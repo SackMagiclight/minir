@@ -115,7 +115,7 @@
             <hr>
 
             <label for="username">
-                <b>Username</b>
+                <b>IR Username(IR Display Name)</b>
             </label>
             <input type="text" placeholder="Username" name="username" required>
 
@@ -190,7 +190,7 @@
     }
     function dispComplete() {
         $("#errorMessage").text("");
-        var dispMsg = "<div class='completeMsg'>" + "仮登録が完了しました。<br>認証用メールのリンクをクリックして、登録を完了させてください。" + "</div>";
+        var dispMsg = "<div class='completeMsg'>" + "Temporary registration is completed.<br>Please click the link of authentication mail, please complete registration." + "</div>";
         if ($("#loading").length == 0) {
             $("body").append("<div id='loading'>" + dispMsg + "</div>");
         }
