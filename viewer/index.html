@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>MinIR (IR for beatoraja) Score Data</title>
+</head>
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.221.1.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.4.6/css/tabulator.min.css" rel="stylesheet">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.4.6/js/tabulator.min.js"></script>
+
+<body>
+    <div id="table"></div>
+</body>
+<script type="text/javascript">
+
+    $(function () {
+        form_action();
+    });
+
+    function createTable(tabledata) {
+        let notes = tabledata[0].notes;
+        $("#table").tabulator({
+            layout: "fitColumns",
+            columns: [
+                { formatter: "rownum", align: "center", width: 40, headerSort: false },
+                { title: "Name", field: "username", width: 150, headerSort: false },
+                { title: "Score", field: "score", align: "left", formatter: "progress", formatterParams: { min: 0, max: notes* 2, legend: true }, headerSort: false },
+                { title: "Combo", field: "combo", align: "left", formatter: "progress", formatterParams: { min: 0, max: notes, color: "orange", legend: true }, headerSort: false },
+                {
+                    title: "Clear", field: "clear", align: "center", width: 150, headerSort: false, formatter: function (cell, formatterParams) {
+                        switch(cell.getValue()){
+                            case 0:
+                                cell.getElement().css({"background-color":"rgb(255, 255, 255)"});
+                                return "NoPlay";
+                                break;
+                                case 1:
+                                cell.getElement().css({"background-color":"rgb(192, 192, 192)"});
+                                return "Failed";
+                                break;
+                                case 2:
+                                cell.getElement().css({"background-color":"rgb(149, 149, 255)"});
+                                return "AssistEasy";
+                                break;
+                                case 3:
+                                cell.getElement().css({"background-color":"rgb(149, 149, 255)"});
+                                return "LightAssistEasy";
+                                break;
+                                case 4:
+                                cell.getElement().css({"background-color":"rgb(152, 251, 152)"});
+                                return "Easy";
+                                break;
+                                case 5:
+                                cell.getElement().css({"background-color":"rgb(152, 251, 152)"});
+                                return "Normal";
+                                break;
+                                case 6:
+                                cell.getElement().css({"background-color":"rgb(255, 99, 71)"});
+                                return "Hard";
+                                break;
+                                case 7:
+                                cell.getElement().css({"background-color":"rgb(255, 217, 0)"});
+                                return "ExHard";
+                                break;
+                                case 8:
+                                cell.getElement().css({"background-color":"rgb(255, 140, 0)"});
+                                return "FullCombo";
+                                break;
+                                case 9:
+                                cell.getElement().css({"background-color":"rgb(255, 140, 0)"});
+                                return "Perfect";
+                                break;
+                                case 10:
+                                cell.getElement().css({"background-color":"rgb(255, 140, 0)"});
+                                return "Max";
+                                break;
+                        }
+                    }
+                }
+            ]
+        });
+        $("#table").tabulator("setData", tabledata);
+    }
+
+    function form_action() {
+        var arg = new Object;
+        url = location.search.substring(1).split('&');
+        for (i = 0; url[i]; i++) {
+            var k = url[i].split('=');
+            arg[k[0]] = k[1];
+        }
+        var songhash = arg.songhash;
+
+        AWS.config.update({
+            accessKeyId: 'AKIAIUNY56NANW7JGMTA',
+            secretAccessKey: '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'
+        });
+        AWS.config.region = 'us-east-1';
+        var lambda = new AWS.Lambda();
+        var params = {
+            FunctionName: 'get_song_data',
+            Payload: JSON.stringify({
+                "songhash": songhash
+            })
+        };
+
+        lambda.invoke(params, function (err, data) {
+            if (err) {
+                console.log(err);
+            } else {
+                var json = JSON.parse(data.Payload.toString());
+                if(json.message == "success"){
+                    createTable(json.IRDatas);
+                }
+            }
+        });
+    }
+</script>
+
+</html>
