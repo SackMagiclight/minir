@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>MinIR (IR for beatoraja) Score Data</title>
+</head>
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.221.1.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.4.6/css/tabulator.min.css" rel="stylesheet">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.4.6/js/tabulator.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+
+<body>
+    <div id="loading" class="mdl-spinner mdl-js-spinner is-active"></div>
+    <div id="table"></div>
+</body>
+<script type="text/javascript">
+    'use strict';
+    $(function () {
+        form_action();
+    });
+
+    function createTable(tabledata) {
+        let notes = tabledata[0].notes;
+        $("#table").tabulator({
+            layout: "fitColumns",
+            columns: [
+                { formatter: "rownum", align: "center", width: 40, headerSort: false },
+                { title: "Title", field: "title", headerSort: false },
+                { title: "Artist", field: "artist", headerSort: false },
+            ],
+            rowClick: function (e, row) {
+                let songhash = row.getData().songhash;
+                window.open("./?songhash=" + songhash, '_blank');
+            }
+        });
+        $("#table").tabulator("setData", tabledata);
+    }
+
+    function form_action() {
+        AWS.config.update({
+            accessKeyId: 'AKIAIUNY56NANW7JGMTA',
+            secretAccessKey: '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'
+        });
+        AWS.config.region = 'us-east-1';
+        var lambda = new AWS.Lambda();
+        var params = {
+            FunctionName: 'get_played_100',
+            Payload: JSON.stringify({
+                "mode": "beat-7k"
+            })
+        };
+
+        lambda.invoke(params, function (err, data) {
+            if (err) {
+                console.log(err);
+                $("#loading").css("display", "none");
+                showSnackbarButton();
+            } else {
+                $("#loading").css("display", "none");
+                var json = JSON.parse(data.Payload.toString());
+                if (json.message == "success") {
+                    createTable(json.songDatas);
+                } else {
+                    showSnackbarButton();
+                }
+            }
+        });
+    }
+
+    function showSnackbarButton() {
+        var snackbarContainer = document.querySelector('#snackbar');
+        var data = {
+            message: 'Data not found.',
+            timeout: 2000
+        };
+        snackbarContainer.MaterialSnackbar.showSnackbar(data);
+    }
+
+    function jumpToSongIR() {
+
+    }
+</script>
+
+</html>
