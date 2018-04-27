@@ -26,7 +26,6 @@
     });
 
     function createTable(tabledata) {
-        let notes = tabledata[0].notes;
         $("#table").tabulator({
             layout: "fitColumns",
             columns: [
@@ -43,6 +42,14 @@
     }
 
     function form_action() {
+        var arg = new Object;
+        var url = location.search.substring(1).split('&');
+        for (var i = 0; url[i]; i++) {
+            var k = url[i].split('=');
+            arg[k[0]] = k[1];
+        }
+        let mode = arg.mode;
+
         AWS.config.update({
             accessKeyId: 'AKIAIUNY56NANW7JGMTA',
             secretAccessKey: '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'
@@ -52,7 +59,7 @@
         var params = {
             FunctionName: 'get_played_100',
             Payload: JSON.stringify({
-                "mode": "beat-7k"
+                "mode": mode ? mode : "beat-7k"
             })
         };
 
@@ -80,10 +87,6 @@
             timeout: 2000
         };
         snackbarContainer.MaterialSnackbar.showSnackbar(data);
-    }
-
-    function jumpToSongIR() {
-
     }
 </script>
 
