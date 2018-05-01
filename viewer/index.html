@@ -139,6 +139,7 @@
             arg[k[0]] = k[1];
         }
         var songhash = arg.songhash;
+        var lnmode = arg.lnmode;
 
         AWS.config.update({
             accessKeyId: 'AKIAIUNY56NANW7JGMTA',
@@ -149,7 +150,7 @@
         var params = {
             FunctionName: 'get_song_data',
             Payload: JSON.stringify({
-                "songhash": songhash
+                "songhash": (songhash + (lnmode ? ("." + lnmode) : ".0"))
             })
         };
 
