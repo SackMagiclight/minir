@@ -14,48 +14,60 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
 <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+<script src="https://www.youtube.com/iframe_api"></script>
 
 <body>
     <div id="loading" class="mdl-spinner mdl-js-spinner is-active"></div>
-    <ul id="songdata" class="list-item mdl-list" style="display: none;">
-        <li class="mdl-list__item">
-            <span class="mdl-list__item-primary-content">
-                <i class="material-icons mdl-list__item-icon">music_note</i>
-                <span id="genre">Genre</span>
-            </span>
-        </li>
-        <li class="mdl-list__item">
-            <span class="mdl-list__item-primary-content">
-                <i class="material-icons mdl-list__item-icon">title</i>
-                <span id="title">Title</span>
-            </span>
-        </li>
-        <li class="mdl-list__item">
-            <span class="mdl-list__item-primary-content">
-                <i class="material-icons mdl-list__item-icon">person</i>
-                <span id="artist">Artist</span>
-            </span>
-        </li>
-        <li class="mdl-list__item">
-            <span class="mdl-list__item-primary-content">
-                <i class="material-icons mdl-list__item-icon">fast_forward</i>
-                <span id="bpm">BPM</span>
-            </span>
-        </li>
-        <li class="mdl-list__item">
-            <span class="mdl-list__item-primary-content">
-                <i class="material-icons mdl-list__item-icon">stars</i>
-                ☆<span id="grade">Grade</span>
-            </span>
-        </li>
-        <li class="mdl-list__item">
-            <span class="mdl-list__item-primary-content">
-                <i class="material-icons mdl-list__item-icon">assessment</i>
-                <span id="notes">Notes</span>notes&nbsp;/&nbsp;<span id="total">Total</span>&nbsp;total
-            </span>
-        </li>
-    </ul>
-    <div id="table"></div>
+    <div class="mdl-grid">
+        <div class="mdl-cell mdl-cell--6-col">
+            <ul id="songdata" class="list-item mdl-list" style="display: none;">
+                <li class="mdl-list__item">
+                    <span class="mdl-list__item-primary-content">
+                        <i class="material-icons mdl-list__item-icon">music_note</i>
+                        <span id="genre">Genre</span>
+                    </span>
+                </li>
+                <li class="mdl-list__item">
+                    <span class="mdl-list__item-primary-content">
+                        <i class="material-icons mdl-list__item-icon">title</i>
+                        <span id="title">Title</span>
+                    </span>
+                </li>
+                <li class="mdl-list__item">
+                    <span class="mdl-list__item-primary-content">
+                        <i class="material-icons mdl-list__item-icon">person</i>
+                        <span id="artist">Artist</span>
+                    </span>
+                </li>
+                <li class="mdl-list__item">
+                    <span class="mdl-list__item-primary-content">
+                        <i class="material-icons mdl-list__item-icon">fast_forward</i>
+                        <span id="bpm">BPM</span>
+                    </span>
+                </li>
+                <li class="mdl-list__item">
+                    <span class="mdl-list__item-primary-content">
+                        <i class="material-icons mdl-list__item-icon">stars</i>
+                        ☆
+                        <span id="grade">Grade</span>
+                    </span>
+                </li>
+                <li class="mdl-list__item">
+                    <span class="mdl-list__item-primary-content">
+                        <i class="material-icons mdl-list__item-icon">assessment</i>
+                        <span id="notes">Notes</span>notes&nbsp;/&nbsp;
+                        <span id="total">Total</span>&nbsp;total
+                    </span>
+                </li>
+            </ul>
+        </div>
+        <div class="mdl-cell mdl-cell--6-col">
+            <div id="player"></div>
+        </div>
+        <div class="mdl-cell mdl-cell--12-col">
+            <div id="table"></div>
+        </div>
+    </div>
     <div id="snackbar" class="mdl-js-snackbar mdl-snackbar">
         <div class="mdl-snackbar__text"></div>
         <button class="mdl-snackbar__action" type="button"></button>
@@ -132,22 +144,22 @@
     }
 
     function form_action() {
-        var arg = new Object;
-        var url = location.search.substring(1).split('&');
-        for (var i = 0; url[i]; i++) {
-            var k = url[i].split('=');
+        let arg = new Object;
+        let url = location.search.substring(1).split('&');
+        for (let i = 0; url[i]; i++) {
+            let k = url[i].split('=');
             arg[k[0]] = k[1];
         }
-        var songhash = arg.songhash;
-        var lnmode = arg.lnmode;
+        let songhash = arg.songhash;
+        let lnmode = arg.lnmode;
 
         AWS.config.update({
             accessKeyId: 'AKIAIUNY56NANW7JGMTA',
             secretAccessKey: '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'
         });
         AWS.config.region = 'us-east-1';
-        var lambda = new AWS.Lambda();
-        var params = {
+        let lambda = new AWS.Lambda();
+        let params = {
             FunctionName: 'get_song_data',
             Payload: JSON.stringify({
                 "songhash": (songhash + (lnmode ? ("." + lnmode) : ".0"))
@@ -161,10 +173,11 @@
                 showSnackbarButton();
             } else {
                 $("#loading").css("display", "none");
-                var json = JSON.parse(data.Payload.toString());
+                let json = JSON.parse(data.Payload.toString());
                 if (json.message == "success") {
                     createTable(json.IRDatas);
                     createSongDataList(json.SongData);
+                    createYoutubeMov(json.SongData);
                     $("#songdata").css("display", "inline");
                 } else {
                     showSnackbarButton();
@@ -177,7 +190,7 @@
         $("#genre").text(songData.genre);
         $("#title").text(songData.title);
         $("#artist").text(songData.artist);
-        if(songData.maxbpm == songData.minbpm){
+        if (songData.maxbpm == songData.minbpm) {
             $("#bpm").text(songData.maxbpm);
         } else {
             $("#bpm").text(songData.minbpm + "-" + songData.maxbpm);
@@ -187,9 +200,26 @@
         $("#total").text(songData.total);
     }
 
+    function createYoutubeMov(songData) {
+        let url = "https://www.googleapis.com/youtube/v3/search?type=video&part=id&q=" + encodeURIComponent(songData.title + "BMS") + "&key=AIzaSyAhzvSZ6LQXhjOJz2xd5W4gZcoe-WCe6rs";
+        console.log(url);
+        $.ajax({
+            type: "get",
+            dataType: "jsonp",
+            url: url
+        }).done(function (e) {
+            console.log(e);
+            let player = new YT.Player('player', {
+                height: '390',
+                width: '640',
+                videoId: e.items[0].id.videoId
+            });
+        });
+    }
+
     function showSnackbarButton() {
-        var snackbarContainer = document.querySelector('#snackbar');
-        var data = {
+        let snackbarContainer = document.querySelector('#snackbar');
+        let data = {
             message: 'Data not found.',
             timeout: 2000
         };
