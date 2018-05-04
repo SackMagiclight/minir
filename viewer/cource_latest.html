@@ -34,7 +34,7 @@
             ],
             rowClick: function (e, row) {
                 let courcehash = row.getData().courcehash;
-                window.open("./?courcehash=" + courcehash, '_blank');
+                window.open("./cource?courcehash=" + courcehash, '_blank');
             }
         });
         $("#table").tabulator("setData", tabledata);
