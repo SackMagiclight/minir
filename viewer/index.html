@@ -209,11 +209,31 @@
             url: url
         }).done(function (e) {
             console.log(e);
-            let player = new YT.Player('player', {
-                height: '390',
-                width: '640',
-                videoId: e.items[0].id.videoId
-            });
+
+            if (e.items.length == 0) {
+                let url = "https://www.googleapis.com/youtube/v3/search?type=video&part=id&q=" + encodeURIComponent(songData.title) + "&key=AIzaSyAhzvSZ6LQXhjOJz2xd5W4gZcoe-WCe6rs";
+                console.log(url);
+                $.ajax({
+                    type: "get",
+                    dataType: "jsonp",
+                    url: url
+                }).done(function (e) {
+                    console.log(e);
+                    if (e.items.length != 0) {
+                        let player = new YT.Player('player', {
+                            height: '390',
+                            width: '640',
+                            videoId: e.items[0].id.videoId
+                        });
+                    }
+                });
+            } else {
+                let player = new YT.Player('player', {
+                    height: '390',
+                    width: '640',
+                    videoId: e.items[0].id.videoId
+                });
+            }
         });
     }
 
