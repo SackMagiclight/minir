@@ -41,11 +41,19 @@
                 { formatter: "rownum", align: "center", width: 40, headerSort: false },
                 { title: "Title", field: "title", headerSort: false },
                 { title: "Artist", field: "artist", headerSort: false },
-            ],
-            rowClick: function (e, row) {
-                let songhash = row.getData().songhash;
-                window.open("./?songhash=" + songhash, '_blank');
-            }
+                { title:"IR - default", field:"songhash", width:100, formatter:function(cell, formatterParams){
+                    let value = cell.getValue();
+                    return `<a href="./?songhash=${value}&lnmode=0" target="_blank">IR</a>`;
+                }, headerSort: false},
+                { title:"IR - CN", field:"songhash", width:100, formatter:function(cell, formatterParams){
+                    let value = cell.getValue();
+                    return `<a href="./?songhash=${value}&lnmode=1" target="_blank">IR(CN)</a>`;
+                }, headerSort: false},
+                { title:"IR - HCN", field:"songhash", width:100, formatter:function(cell, formatterParams){
+                    let value = cell.getValue();
+                    return `<a href="./?songhash=${value}&lnmode=2" target="_blank">IR(HCN)</a>`;
+                }, headerSort: false},
+            ]
         });
         $("#table").tabulator("setData", tabledata);
     }

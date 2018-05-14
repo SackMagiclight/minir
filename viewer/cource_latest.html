@@ -40,11 +40,19 @@
             columns: [
                 { formatter: "rownum", align: "center", width: 40, headerSort: false },
                 { title: "Cource Name", field: "name", headerSort: false },
-            ],
-            rowClick: function (e, row) {
-                let courcehash = row.getData().courcehash;
-                window.open("./cource?courcehash=" + courcehash, '_blank');
-            }
+                { title:"IR - default", field:"courcehash", width:100, formatter:function(cell, formatterParams){
+                    let value = cell.getValue();
+                    return `<a href="./cource?courcehash=${value}&lnmode=0" target="_blank">IR</a>`;
+                }, headerSort: false},
+                { title:"IR - CN", field:"courcehash", width:100, formatter:function(cell, formatterParams){
+                    let value = cell.getValue();
+                    return `<a href="./cource?courcehash=${value}&lnmode=1" target="_blank">IR(CN)</a>`;
+                }, headerSort: false},
+                { title:"IR - HCN", field:"courcehash", width:100, formatter:function(cell, formatterParams){
+                    let value = cell.getValue();
+                    return `<a href="./cource?courcehash=${value}&lnmode=2" target="_blank">IR(HCN)</a>`;
+                }, headerSort: false},
+            ]
         });
         $("#table").tabulator("setData", tabledata);
     }
