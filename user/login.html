@@ -76,8 +76,7 @@
 
     function form_submit(form) {
         if (Cookies.get('AccessToken') && Cookies.get('RefreshToken')) {
-            //window.location.href = './user';
-            alert("Accesstoken=" + Cookies.get('AccessToken'));
+            window.location.href = './user';
             return;
         }
 
@@ -93,7 +92,7 @@
         let params = {
             FunctionName: 'login_and_responce',
             Payload: JSON.stringify({
-                "email": email,
+                "username": email,
                 "password": psw
             })
         };
