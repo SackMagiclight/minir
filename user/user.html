@@ -28,14 +28,12 @@
 <body>
     <div id="page_loading" class="mdl-spinner mdl-js-spinner"></div>
     <form onsubmit="return false" id="form">
-        <div class="mdl-grid">
+        <div id="form_div" class="mdl-grid" style="display: none;">
             <div class="mdl-cell mdl-cell--12-col">
                 <h1 id="user_name"></h1>
             </div>
-        </div>
-        <div class="mdl-grid">
             <div class="mdl-cell mdl-cell--12-col">
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <div id="bio_div" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                     <textarea class="mdl-textfield__input" type="text" rows= "10" id="bio" ></textarea>
                     <label class="mdl-textfield__label" for="bio">Bio</label>
                 </div>
@@ -44,6 +42,8 @@
                 <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Update</button>
                 <div id="loading" class="mdl-spinner mdl-js-spinner"></div>
             </div>
+        </div>
+        <div class="mdl-grid">
             <div class="mdl-cell mdl-cell--12-col">
                 <p>Latest 10 Play</p>
                 <div id="table"></div>
@@ -100,6 +100,7 @@
                 if (json.message == "success") {
                     createTable(json.ScoreDatas);
                     createUserDataForm(json.UserData);
+                    $("#form_div").css("display", "inline");
                 } else {
                     Cookies.remove('AccessToken', { path: '/minir/' });
                     Cookies.remove('RefreshToken', { path: '/minir/' });
@@ -118,15 +119,15 @@
                 { title: "Artist", field: "artist", headerSort: false },
                 { title:"IR - default", field:"songhash", width:100, formatter:function(cell, formatterParams){
                     let value = cell.getValue();
-                    return `<a href="./?songhash=${value}&lnmode=0" target="_blank">IR</a>`;
+                    return `<a href="../?songhash=${value}&lnmode=0" target="_blank">IR</a>`;
                 }, headerSort: false},
                 { title:"IR - CN", field:"songhash", width:100, formatter:function(cell, formatterParams){
                     let value = cell.getValue();
-                    return `<a href="./?songhash=${value}&lnmode=1" target="_blank">IR(CN)</a>`;
+                    return `<a href="../?songhash=${value}&lnmode=1" target="_blank">IR(CN)</a>`;
                 }, headerSort: false},
                 { title:"IR - HCN", field:"songhash", width:100, formatter:function(cell, formatterParams){
                     let value = cell.getValue();
-                    return `<a href="./?songhash=${value}&lnmode=2" target="_blank">IR(HCN)</a>`;
+                    return `<a href="../?songhash=${value}&lnmode=2" target="_blank">IR(HCN)</a>`;
                 }, headerSort: false},
             ]
         });
@@ -136,6 +137,7 @@
     function createUserDataForm(userdata) {
         $("#user_name").text(userdata.username);
         $("#bio").text(userdata.bio);
+        $("#bio_div").addClass("is-dirty");
     }
 
     function form_submit(form) {
