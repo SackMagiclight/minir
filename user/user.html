@@ -156,7 +156,7 @@
         AWS.config.region = 'us-east-1';
         let lambda = new AWS.Lambda();
         let params = {
-            FunctionName: 'update_user',
+            FunctionName: 'update_user_data',
             Payload: JSON.stringify({
                 "bio": bio,
                 "AccessToken": AccessToken,
