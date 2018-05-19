@@ -64,7 +64,7 @@
         let AccessToken = Cookies.get('AccessToken');
         let RefreshToken = Cookies.get('RefreshToken');
         if (AccessToken && RefreshToken) {
-            window.location.href = './user';
+            window.location.href = './';
             return;
         }
     }
@@ -76,7 +76,7 @@
 
     function form_submit(form) {
         if (Cookies.get('AccessToken') && Cookies.get('RefreshToken')) {
-            window.location.href = './user';
+            window.location.href = './';
             return;
         }
 
@@ -128,7 +128,7 @@
         $("#loading").removeClass("is-active");
     }
     function complete() {
-        window.location.href = './user';
+        window.location.href = './';
         return;
     }
 </script>
