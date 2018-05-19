@@ -102,18 +102,19 @@
             if (err) {
                 console.log(err);
             } else {
-                if (data.errorMessage) {
+                let json = JSON.parse(data.Payload.toString());
+                if (json.errorMessage) {
                     console.log(data);
                     $("#errorMessage").text(data.errorMessage);
                     return;
                 }
 
-                if (data.AccessToken) {
-                    Cookies.set("AccessToken", data.AccessToken, { expires: 1, path: '/minir/' });
+                if (json.AccessToken) {
+                    Cookies.set("AccessToken", json.AccessToken, { expires: 1, path: '/minir/' });
                 }
 
-                if (data.RefreshToken) {
-                    Cookies.set("RefreshToken", data.RefreshToken, { expires: 1, path: '/minir/' });
+                if (json.RefreshToken) {
+                    Cookies.set("RefreshToken", json.RefreshToken, { expires: 1, path: '/minir/' });
                 }
                 complete();
             }
