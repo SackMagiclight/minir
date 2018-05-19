@@ -27,7 +27,7 @@
 
 <body>
     <div id="page_loading" class="mdl-spinner mdl-js-spinner"></div>
-    <form onsubmit="return false" id="form" style="display: none;">
+    <form onsubmit="return false" id="form">
         <div class="mdl-grid">
             <div class="mdl-cell mdl-cell--12-col">
                 <h1 id="user_name"></h1>
@@ -100,7 +100,6 @@
                 if (json.message == "success") {
                     createTable(json.ScoreDatas);
                     createUserDataForm(json.UserData);
-                    $("#form").css("display", "inline");
                 } else {
                     Cookies.remove('AccessToken', { path: '/minir/' });
                     Cookies.remove('RefreshToken', { path: '/minir/' });
