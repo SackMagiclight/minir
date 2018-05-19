@@ -119,15 +119,18 @@
                 { title: "Artist", field: "artist", headerSort: false },
                 { title:"IR - default", field:"songhash", width:100, formatter:function(cell, formatterParams){
                     let value = cell.getValue();
-                    return `<a href="../viewer/?songhash=${value}&lnmode=0" target="_blank">IR</a>`;
+                    let songhashArray = value.split(".");
+                    return `<a href="../viewer/?songhash=${songhashArray[0]}&lnmode=0" target="_blank">IR</a>`;
                 }, headerSort: false},
                 { title:"IR - CN", field:"songhash", width:100, formatter:function(cell, formatterParams){
                     let value = cell.getValue();
-                    return `<a href="../viewer/?songhash=${value}&lnmode=1" target="_blank">IR(CN)</a>`;
+                    let songhashArray = value.split(".");
+                    return `<a href="../viewer/?songhash=${songhashArray[0]}&lnmode=1" target="_blank">IR(CN)</a>`;
                 }, headerSort: false},
                 { title:"IR - HCN", field:"songhash", width:100, formatter:function(cell, formatterParams){
                     let value = cell.getValue();
-                    return `<a href="../viewer/?songhash=${value}&lnmode=2" target="_blank">IR(HCN)</a>`;
+                    let songhashArray = value.split(".");
+                    return `<a href="../viewer/?songhash=${songhashArray[0]}&lnmode=2" target="_blank">IR(HCN)</a>`;
                 }, headerSort: false},
             ]
         });
