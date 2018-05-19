@@ -43,9 +43,10 @@
                 <div id="loading" class="mdl-spinner mdl-js-spinner"></div>
             </div>
         </div>
+        <hr>
         <div class="mdl-grid">
             <div class="mdl-cell mdl-cell--12-col">
-                <p>Latest 10 Play</p>
+                <p id="table_title" style="display: none;">Latest 10 Play</p>
                 <div id="table"></div>
             </div>
         </div>
@@ -101,6 +102,7 @@
                     createTable(json.ScoreDatas);
                     createUserDataForm(json.UserData);
                     $("#form_div").css("display", "inline");
+                    $("#table_title").css("display", "block");
                 } else {
                     Cookies.remove('AccessToken', { path: '/minir/' });
                     Cookies.remove('RefreshToken', { path: '/minir/' });
