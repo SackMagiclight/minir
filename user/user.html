@@ -69,7 +69,7 @@
         let AccessToken = Cookies.get('AccessToken');
         let RefreshToken = Cookies.get('RefreshToken');
         if (!AccessToken || !RefreshToken) {
-            window.location.href = './login';
+            //window.location.href = './login';
             return;
         }
 
@@ -93,7 +93,7 @@
                 $("#page_loading").css("display", "none");
                 Cookies.remove('AccessToken', { path: '/minir/' });
                 Cookies.remove('RefreshToken', { path: '/minir/' });
-                window.location.href = './login';
+                //window.location.href = './login';
             } else {
                 $("#page_loading").css("display", "none");
                 let json = JSON.parse(data.Payload.toString());
