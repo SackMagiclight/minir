@@ -105,21 +105,27 @@
                 { formatter: "rownum", align: "center", width: 40, headerSort: false },
                 { title: "Title", field: "title", headerSort: false },
                 { title: "Artist", field: "artist", headerSort: false },
-                { title:"IR - default", field:"songhash", width:100, formatter:function(cell, formatterParams){
-                    let value = cell.getValue();
-                    let songhashArray = value.split(".");
-                    return `<a href="../viewer/?songhash=${songhashArray[0]}&lnmode=0" target="_blank">IR</a>`;
-                }, headerSort: false},
-                { title:"IR - CN", field:"songhash", width:100, formatter:function(cell, formatterParams){
-                    let value = cell.getValue();
-                    let songhashArray = value.split(".");
-                    return `<a href="../viewer/?songhash=${songhashArray[0]}&lnmode=1" target="_blank">IR(CN)</a>`;
-                }, headerSort: false},
-                { title:"IR - HCN", field:"songhash", width:100, formatter:function(cell, formatterParams){
-                    let value = cell.getValue();
-                    let songhashArray = value.split(".");
-                    return `<a href="../viewer/?songhash=${songhashArray[0]}&lnmode=2" target="_blank">IR(HCN)</a>`;
-                }, headerSort: false},
+                {
+                    title: "IR - default", field: "songhash", width: 100, formatter: function (cell, formatterParams) {
+                        let value = cell.getValue();
+                        let songhashArray = value.split(".");
+                        return `<a href="../viewer/?songhash=${songhashArray[0]}&lnmode=0" target="_blank">IR</a>`;
+                    }, headerSort: false
+                },
+                {
+                    title: "IR - CN", field: "songhash", width: 100, formatter: function (cell, formatterParams) {
+                        let value = cell.getValue();
+                        let songhashArray = value.split(".");
+                        return `<a href="../viewer/?songhash=${songhashArray[0]}&lnmode=1" target="_blank">IR(CN)</a>`;
+                    }, headerSort: false
+                },
+                {
+                    title: "IR - HCN", field: "songhash", width: 100, formatter: function (cell, formatterParams) {
+                        let value = cell.getValue();
+                        let songhashArray = value.split(".");
+                        return `<a href="../viewer/?songhash=${songhashArray[0]}&lnmode=2" target="_blank">IR(HCN)</a>`;
+                    }, headerSort: false
+                },
             ]
         });
         $("#table").tabulator("setData", tabledata);
@@ -127,7 +133,7 @@
 
     function createUserDataForm(userdata) {
         $("#user_name").text(userdata.username);
-        $("#bio").text(userdata.bio);
+        $("#bio").text(nl2br(userdata.bio));
     }
 
     function showSnackbarButton(message) {
@@ -137,6 +143,14 @@
             timeout: 2000
         };
         snackbarContainer.MaterialSnackbar.showSnackbar(data);
+    }
+
+    function nl2br(str, is_xhtml) {
+        if (typeof str === 'undefined' || str === null) {
+            return '';
+        }
+        var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';
+        return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
     }
 </script>
 
