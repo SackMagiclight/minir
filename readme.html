@@ -396,7 +396,7 @@ blockquote {
 
 </head>
 <body>
-<p>最終更新：2018/05/05 jarファイル不具合修正</p>
+<p>最終更新：2018/05/20 マイページ実装</p>
 <hr>
 <h2 id="minir-%E3%81%A8%E3%81%AF">MinIR とは</h2>
 <p>beatoraja用に設計されたIRです。
@@ -419,7 +419,6 @@ blockquote {
 <ul>
 <li>段位認定（難易度表で対応してください。スコア送信できます。(0.5.6以降の本体必須)）</li>
 <li>ライバル機能（無課金で対応するのが難しい）</li>
-<li>マイページ（同上だが簡易的なのは対応したい）</li>
 <li>楽曲検索(RDBじゃないので非現実的な負荷)</li>
 </ul>
 </li>
@@ -496,9 +495,14 @@ IRタブで「MinIR」が選択できるようになっていれば成功です�
 </li>
 <li>譜面のスコア閲覧
 <ul>
-<li><a href="https://www.gaftalk.com/minir/viewer/?songhash=7b6bc1bb9ca1d8843673f5fc758eda2b622a01640afac79590ee07e7a66c4e37">https://www.gaftalk.com/minir/viewer/?songhash=[sha256]</a> で閲覧できます。[sha256]には譜面のsha256ハッシュが必要です。
+<li><a href="https://www.gaftalk.com/minir/viewer/?songhash=7b6bc1bb9ca1d8843673f5fc758eda2b622a01640afac79590ee07e7a66c4e37">https://www.gaftalk.com/minir/viewer/?songhash=[sha256]&amp;lnmode=[0,1,2]</a> で閲覧できます。[sha256]には譜面のsha256ハッシュが必要です。
 <ul>
-<li>クエリパラメータ <code>lnmode=0,1,2</code> でLNモード別のスコアが閲覧できます。(0:LN, 1:CN, 2:HCN)</li>
+<li>クエリパラメータ <code>lnmode=0,1,2</code> でLNモード別のスコアが閲覧できます。(0:LN, 1:CN, 2:HCN)
+<ul>
+<li>指定がない場合、LNとなります</li>
+</ul>
+</li>
+<li>BMSに<code>#LNMODE</code>が定義されている場合は常に<code>lnmode=0</code>となるので、注意してください。（LNモードにかかわらずユニークのためです）</li>
 </ul>
 </li>
 </ul>
@@ -534,13 +538,42 @@ IRタブで「MinIR」が選択できるようになっていれば成功です�
 <li><a href="https://www.gaftalk.com/minir/viewer/cource_latest">https://www.gaftalk.com/minir/viewer/cource_latest</a> で閲覧できます。</li>
 </ul>
 </li>
+<li>ユーザーマイページ
+<ul>
+<li><a href="https://www.gaftalk.com/minir/viewer/user?userid=a30f300b-1984-4797-80d3-66a06af7fcc8">https://www.gaftalk.com/minir/viewer/user?userid=[userid]</a> で閲覧できます。
+<ul>
+<li>クエリパラメータ <code>userid=[userid]</code> が必要です。</li>
+<li>IRページのユーザー名クリックから遷移するのが確実です。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>ログイン
+<ul>
+<li><a href="https://www.gaftalk.com/minir/user/login">https://www.gaftalk.com/minir/user/login</a> で開きます。</li>
+<li>登録時のメールアドレス、パスワードを利用してログインしてください。</li>
+<li>ログイン後はユーザーマイページ（編集可能版）に遷移します。（後述）</li>
+</ul>
+</li>
+<li>ユーザーマイページ（編集）
+<ul>
+<li>ログインが正しく行われていれば、<a href="https://www.gaftalk.com/minir/user/">https://www.gaftalk.com/minir/user/</a> で開きます。（ログイン後は自動遷移します。一定時間はログイン情報を保持します。）</li>
+<li>bioの編集が可能です。
+<ul>
+<li>URL（http:// | https:// 等）はユーザーマイページ内でリンクに置き換えられるため、外部リンクにご活用ください。</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 <h2 id="%E4%BB%8A%E5%BE%8C%E3%81%AE%E4%BA%88%E5%AE%9A%E4%B8%8A%E3%81%AE%E6%96%B9%E3%81%8C%E5%84%AA%E5%85%88%E9%A0%86%E4%BD%8D%E9%AB%98%E3%82%81">今後の予定(上の方が優先順位高め)</h2>
 <ul>
 <li><s>「スコアが上回っていれば上書き、クリアが上回っていれば上書き」にIR仕様を修正します</s> 2018/04/19 対応済み</li>
 <li><s>譜面情報を保持（送信）するようにし、IRページに表示するようにします</s> 2018/04/19 対応済み</li>
 <li><s>コースデータ送信に対応します</s> 2018/05/04 対応済み</li>
-<li>簡易マイページ機能(Bioの編集、直近のプレイ表示)</li>
+<li><s>簡易マイページ機能(Bioの編集、直近のプレイ表示)</s> 2018/05/20 対応済み</li>
+<li>認証URL再送信機能</li>
+<li>パスワード変更</li>
 </ul>
 <p>その他ご意見・ご感想はDiscode DMでよろしくおねがいします。</p>
 <hr>
