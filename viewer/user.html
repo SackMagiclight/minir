@@ -133,7 +133,7 @@
 
     function createUserDataForm(userdata) {
         $("#user_name").text(userdata.username);
-        $("#bio").text(nl2br(userdata.bio));
+        $("#bio").html(nl2br(userdata.bio));
     }
 
     function showSnackbarButton(message) {
