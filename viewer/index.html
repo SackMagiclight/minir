@@ -5,10 +5,10 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-83617244-2"></script>
     <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-83617244-2');
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'UA-83617244-2');
     </script>
 
     <meta charset="utf-8">
@@ -94,7 +94,13 @@
             layout: "fitColumns",
             columns: [
                 { formatter: "rownum", align: "center", width: 40, headerSort: false },
-                { title: "Name", field: "username", width: 150, headerSort: false },
+                {
+                    title: "Name", field: "username", width: 150, headerSort: false, formatter: function (cell, formatterParams) {
+                        let data = cell.getRow().getData();
+                        let userid = data.userid;
+                        return `<a href="./user?userid=${userid}" target="_blank">${cell.getValue()}</a>`;
+                    }
+                },
                 { title: "Score", field: "score", align: "left", formatter: "progress", formatterParams: { min: 0, max: notes * 2, legend: true }, headerSort: false },
                 { title: "Combo", field: "combo", align: "left", formatter: "progress", formatterParams: { min: 0, max: notes, color: "orange", legend: true }, headerSort: false },
                 {
