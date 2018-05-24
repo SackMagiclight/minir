@@ -176,7 +176,7 @@ a img{
   width: auto;
   background-color: #f3f3f3;
   background: url('images/coffee.png') center 50% no-repeat;
-  background-size: 10% auto;
+  background-size: 100px auto;
 }
 
 .logo-font {
