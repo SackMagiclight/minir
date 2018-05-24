@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="Introducing Lollipop, a sweet new take on Android.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <title>MinIR for beatoraja</title>
+
+  <!-- Page styles -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    #view-source {
+      position: fixed;
+      display: block;
+      right: 0;
+      bottom: 0;
+      margin-right: 40px;
+      margin-bottom: 40px;
+      z-index: 900;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <div class="minir-header mdl-layout__header mdl-layout__header--waterfall">
+      <div class="mdl-layout__header-row">
+        <nav class="minir-navigation mdl-navigation" style="width:auto">
+          <a class="mdl-navigation__link" href="/minir/">Home</a>
+          <a class="mdl-navigation__link" href="/minir/readme">About</a>
+          <a class="mdl-navigation__link" href="https://drive.google.com/open?id=1wYVNufrfiVAWUkYTVdGl0Q0PqrhkHZBo">Download API</a>
+          <a id="submenu" class="mdl-navigation__link" href="#">Latest 100 played
+            <i class="material-icons">
+              arrow_drop_down
+            </i>
+          </a>
+        </nav>
+        <ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="submenu">
+          <li class="mdl-menu__item">
+            <a class="mdl-navigation__link" href="/minir/viewer/latest?mode=beat-7k">7KEYS</a>
+          </li>
+          <li class="mdl-menu__item">
+            <a class="mdl-navigation__link" href="/minir/viewer/latest?mode=beat-5k">5KEYS</a>
+          </li>
+          <li class="mdl-menu__item">
+            <a class="mdl-navigation__link" href="/minir/viewer/latest?mode=beat-10k">10KEYS</a>
+          </li>
+          <li class="mdl-menu__item">
+            <a class="mdl-navigation__link" href="/minir/viewer/latest?mode=beat-14k">14KEYS</a>
+          </li>
+          <li class="mdl-menu__item">
+            <a class="mdl-navigation__link" href="/minir/viewer/latest?mode=popn-5k">PMS 5KEYS</a>
+          </li>
+          <li class="mdl-menu__item">
+            <a class="mdl-navigation__link" href="/minir/viewer/latest?mode=popn-9k">PMS 9KEYS</a>
+          </li>
+          <li class="mdl-menu__item">
+            <a class="mdl-navigation__link" href="/minir/viewer/latest?mode=keyboard-24k">KM 24KEYS</a>
+          </li>
+          <li class="mdl-menu__item">
+            <a class="mdl-navigation__link" href="/minir/viewer/latest?mode=keyboard-24k-double">KM 48KEYS</a>
+          </li>
+        </ul>
+        <!-- Add spacer, to align navigation to the right in desktop -->
+        <div class="minir-header-spacer mdl-layout-spacer"></div>
+        <!-- Navigation -->
+        <!-- <div class="minir-navigation-container">
+          <nav class="minir-navigation mdl-navigation">
+            <a class="mdl-navigation__link mdl-typography--text-uppercase" href="">Sign up</a>
+            <a class="mdl-navigation__link mdl-typography--text-uppercase" href="">Login</a>
+            <a class="mdl-navigation__link mdl-typography--text-uppercase" href="">Logout</a>
+            <a class="mdl-navigation__link mdl-typography--text-uppercase" href="">Setting</a>
+          </nav>
+        </div> -->
+      </div>
+    </div>
+    <div class="minir-content mdl-layout__content">
+      <a name="top"></a>
+      <div class="minir-be-together-section mdl-typography--text-center">
+        <div class="logo-font minir-slogan">MinIR for beatoraja</div>
+        <div class="logo-font minir-sub-slogan">It is an IR designed for beatoraja.</div>
+      </div>
+      <footer class="minir-footer mdl-mega-footer">
+        <div class="mdl-mega-footer--top-section">
+          <div class="mdl-mega-footer--right-section">
+            <a class="mdl-typography--font-light" href="#top">
+              Back to Top
+              <i class="material-icons">expand_less</i>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+  <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+</body>
+
+</html>
