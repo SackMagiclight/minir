@@ -37,6 +37,8 @@
       z-index: 900;
     }
   </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 </head>
 
 <body>
@@ -111,6 +113,34 @@
     </div>
   </div>
   <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.js"></script>
+  <script>
+    window.addEventListener("load", function () {
+      let allow = Cookies.get('cookiestatus');
+      if(allow == "allow"){
+        return;
+      }
+      window.cookieconsent.initialise({
+        "palette": {
+          "popup": {
+            "background": "#efefef",
+            "text": "#404040"
+          },
+          "button": {
+            "background": "#8ec760",
+            "text": "#ffffff"
+          }
+        },
+        "theme": "edgeless",
+        "type": "opt-in",
+        "onStatusChange": function(status) {
+          Cookies.set("cookiestatus", status, { path: '/minir/' });
+        },
+      })
+    });
+  </script>
 </body>
 
 </html>
