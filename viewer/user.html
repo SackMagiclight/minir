@@ -26,7 +26,7 @@
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 
 <body>
-    <div id="page_loading" class="mdl-spinner mdl-js-spinner"></div>
+    <div id="page_loading" class="mdl-spinner mdl-js-spinner is-active"></div>
     <div id="form_div" class="mdl-grid" style="display: none;">
         <div class="mdl-cell mdl-cell--12-col">
             <h1 id="user_name"></h1>
@@ -35,7 +35,21 @@
             <p id="bio"></p>
         </div>
     </div>
-    <hr>
+    <div id="rival_div" class="mdl-grid" style="display: none;">
+        <div class="mdl-cell mdl-cell--12-col">
+            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" onClick="addRival()">
+                Add Rival
+            </button>
+            <div id="loading_rival_add" class="mdl-spinner mdl-js-spinner"></div>
+        </div>
+        <div class="mdl-cell mdl-cell--12-col">
+            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" onClick="removeRival()">
+                Remove Rival
+            </button>
+            <div id="loading_rival_remove" class="mdl-spinner mdl-js-spinner"></div>
+        </div>
+    </div>
+    <hr id="hr" style="display: none;">
     <div class="mdl-grid">
         <div class="mdl-cell mdl-cell--12-col">
             <p id="table_title" style="display: none;">Latest 10 Play</p>
@@ -66,6 +80,9 @@
         }
         let userid = arg.userid;
 
+        let AccessToken = Cookies.get('AccessToken');
+        let RefreshToken = Cookies.get('RefreshToken');
+
         AWS.config.update({
             accessKeyId: 'AKIAIUNY56NANW7JGMTA',
             secretAccessKey: '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'
@@ -84,13 +101,18 @@
                 console.log(err);
                 showSnackbarButton(err);
             } else {
-                $("#page_loading").css("display", "none");
+                $("#page_loading").removeClass("is-active");
                 let json = JSON.parse(data.Payload.toString());
                 if (json.message == "success") {
                     createTable(json.ScoreDatas);
                     createUserDataForm(json.UserData);
                     $("#form_div").css("display", "inline");
+                    $("#hr").css("display", "block");
                     $("#table_title").css("display", "block");
+
+                    if (AccessToken && RefreshToken) {
+                        $("#rival_div").css("display", "inline");
+                    }
                 } else {
                     showSnackbarButton(json);
                 }
@@ -145,9 +167,9 @@
         snackbarContainer.MaterialSnackbar.showSnackbar(data);
     }
 
-    function replaseURL(str){
+    function replaseURL(str) {
         var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-        return str.replace(exp,"<a href='$1' target='_blank'>$1</a>");
+        return str.replace(exp, "<a href='$1' target='_blank'>$1</a>");
     }
 
     function nl2br(str, is_xhtml) {
@@ -156,6 +178,98 @@
         }
         var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';
         return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
+    }
+
+    function addRival() {
+        var arg = new Object;
+        var url = location.search.substring(1).split('&');
+        for (var i = 0; url[i]; i++) {
+            var k = url[i].split('=');
+            arg[k[0]] = k[1];
+        }
+        let userid = arg.userid;
+
+        let AccessToken = Cookies.get('AccessToken');
+        let RefreshToken = Cookies.get('RefreshToken');
+
+        AWS.config.update({
+            accessKeyId: 'AKIAJGA7ZWB5TQNJMNCA',
+            secretAccessKey: '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'
+        });
+        AWS.config.region = 'us-east-1';
+        let lambda = new AWS.Lambda();
+        let params = {
+            FunctionName: 'add_rival',
+            Payload: JSON.stringify({
+                "AccessToken": AccessToken,
+                "RefreshToken": RefreshToken,
+                "rivalId": userid
+            })
+        };
+
+        $("#loading_rival_add").addClass("is-active");
+
+        lambda.invoke(params, function (err, data) {
+            $("#loading_rival_add").removeClass("is-active");
+            if (err) {
+                console.log(err);
+                let json = JSON.parse(err.toString());
+                showSnackbarButton(json);
+            } else {
+                let json = JSON.parse(data.Payload.toString());
+                if (json.message == "success") {
+                    showSnackbarButton("Success add Rival.");
+                } else {
+                    showSnackbarButton(json);
+                }
+            }
+        });
+    }
+
+    function removeRival() {
+        var arg = new Object;
+        var url = location.search.substring(1).split('&');
+        for (var i = 0; url[i]; i++) {
+            var k = url[i].split('=');
+            arg[k[0]] = k[1];
+        }
+        let userid = arg.userid;
+
+        let AccessToken = Cookies.get('AccessToken');
+        let RefreshToken = Cookies.get('RefreshToken');
+
+        AWS.config.update({
+            accessKeyId: 'AKIAJGA7ZWB5TQNJMNCA',
+            secretAccessKey: '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'
+        });
+        AWS.config.region = 'us-east-1';
+        let lambda = new AWS.Lambda();
+        let params = {
+            FunctionName: 'remove_rival',
+            Payload: JSON.stringify({
+                "AccessToken": AccessToken,
+                "RefreshToken": RefreshToken,
+                "rivalId": userid
+            })
+        };
+
+        $("#loading_rival_remove").addClass("is-active");
+
+        lambda.invoke(params, function (err, data) {
+            $("#loading_rival_remove").removeClass("is-active");
+            if (err) {
+                console.log(err);
+                let json = JSON.parse(err.toString());
+                showSnackbarButton(json);
+            } else {
+                let json = JSON.parse(data.Payload.toString());
+                if (json.message == "success") {
+                    showSnackbarButton("Success remove Rival.");
+                } else {
+                    showSnackbarButton(json);
+                }
+            }
+        });
     }
 </script>
 
