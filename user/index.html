@@ -34,7 +34,7 @@
             </div>
             <div class="mdl-cell mdl-cell--12-col">
                 <div id="bio_div" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width: 100%;">
-                    <textarea class="mdl-textfield__input" type="text" rows= "10" id="bio" ></textarea>
+                    <textarea class="mdl-textfield__input" type="text" rows="10" id="bio"></textarea>
                     <label class="mdl-textfield__label" for="bio">Bio</label>
                 </div>
             </div>
@@ -45,9 +45,13 @@
         </div>
         <hr>
         <div class="mdl-grid">
-            <div class="mdl-cell mdl-cell--12-col">
-                <p id="table_title" style="display: none;">Latest 10 Play</p>
+            <div class="mdl-cell mdl-cell--6-col">
+                <p class="table_title" style="display: none;">Latest 10 Play</p>
                 <div id="table"></div>
+            </div>
+            <div class="mdl-cell mdl-cell--6-col">
+                <p class="table_title" style="display: none;">Rivals</p>
+                <div id="rival_table"></div>
             </div>
         </div>
     </form>
@@ -100,9 +104,10 @@
                 let json = JSON.parse(data.Payload.toString());
                 if (json.message == "success") {
                     createTable(json.ScoreDatas);
+                    createRivalTable(json.UserData.rivals);
                     createUserDataForm(json.UserData);
                     $("#form_div").css("display", "inline");
-                    $("#table_title").css("display", "block");
+                    $(".table_title").css("display", "block");
                 } else {
                     Cookies.remove('AccessToken', { path: '/minir/' });
                     Cookies.remove('RefreshToken', { path: '/minir/' });
@@ -119,24 +124,46 @@
                 { formatter: "rownum", align: "center", width: 40, headerSort: false },
                 { title: "Title", field: "title", headerSort: false },
                 { title: "Artist", field: "artist", headerSort: false },
-                { title:"IR - default", field:"songhash", width:100, formatter:function(cell, formatterParams){
-                    let value = cell.getValue();
-                    let songhashArray = value.split(".");
-                    return `<a href="../viewer/?songhash=${songhashArray[0]}&lnmode=0" target="_blank">IR</a>`;
-                }, headerSort: false},
-                { title:"IR - CN", field:"songhash", width:100, formatter:function(cell, formatterParams){
-                    let value = cell.getValue();
-                    let songhashArray = value.split(".");
-                    return `<a href="../viewer/?songhash=${songhashArray[0]}&lnmode=1" target="_blank">IR(CN)</a>`;
-                }, headerSort: false},
-                { title:"IR - HCN", field:"songhash", width:100, formatter:function(cell, formatterParams){
-                    let value = cell.getValue();
-                    let songhashArray = value.split(".");
-                    return `<a href="../viewer/?songhash=${songhashArray[0]}&lnmode=2" target="_blank">IR(HCN)</a>`;
-                }, headerSort: false},
+                {
+                    title: "IR - default", field: "songhash", width: 100, formatter: function (cell, formatterParams) {
+                        let value = cell.getValue();
+                        let songhashArray = value.split(".");
+                        return `<a href="../viewer/?songhash=${songhashArray[0]}&lnmode=0" target="_blank">IR</a>`;
+                    }, headerSort: false
+                },
+                {
+                    title: "IR - CN", field: "songhash", width: 100, formatter: function (cell, formatterParams) {
+                        let value = cell.getValue();
+                        let songhashArray = value.split(".");
+                        return `<a href="../viewer/?songhash=${songhashArray[0]}&lnmode=1" target="_blank">IR(CN)</a>`;
+                    }, headerSort: false
+                },
+                {
+                    title: "IR - HCN", field: "songhash", width: 100, formatter: function (cell, formatterParams) {
+                        let value = cell.getValue();
+                        let songhashArray = value.split(".");
+                        return `<a href="../viewer/?songhash=${songhashArray[0]}&lnmode=2" target="_blank">IR(HCN)</a>`;
+                    }, headerSort: false
+                },
             ]
         });
         $("#table").tabulator("setData", tabledata);
+    }
+
+    function createRivalTable(tabledata) {
+        $("#rival_table").tabulator({
+            layout: "fitColumns",
+            columns: [
+                {
+                    title: "Name", field: "username", headerSort: false, formatter: function (cell, formatterParams) {
+                        let data = cell.getRow().getData();
+                        let userid = data.userid;
+                        return `<a href="../viewer/user?userid=${userid}" target="_blank">${cell.getValue()}</a>`;
+                    }
+                },
+            ]
+        });
+        $("#rival_table").tabulator("setData", tabledata);
     }
 
     function createUserDataForm(userdata) {
