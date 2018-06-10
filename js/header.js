@@ -24,7 +24,7 @@ class Header extends React.Component {
                 })()}
                 {(() => {
                     if (this.state.AccessToken && this.state.RefreshToken) {
-                        return <a class="mdl-navigation__link mdl-typography--text-uppercase" href="">Logout</a>;
+                        return <a class="mdl-navigation__link mdl-typography--text-uppercase" href="/minir/user/logout">Logout</a>;
                     }
                 })()}
                 {(() => {
