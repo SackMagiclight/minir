@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+#view-source {
+  position: fixed;
+  display: block;
+  right: 0;
+  bottom: 0;
+  margin-right: 40px;
+  margin-bottom: 40px;
+  z-index: 900;
+}
+
 body {
   margin: 0;
 }
@@ -161,8 +171,6 @@ a img{
 
   .minir-drawer .mdl-layout-title {
     position: relative;
-    background: #6ab344;
-    height: 160px;
   }
 
     .minir-drawer .minir-logo-image {
@@ -467,7 +475,6 @@ a img{
 /**** Mobile layout ****/
 @media (max-width: 900px) {
   .minir-navigation-container {
-    display: none;
   }
 
   .minir-title {

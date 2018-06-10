@@ -1,583 +1,313 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-83617244-2"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-83617244-2');
-</script>
-
-<title>readme.md</title>
-<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-
-<style>
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-
-body {
-	font-family: "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", sans-serif, "Droid Sans Fallback";
-	font-size: 14px;
-	padding: 0 12px;
-	line-height: 22px;
-	word-wrap: break-word;
-}
-
-#code-csp-warning {
-	position: fixed;
-	top: 0;
-	right: 0;
-	color: white;
-	margin: 16px;
-	text-align: center;
-	font-size: 12px;
-	font-family: sans-serif;
-	background-color:#444444;
-	cursor: pointer;
-	padding: 6px;
-	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
-}
-
-#code-csp-warning:hover {
-	text-decoration: none;
-	background-color:#007acc;
-	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
-}
-
-
-body.scrollBeyondLastLine {
-	margin-bottom: calc(100vh - 22px);
-}
-
-body.showEditorSelection .code-line {
-	position: relative;
-}
-
-body.showEditorSelection .code-active-line:before,
-body.showEditorSelection .code-line:hover:before {
-	content: "";
-	display: block;
-	position: absolute;
-	top: 0;
-	left: -12px;
-	height: 100%;
-}
-
-body.showEditorSelection li.code-active-line:before,
-body.showEditorSelection li.code-line:hover:before {
-	left: -30px;
-}
-
-.vscode-light.showEditorSelection .code-active-line:before {
-	border-left: 3px solid rgba(0, 0, 0, 0.15);
-}
-
-.vscode-light.showEditorSelection .code-line:hover:before {
-	border-left: 3px solid rgba(0, 0, 0, 0.40);
-}
-
-.vscode-dark.showEditorSelection .code-active-line:before {
-	border-left: 3px solid rgba(255, 255, 255, 0.4);
-}
-
-.vscode-dark.showEditorSelection .code-line:hover:before {
-	border-left: 3px solid rgba(255, 255, 255, 0.60);
-}
-
-.vscode-high-contrast.showEditorSelection .code-active-line:before {
-	border-left: 3px solid rgba(255, 160, 0, 0.7);
-}
-
-.vscode-high-contrast.showEditorSelection .code-line:hover:before {
-	border-left: 3px solid rgba(255, 160, 0, 1);
-}
-
-img {
-	max-width: 100%;
-	max-height: 100%;
-}
-
-a {
-	color: #4080D0;
-	text-decoration: none;
-}
-
-a:focus,
-input:focus,
-select:focus,
-textarea:focus {
-	outline: 1px solid -webkit-focus-ring-color;
-	outline-offset: -1px;
-}
-
-hr {
-	border: 0;
-	height: 2px;
-	border-bottom: 2px solid;
-}
-
-h1 {
-	padding-bottom: 0.3em;
-	line-height: 1.2;
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-}
-
-h1, h2, h3 {
-	font-weight: normal;
-}
-
-h1 code,
-h2 code,
-h3 code,
-h4 code,
-h5 code,
-h6 code {
-	font-size: inherit;
-	line-height: auto;
-}
-
-a:hover {
-	color: #4080D0;
-	text-decoration: underline;
-}
-
-table {
-	border-collapse: collapse;
-}
-
-table > thead > tr > th {
-	text-align: left;
-	border-bottom: 1px solid;
-}
-
-table > thead > tr > th,
-table > thead > tr > td,
-table > tbody > tr > th,
-table > tbody > tr > td {
-	padding: 5px 10px;
-}
-
-table > tbody > tr + tr > td {
-	border-top: 1px solid;
-}
-
-blockquote {
-	margin: 0 7px 0 5px;
-	padding: 0 16px 0 10px;
-	border-left: 5px solid;
-}
-
-code {
-	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
-	font-size: 14px;
-	line-height: 19px;
-}
-
-body.wordWrap pre {
-	white-space: pre-wrap;
-}
-
-.mac code {
-	font-size: 12px;
-	line-height: 18px;
-}
-
-pre:not(.hljs),
-pre.hljs code > div {
-	padding: 16px;
-	border-radius: 3px;
-	overflow: auto;
-}
-
-/** Theming */
-
-.vscode-light,
-.vscode-light pre code {
-	color: rgb(30, 30, 30);
-}
-
-.vscode-dark,
-.vscode-dark pre code {
-	color: #DDD;
-}
-
-.vscode-high-contrast,
-.vscode-high-contrast pre code {
-	color: white;
-}
-
-.vscode-light code {
-	color: #A31515;
-}
-
-.vscode-dark code {
-	color: #D7BA7D;
-}
-
-.vscode-light pre:not(.hljs),
-.vscode-light code > div {
-	background-color: rgba(220, 220, 220, 0.4);
-}
-
-.vscode-dark pre:not(.hljs),
-.vscode-dark code > div {
-	background-color: rgba(10, 10, 10, 0.4);
-}
-
-.vscode-high-contrast pre:not(.hljs),
-.vscode-high-contrast code > div {
-	background-color: rgb(0, 0, 0);
-}
-
-.vscode-high-contrast h1 {
-	border-color: rgb(0, 0, 0);
-}
-
-.vscode-light table > thead > tr > th {
-	border-color: rgba(0, 0, 0, 0.69);
-}
-
-.vscode-dark table > thead > tr > th {
-	border-color: rgba(255, 255, 255, 0.69);
-}
-
-.vscode-light h1,
-.vscode-light hr,
-.vscode-light table > tbody > tr + tr > td {
-	border-color: rgba(0, 0, 0, 0.18);
-}
-
-.vscode-dark h1,
-.vscode-dark hr,
-.vscode-dark table > tbody > tr + tr > td {
-	border-color: rgba(255, 255, 255, 0.18);
-}
-
-.vscode-light blockquote,
-.vscode-dark blockquote {
-	background: rgba(127, 127, 127, 0.1);
-	border-color: rgba(0, 122, 204, 0.5);
-}
-
-.vscode-high-contrast blockquote {
-	background: transparent;
-	border-color: #fff;
-}
-</style>
-
-<style>
-/* Tomorrow Theme */
-/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
-/* Original theme - https://github.com/chriskempson/tomorrow-theme */
-
-/* Tomorrow Comment */
-.hljs-comment,
-.hljs-quote {
-	color: #8e908c;
-}
-
-/* Tomorrow Red */
-.hljs-variable,
-.hljs-template-variable,
-.hljs-tag,
-.hljs-name,
-.hljs-selector-id,
-.hljs-selector-class,
-.hljs-regexp,
-.hljs-deletion {
-	color: #c82829;
-}
-
-/* Tomorrow Orange */
-.hljs-number,
-.hljs-built_in,
-.hljs-builtin-name,
-.hljs-literal,
-.hljs-type,
-.hljs-params,
-.hljs-meta,
-.hljs-link {
-	color: #f5871f;
-}
-
-/* Tomorrow Yellow */
-.hljs-attribute {
-	color: #eab700;
-}
-
-/* Tomorrow Green */
-.hljs-string,
-.hljs-symbol,
-.hljs-bullet,
-.hljs-addition {
-	color: #718c00;
-}
-
-/* Tomorrow Blue */
-.hljs-title,
-.hljs-section {
-	color: #4271ae;
-}
-
-/* Tomorrow Purple */
-.hljs-keyword,
-.hljs-selector-tag {
-	color: #8959a8;
-}
-
-.hljs {
-	display: block;
-	overflow-x: auto;
-	color: #4d4d4c;
-	padding: 0.5em;
-}
-
-.hljs-emphasis {
-	font-style: italic;
-}
-
-.hljs-strong {
-	font-weight: bold;
-}
-</style>
-
-<style>
-/*
- * Markdown PDF CSS
- */
-
- body {
-	font-family:  "Meiryo", "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", sans-serif, "Droid Sans Fallback";
-}
-
-pre {
-	background-color: #f8f8f8;
-	border: 1px solid #cccccc;
-	border-radius: 3px;
-	overflow-x: auto;
-	white-space: pre-wrap;
-	overflow-wrap: break-word;
-}
-
-pre:not(.hljs) {
-	padding: 23px;
-	line-height: 19px;
-}
-
-blockquote {
-	background: rgba(127, 127, 127, 0.1);
-	border-color: rgba(0, 122, 204, 0.5);
-}
-
-.emoji {
-	height: 1.4em;
-}
-
-/* for inline code */
-:not(pre):not(.hljs) > code {
-	color: #C9AE75; /* Change the old color so it seems less like an error */
-	font-size: inherit;
-}
-
-/* Page Break : use <div class="page"/> to insert page break
--------------------------------------------------------- */
-.page {
-	page-break-after: always;
-}
-
-</style>
-
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-83617244-2"></script>
+	<script src="./js/analysis.js"></script>
+
+	<meta charset="utf-8">
+	<title>MinIR for beatoraja</title>
+
+	<meta property="og:title" content="MinIR">
+	<meta property="og:description" content="It is an IR designed for beatoraja.">
+	<meta property="og:image" content="https://www.gaftalk.com/minir/images/coffee.png">
+
+	<meta name="twitter:card" content="summary" />
+
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.min.css">
+	<link rel="stylesheet" href="styles.css">
+
+	<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+
+	<script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+	<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script type="text/babel" src="./js/header.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.js"></script>
+	<script src="./js/cookie.js"></script>
 </head>
-<body>
-<p>最終更新：2018/05/20 マイページ実装</p>
-<hr>
-<h2 id="minir-%E3%81%A8%E3%81%AF">MinIR とは</h2>
-<p>beatoraja用に設計されたIRです。
-下記コンセプトに基づいています。</p>
-<ul>
-<li>できるだけ安価に済ませたい
-<ul>
-<li>なので、AWSの無料枠で収まるように設計(<strong>収まってほしい</strong>)</li>
-<li>保存するデータを最小限にすることで、課金を抑える
-<ul>
-<li>保存データが確定するまでもうちょっとかかるかな？</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>最低限の機能
-<ul>
-<li><strong>スコアが譜面ごとに記録できること</strong>のみを要件に開発</li>
-<li>そのため下記内容は実装予定がありません（今後変わるかもだけど）
-<ul>
-<li>段位認定（難易度表で対応してください。スコア送信できます。(0.5.6以降の本体必須)）</li>
-<li>ライバル機能（無課金で対応するのが難しい）</li>
-<li>楽曲検索(RDBじゃないので非現実的な負荷)</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>万が一に備えた再利用性
-<ul>
-<li>AWSを利用することで、サーバー管理の引き継ぎが容易</li>
-</ul>
-</li>
-<li>ぶっちゃけAWSの勉強で作った
-<ul>
-<li>すいません、ガッツリ運用するかは未知数です</li>
-<li>人が足りない</li>
-<li>本当は実装予定なし機能はやりたい…</li>
-</ul>
-</li>
-</ul>
-<h2 id="%E5%8F%82%E5%8A%A0%E6%96%B9%E6%B3%95">参加方法</h2>
-<ol>
-<li>
-<p>IRユーザーを作成します。<br>
-<a href="https://www.gaftalk.com/minir/signup/">https://www.gaftalk.com/minir/signup/</a> にアクセスして、ユーザーを作成し、メール認証を行います。</p>
-</li>
-<li>
-<p>MinIR API をダウンロードし配置します<br>
-<a href="https://drive.google.com/open?id=1wYVNufrfiVAWUkYTVdGl0Q0PqrhkHZBo">https://drive.google.com/open?id=1wYVNufrfiVAWUkYTVdGl0Q0PqrhkHZBo</a> からzipをダウンロードします。<br>
-フォルダ内容は以下の通りです。</p>
-<ul>
-<li>ir
-<ul>
-<li>minir_alpha.jar</li>
-</ul>
-</li>
-<li>beatoraja_minir.bat</li>
-</ul>
-<p>これらのファイルを本体であるbeatorajaフォルダに配置します。<br>
-以下のようになるはずです。</p>
-<ul>
-<li>skin</li>
-<li>player</li>
-<li>ir
-<ul>
-<li>minir_alpha.jar</li>
-</ul>
-</li>
-<li>beatoraja_minir.bat</li>
-<li>beatoraja.jar</li>
-<li>beatoraja-config.bat</li>
-<li>config.json</li>
-<li>...</li>
-</ul>
-<p>注意：IR機構は独立しているため、ローカルのプレイデータに影響は与えないはずですが、万が一のため<strong>バックアップをとっておくことを強く推奨</strong>します。</p>
-</li>
-<li>
-<p><code>beatoraja_minir.bat</code> から起動します。<br>
-IRタブで「MinIR」が選択できるようになっていれば成功です。
-登録したメールアドレス/パスワードを入力し、起動してください。</p>
-</li>
-</ol>
-<h2 id="%E7%8F%BE%E7%8A%B6%E3%81%A7%E3%81%8D%E3%82%8B%E3%81%93%E3%81%A8">現状できること</h2>
-<ul>
-<li>譜面のスコア送信
-<ul>
-<li>スコアが上回っていればスコアが上書き、クリアが上回っていればクリア状況が上書きされます。</li>
-<li>beatoraja上でのログイン必須です。</li>
-</ul>
-</li>
-<li>コースのスコア送信(beatoraja 0.5.6以上必須)
-<ul>
-<li>スコアが上回っていればスコアが上書き、クリアが上回っていればクリア状況が上書きされます。</li>
-<li>beatoraja上でのログイン必須です。</li>
-</ul>
-</li>
-<li>譜面のスコア閲覧
-<ul>
-<li><a href="https://www.gaftalk.com/minir/viewer/?songhash=7b6bc1bb9ca1d8843673f5fc758eda2b622a01640afac79590ee07e7a66c4e37">https://www.gaftalk.com/minir/viewer/?songhash=[sha256]&amp;lnmode=[0,1,2]</a> で閲覧できます。[sha256]には譜面のsha256ハッシュが必要です。
-<ul>
-<li>クエリパラメータ <code>lnmode=0,1,2</code> でLNモード別のスコアが閲覧できます。(0:LN, 1:CN, 2:HCN)
-<ul>
-<li>指定がない場合、LNとなります</li>
-</ul>
-</li>
-<li>BMSに<code>#LNMODE</code>が定義されている場合は常に<code>lnmode=0</code>となるので、注意してください。（LNモードにかかわらずユニークのためです）</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>コースのスコア閲覧
-<ul>
-<li><a href="https://www.gaftalk.com/minir/viewer/cource?courcehash=0458521b2c4ea24d55dd39c5d4ae7aa3da6d9262c30f1df62307a5a439eec909e10">https://www.gaftalk.com/minir/viewer/cource?courcehash=[sha256]</a> で閲覧できます。[sha256]にはコースのsha256ハッシュが必要です。</li>
-</ul>
-</li>
-<li>直近100件のIR送信された譜面リスト
-<ul>
-<li><a href="https://www.gaftalk.com/minir/viewer/latest?mode=beat-7k">https://www.gaftalk.com/minir/viewer/latest?mode=[mode]</a> で閲覧できます。</li>
-<li>クエリパラメータ <code>mode=[mode]</code> でモード別の直近が取得できます（指定なしで7KEYS (beat-7k))
-<ul>
-<li><code>[mode]</code>一覧
-<ul>
-<li><code>beat-5k</code> : 5KEYS</li>
-<li><code>beat-7k</code> : 7KEYS</li>
-<li><code>beat-10k</code> : 10KEYS</li>
-<li><code>beat-14k</code> : 14KEYS</li>
-<li><code>popn-5k</code> : PMS 5KEYS</li>
-<li><code>popn-9k</code> : PMS 9KEYS</li>
-<li><code>keyboard-24k</code> : KM 24KEYS</li>
-<li><code>keyboard-24k-double</code> : KM 48KEYS</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>直近100件のIR送信されたコースリスト
-<ul>
-<li><a href="https://www.gaftalk.com/minir/viewer/cource_latest">https://www.gaftalk.com/minir/viewer/cource_latest</a> で閲覧できます。</li>
-</ul>
-</li>
-<li>ユーザーマイページ
-<ul>
-<li><a href="https://www.gaftalk.com/minir/viewer/user?userid=a30f300b-1984-4797-80d3-66a06af7fcc8">https://www.gaftalk.com/minir/viewer/user?userid=[userid]</a> で閲覧できます。
-<ul>
-<li>クエリパラメータ <code>userid=[userid]</code> が必要です。</li>
-<li>IRページのユーザー名クリックから遷移するのが確実です。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>ログイン
-<ul>
-<li><a href="https://www.gaftalk.com/minir/user/login">https://www.gaftalk.com/minir/user/login</a> で開きます。</li>
-<li>登録時のメールアドレス、パスワードを利用してログインしてください。</li>
-<li>ログイン後はユーザーマイページ（編集可能版）に遷移します。（後述）</li>
-</ul>
-</li>
-<li>ユーザーマイページ（編集）
-<ul>
-<li>ログインが正しく行われていれば、<a href="https://www.gaftalk.com/minir/user/">https://www.gaftalk.com/minir/user/</a> で開きます。（ログイン後は自動遷移します。一定時間はログイン情報を保持します。）</li>
-<li>bioの編集が可能です。
-<ul>
-<li>URL（http:// | https:// 等）はユーザーマイページ内でリンクに置き換えられるため、外部リンクにご活用ください。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="%E4%BB%8A%E5%BE%8C%E3%81%AE%E4%BA%88%E5%AE%9A%E4%B8%8A%E3%81%AE%E6%96%B9%E3%81%8C%E5%84%AA%E5%85%88%E9%A0%86%E4%BD%8D%E9%AB%98%E3%82%81">今後の予定(上の方が優先順位高め)</h2>
-<ul>
-<li><s>「スコアが上回っていれば上書き、クリアが上回っていれば上書き」にIR仕様を修正します</s> 2018/04/19 対応済み</li>
-<li><s>譜面情報を保持（送信）するようにし、IRページに表示するようにします</s> 2018/04/19 対応済み</li>
-<li><s>コースデータ送信に対応します</s> 2018/05/04 対応済み</li>
-<li><s>簡易マイページ機能(Bioの編集、直近のプレイ表示)</s> 2018/05/20 対応済み</li>
-<li>認証URL再送信機能</li>
-<li>パスワード変更</li>
-</ul>
-<p>その他ご意見・ご感想はDiscode DMでよろしくおねがいします。</p>
-<hr>
-<p>海岸砂丘(Sack Magiclight)#6651</p>
 
+<body id="body">
+	<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+		<div class="minir-header mdl-layout__header mdl-layout__header--waterfall" id="header">
+			<div class="mdl-layout__header-row">
+				<div class="minir-header-spacer mdl-layout-spacer"></div>
+				<div class="minir-navigation-container">
+					<nav class="minir-navigation mdl-navigation" id="header_nav">
+					</nav>
+					<ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="submenu">
+						<li class="mdl-menu__item">
+							<a class="mdl-navigation__link" href="/minir/viewer/latest?mode=beat-7k">7KEYS</a>
+						</li>
+						<li class="mdl-menu__item">
+							<a class="mdl-navigation__link" href="/minir/viewer/latest?mode=beat-5k">5KEYS</a>
+						</li>
+						<li class="mdl-menu__item">
+							<a class="mdl-navigation__link" href="/minir/viewer/latest?mode=beat-10k">10KEYS</a>
+						</li>
+						<li class="mdl-menu__item">
+							<a class="mdl-navigation__link" href="/minir/viewer/latest?mode=beat-14k">14KEYS</a>
+						</li>
+						<li class="mdl-menu__item">
+							<a class="mdl-navigation__link" href="/minir/viewer/latest?mode=popn-5k">PMS 5KEYS</a>
+						</li>
+						<li class="mdl-menu__item">
+							<a class="mdl-navigation__link" href="/minir/viewer/latest?mode=popn-9k">PMS 9KEYS</a>
+						</li>
+						<li class="mdl-menu__item">
+							<a class="mdl-navigation__link" href="/minir/viewer/latest?mode=keyboard-24k">KM 24KEYS</a>
+						</li>
+						<li class="mdl-menu__item">
+							<a class="mdl-navigation__link" href="/minir/viewer/latest?mode=keyboard-24k-double">KM 48KEYS</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="minir-drawer mdl-layout__drawer">
+			<span class="mdl-layout-title">MinIR</span>
+			<nav class="mdl-navigation">
+				<div class="minir-drawer-separator"></div>
+				<a class="mdl-navigation__link" href="/minir/">Home</a>
+				<a class="mdl-navigation__link" href="/minir/readme">About</a>
+				<a class="mdl-navigation__link" href="https://drive.google.com/open?id=1wYVNufrfiVAWUkYTVdGl0Q0PqrhkHZBo">Download API</a>
+				<a class="mdl-navigation__link" href="/minir/privacy">PrivacyPolicy</a>
+				<div class="minir-drawer-separator"></div>
+				<span class="mdl-navigation__link" href="">Latest 100 played</span>
+				<a class="mdl-navigation__link" href="/minir/viewer/latest?mode=beat-7k">7KEYS</a>
+				<a class="mdl-navigation__link" href="/minir/viewer/latest?mode=beat-5k">5KEYS</a>
+				<a class="mdl-navigation__link" href="/minir/viewer/latest?mode=beat-10k">10KEYS</a>
+				<a class="mdl-navigation__link" href="/minir/viewer/latest?mode=beat-14k">14KEYS</a>
+				<a class="mdl-navigation__link" href="/minir/viewer/latest?mode=popn-5k">PMS 5KEYS</a>
+				<a class="mdl-navigation__link" href="/minir/viewer/latest?mode=popn-9k">PMS 9KEYS</a>
+				<a class="mdl-navigation__link" href="/minir/viewer/latest?mode=keyboard-24k">KM 24KEYS</a>
+				<a class="mdl-navigation__link" href="/minir/viewer/latest?mode=keyboard-24k-double">KM 48KEYS</a>
+			</nav>
+		</div>
+		<div class="minir-content mdl-layout__content" id="contents">
+			<a name="top"></a>
+			<div class="mdl-typography--text-left" style="padding: 40px 70px; margin: 0 auto;">
+				<h4>MinIR とは</h4>
+				<p>beatoraja用に設計されたIRです。 下記コンセプトに基づいています。
+				</p>
+				<ul>
+					<li>できるだけ安価に済ませたい
+						<ul>
+							<li>なので、AWSの無料枠で収まるように設計(
+								<strong>収まってほしい</strong>)</li>
+							<li>保存するデータを最小限にすることで、課金を抑える
+								<ul>
+									<li>保存データが確定するまでもうちょっとかかるかな？</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li>最低限の機能
+						<ul>
+							<li>
+								<strong>スコアが譜面ごとに記録できること</strong>のみを要件に開発</li>
+							<li>そのため下記内容は実装予定がありません（今後変わるかもだけど）
+								<ul>
+									<li>段位認定（難易度表で対応してください。スコア送信できます。(0.5.6以降の本体必須)）</li>
+									<li>ライバル機能（無課金で対応するのが難しい）</li>
+									<li>楽曲検索(RDBじゃないので非現実的な負荷)</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li>万が一に備えた再利用性
+						<ul>
+							<li>AWSを利用することで、サーバー管理の引き継ぎが容易</li>
+						</ul>
+					</li>
+					<li>ぶっちゃけAWSの勉強で作った
+						<ul>
+							<li>すいません、ガッツリ運用するかは未知数です</li>
+							<li>人が足りない</li>
+							<li>本当は実装予定なし機能はやりたい…</li>
+						</ul>
+					</li>
+				</ul>
+				<h4>参加方法</h4>
+				<ol>
+					<li>
+						<p>IRユーザーを作成します。
+							<br>
+							<a href="https://www.gaftalk.com/minir/signup/">https://www.gaftalk.com/minir/signup/</a> にアクセスして、ユーザーを作成し、メール認証を行います。</p>
+					</li>
+					<li>
+						<p>MinIR API をダウンロードし配置します
+							<br>
+							<a href="https://drive.google.com/open?id=1wYVNufrfiVAWUkYTVdGl0Q0PqrhkHZBo">https://drive.google.com/open?id=1wYVNufrfiVAWUkYTVdGl0Q0PqrhkHZBo</a> からzipをダウンロードします。
+							<br> フォルダ内容は以下の通りです。
+						</p>
+						<ul>
+							<li>ir
+								<ul>
+									<li>minir_alpha.jar</li>
+								</ul>
+							</li>
+							<li>beatoraja_minir.bat</li>
+						</ul>
+						<p>これらのファイルを本体であるbeatorajaフォルダに配置します。
+							<br> 以下のようになるはずです。
+						</p>
+						<ul>
+							<li>skin</li>
+							<li>player</li>
+							<li>ir
+								<ul>
+									<li>minir_alpha.jar</li>
+								</ul>
+							</li>
+							<li>beatoraja_minir.bat</li>
+							<li>beatoraja.jar</li>
+							<li>beatoraja-config.bat</li>
+							<li>config.json</li>
+							<li>...</li>
+						</ul>
+						<p>注意：IR機構は独立しているため、ローカルのプレイデータに影響は与えないはずですが、万が一のため
+							<strong>バックアップをとっておくことを強く推奨</strong>します。</p>
+					</li>
+					<li>
+						<p>
+							<code>beatoraja_minir.bat</code> から起動します。
+							<br> IRタブで「MinIR」が選択できるようになっていれば成功です。 登録したメールアドレス/パスワードを入力し、起動してください。
+						</p>
+					</li>
+				</ol>
+				<h4>現状できること</h4>
+				<ul>
+					<li>譜面のスコア送信
+						<ul>
+							<li>スコアが上回っていればスコアが上書き、クリアが上回っていればクリア状況が上書きされます。</li>
+							<li>beatoraja上でのログイン必須です。</li>
+						</ul>
+					</li>
+					<li>コースのスコア送信(beatoraja 0.5.6以上必須)
+						<ul>
+							<li>スコアが上回っていればスコアが上書き、クリアが上回っていればクリア状況が上書きされます。</li>
+							<li>beatoraja上でのログイン必須です。</li>
+						</ul>
+					</li>
+					<li>譜面のスコア閲覧
+						<ul>
+							<li>
+								<a href="https://www.gaftalk.com/minir/viewer/?songhash=7b6bc1bb9ca1d8843673f5fc758eda2b622a01640afac79590ee07e7a66c4e37">https://www.gaftalk.com/minir/viewer/?songhash=[sha256]&amp;lnmode=[0,1,2]</a> で閲覧できます。[sha256]には譜面のsha256ハッシュが必要です。
+								<ul>
+									<li>クエリパラメータ
+										<code>lnmode=0,1,2</code> でLNモード別のスコアが閲覧できます。(0:LN, 1:CN, 2:HCN)
+										<ul>
+											<li>指定がない場合、LNとなります</li>
+										</ul>
+									</li>
+									<li>BMSに
+										<code>#LNMODE</code>が定義されている場合は常に
+										<code>lnmode=0</code>となるので、注意してください。（LNモードにかかわらずユニークのためです）</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li>コースのスコア閲覧
+						<ul>
+							<li>
+								<a href="https://www.gaftalk.com/minir/viewer/cource?courcehash=0458521b2c4ea24d55dd39c5d4ae7aa3da6d9262c30f1df62307a5a439eec909e10">https://www.gaftalk.com/minir/viewer/cource?courcehash=[sha256]</a> で閲覧できます。[sha256]にはコースのsha256ハッシュが必要です。</li>
+						</ul>
+					</li>
+					<li>直近100件のIR送信された譜面リスト
+						<ul>
+							<li>
+								<a href="https://www.gaftalk.com/minir/viewer/latest?mode=beat-7k">https://www.gaftalk.com/minir/viewer/latest?mode=[mode]</a> で閲覧できます。</li>
+							<li>クエリパラメータ
+								<code>mode=[mode]</code> でモード別の直近が取得できます（指定なしで7KEYS (beat-7k))
+								<ul>
+									<li>
+										<code>[mode]</code>一覧
+										<ul>
+											<li>
+												<code>beat-5k</code> : 5KEYS</li>
+											<li>
+												<code>beat-7k</code> : 7KEYS</li>
+											<li>
+												<code>beat-10k</code> : 10KEYS</li>
+											<li>
+												<code>beat-14k</code> : 14KEYS</li>
+											<li>
+												<code>popn-5k</code> : PMS 5KEYS</li>
+											<li>
+												<code>popn-9k</code> : PMS 9KEYS</li>
+											<li>
+												<code>keyboard-24k</code> : KM 24KEYS</li>
+											<li>
+												<code>keyboard-24k-double</code> : KM 48KEYS</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li>直近100件のIR送信されたコースリスト
+						<ul>
+							<li>
+								<a href="https://www.gaftalk.com/minir/viewer/cource_latest">https://www.gaftalk.com/minir/viewer/cource_latest</a> で閲覧できます。</li>
+						</ul>
+					</li>
+					<li>ユーザーマイページ
+						<ul>
+							<li>
+								<a href="https://www.gaftalk.com/minir/viewer/user?userid=a30f300b-1984-4797-80d3-66a06af7fcc8">https://www.gaftalk.com/minir/viewer/user?userid=[userid]</a> で閲覧できます。
+								<ul>
+									<li>クエリパラメータ
+										<code>userid=[userid]</code> が必要です。</li>
+									<li>IRページのユーザー名クリックから遷移するのが確実です。</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li>ログイン
+						<ul>
+							<li>
+								<a href="https://www.gaftalk.com/minir/user/login">https://www.gaftalk.com/minir/user/login</a> で開きます。</li>
+							<li>登録時のメールアドレス、パスワードを利用してログインしてください。</li>
+							<li>ログイン後はユーザーマイページ（編集可能版）に遷移します。（後述）</li>
+						</ul>
+					</li>
+					<li>ユーザーマイページ（編集）
+						<ul>
+							<li>ログインが正しく行われていれば、
+								<a href="https://www.gaftalk.com/minir/user/">https://www.gaftalk.com/minir/user/</a> で開きます。（ログイン後は自動遷移します。一定時間はログイン情報を保持します。）</li>
+							<li>bioの編集が可能です。
+								<ul>
+									<li>URL（http:// | https:// 等）はユーザーマイページ内でリンクに置き換えられるため、外部リンクにご活用ください。</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<p>その他ご意見・ご感想はDiscode DMでよろしくおねがいします。</p>
+				<hr>
+				<p>海岸砂丘(Sack Magiclight)#6651</p>
+			</div>
+			<footer class="minir-footer mdl-mega-footer">
+				<div class="mdl-mega-footer--top-section">
+					<div class="mdl-mega-footer--right-section">
+						<a class="mdl-typography--font-light" href="#top">
+							Back to Top
+							<i class="material-icons">expand_less</i>
+						</a>
+					</div>
+				</div>
+			</footer>
+		</div>
+	</div>
 </body>
+
+<script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+
 </html>
