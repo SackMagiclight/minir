@@ -147,7 +147,11 @@
         } else {
           let json = JSON.parse(data.Payload.toString());
           if (json.message == "success") {
-            window.location.href = '/minir/viewer/?songhash=' + json.songhash;
+            if(json.songhash){
+              window.location.href = '/minir/viewer/?songhash=' + json.songhash;
+            } else {
+              showSnackbarButton();
+            }
           } else {
             showSnackbarButton();
           }
