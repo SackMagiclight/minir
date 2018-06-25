@@ -11,7 +11,6 @@ class Header extends React.Component {
     render() {
         return (
             <React.Fragment>
-                <a id="submenu" class="mdl-navigation__link" href="#">Latest 100 played<i class="material-icons">arrow_drop_down</i></a>
                 {(() => {
                     if (!this.state.AccessToken || !this.state.RefreshToken) {
                         return <a class="mdl-navigation__link mdl-typography--text-uppercase" href="/minir/signup">Sign up</a>;
