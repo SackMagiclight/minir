@@ -101,10 +101,11 @@
         </div>
         <div class="minir-content mdl-layout__content">
             <div id="page_loading" class="mdl-spinner mdl-js-spinner"></div>
-            <form onsubmit="return false" id="form">
-                <div id="form_div" class="mdl-grid" style="display: none;">
+            <div id="form_div" class="mdl-grid" style="display: none;">
+                <form onsubmit="return false" id="form">
                     <div class="mdl-cell mdl-cell--12-col">
                         <h1 id="user_name"></h1>
+                        <h3 id="user_id"></h3>
                     </div>
                     <div class="mdl-cell mdl-cell--12-col">
                         <div id="bio_div" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width: 100%;">
@@ -116,19 +117,28 @@
                         <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Update</button>
                         <div id="loading" class="mdl-spinner mdl-js-spinner"></div>
                     </div>
-                </div>
+                </form>
                 <hr>
-                <div class="mdl-grid">
-                    <div class="mdl-cell mdl-cell--6-col">
-                        <p class="table_title" style="display: none;">Latest 10 Play</p>
-                        <div id="table"></div>
+                <form onsubmit="return false" id="form_apikey">
+                    <div class="mdl-cell mdl-cell--12-col">
+                        <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Generate API key</button>
+                        <div id="loading_apikey" class="mdl-spinner mdl-js-spinner"></div>
+                        <input id="publickey" name="publickey" type="text" value="" readonly="readonly" />
                     </div>
-                    <div class="mdl-cell mdl-cell--6-col">
-                        <p class="table_title" style="display: none;">Rivals</p>
-                        <div id="rival_table"></div>
-                    </div>
+                </form>
+            </div>
+            <hr>
+            <div class="mdl-grid">
+                <div class="mdl-cell mdl-cell--6-col">
+                    <p class="table_title" style="display: none;">Latest 10 Play</p>
+                    <div id="table"></div>
                 </div>
-            </form>
+                <div class="mdl-cell mdl-cell--6-col">
+                    <p class="table_title" style="display: none;">Rivals</p>
+                    <div id="rival_table"></div>
+                </div>
+            </div>
+
             <div id="snackbar" class="mdl-js-snackbar mdl-snackbar">
                 <div class="mdl-snackbar__text"></div>
                 <button class="mdl-snackbar__action" type="button"></button>
@@ -146,6 +156,11 @@
 
     $("#form").submit(function (e) {
         form_submit(document.forms.form);
+        e.preventDefault();
+    });
+
+    $("#form_apikey").submit(function (e) {
+        form_submit_apikey(document.forms.form_apikey);
         e.preventDefault();
     });
 
@@ -247,7 +262,9 @@
 
     function createUserDataForm(userdata) {
         $("#user_name").text(userdata.username);
+        $("#user_id").text(userdata.userid);
         $("#bio").text(userdata.bio);
+        $("#publickey").val(userdata.publickey);
         $("#bio_div").addClass("is-dirty");
     }
 
@@ -296,6 +313,56 @@
                 }
 
                 complete();
+            }
+        });
+    }
+
+    function form_submit_apikey(form) {
+        $("#loading_apikey").addClass("is-active");
+        let AccessToken = Cookies.get('AccessToken');
+        let RefreshToken = Cookies.get('RefreshToken');
+        if (!AccessToken || !RefreshToken) {
+            window.location.href = './login';
+            return;
+        }
+
+        let bio = form.bio.value;
+        AWS.config.update({
+            accessKeyId: 'AKIAJGA7ZWB5TQNJMNCA',
+            secretAccessKey: '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'
+        });
+        AWS.config.region = 'us-east-1';
+        let lambda = new AWS.Lambda();
+        let params = {
+            FunctionName: 'generate_access_token',
+            Payload: JSON.stringify({
+                "AccessToken": AccessToken,
+                "RefreshToken": RefreshToken,
+            })
+        };
+
+        lambda.invoke(params, function (err, data) {
+            $("#loading_apikey").removeClass("is-active");
+            if (err) {
+                console.log(err);
+            } else {
+                let json = JSON.parse(data.Payload.toString());
+                if (json.message == "success") {
+                    if (json.AccessToken) {
+                        Cookies.set("AccessToken", json.AccessToken, { expires: 1, path: '/minir/' });
+                    }
+
+                    if (json.RefreshToken) {
+                        Cookies.set("RefreshToken", json.RefreshToken, { expires: 1, path: '/minir/' });
+                    }
+
+                    if (json.publickey) {
+                        $("#publickey").val(json.publickey);
+                    }
+                } else {
+                    showSnackbarButton(data.errorMessage);
+                    return;
+                }
             }
         });
     }
