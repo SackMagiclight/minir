@@ -173,6 +173,11 @@
         let notes = tabledata[0].notes;
         $("#table").tabulator({
             layout: "fitColumns",
+            rowFormatter:function(row){
+                if(row.getData().novalidate){
+                    row.getElement().css({"background-color":"#A6A6DF"});
+                }
+            },
             columns: [
                 { formatter: "rownum", align: "center", width: 40, headerSort: false },
                 {

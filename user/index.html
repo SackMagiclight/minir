@@ -105,7 +105,7 @@
                 <form onsubmit="return false" id="form">
                     <div class="mdl-cell mdl-cell--12-col">
                         <h1 id="user_name"></h1>
-                        <h3 id="user_id"></h3>
+                        <h5 id="user_id"></h5>
                     </div>
                     <div class="mdl-cell mdl-cell--12-col">
                         <div id="bio_div" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width: 100%;">
@@ -264,7 +264,7 @@
 
     function createUserDataForm(userdata) {
         $("#user_name").text(userdata.username);
-        $("#user_id").text(userdata.userid);
+        $("#user_id").text("UserID: " +  userdata.userid);
         $("#bio").text(userdata.bio);
         $("#publickey").val(userdata.publickey);
         $("#bio_div").addClass("is-dirty");
