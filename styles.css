@@ -183,8 +183,8 @@ a img{
   height: 800px;
   width: auto;
   background-color: #f3f3f3;
-  background: url('images/coffee.png') center 50% no-repeat;
-  background-size: 100px auto;
+  background: url('images/logo.png') center 50% no-repeat;
+  background-size: 70% auto;
 }
 
 .logo-font {

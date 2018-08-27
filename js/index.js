@@ -43,10 +43,7 @@ class Contents extends React.Component {
 		return (
 			<React.Fragment>
 				<a name="top"></a>
-				<div class="minir-be-together-section mdl-typography--text-center">
-					<div class="logo-font minir-slogan">MinIR</div>
-					<div class="logo-font minir-sub-slogan">It is an IR designed for beatoraja.</div>
-				</div>
+				<div class="minir-be-together-section mdl-typography--text-center"></div>
 				<div class="minir-screen-section mdl-typography--text-center">
 					<a name="screens"></a>
 					<div class="mdl-typography--display-1-color-contrast">Update history</div>
