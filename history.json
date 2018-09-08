@@ -1,9 +1,14 @@
 [
     {
+        "date": "2018/09/08",
+        "icon": "warning",
+        "text": "beatoraja 0.6.3のリリースに伴い MinIR APIが更新されました。旧APIではスコアの送信ができなくなりましたのでご注意ください。"
+    },
+    {
         "date": "2018/09/01",
         "icon": "info",
         "text": "IRメンテナンスは終了しました。"
-    },
+    },    
     {
         "date": "2018/09/01",
         "icon": "notification_important",
