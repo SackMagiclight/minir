@@ -1,0 +1,60 @@
+{
+  "name": "minir",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.9.0",
+    "aws-amplify": "^1.1.36",
+    "aws-amplify-vue": "^0.2.14",
+    "aws-sdk": "^2.485.0",
+    "axios": "^0.18.1",
+    "jssha": "^2.3.1",
+    "moment": "^2.24.0",
+    "tabulator-tables": "^4.2.7",
+    "vue": "^2.6.10",
+    "vue-analytics": "^5.17.0",
+    "vue-cookie": "^1.1.4",
+    "vue-head": "^2.1.1",
+    "vue-router": "^3.0.6",
+    "vue-social-sharing": "^2.4.5",
+    "vue-youtube-embed": "^2.2.1",
+    "vuetify": "^1.5.16"
+  },
+  "devDependencies": {
+    "@babel/polyfill": "^7.4.4",
+    "@vue/cli-plugin-babel": "^3.8.0",
+    "@vue/cli-plugin-eslint": "^3.8.0",
+    "@vue/cli-service": "^3.8.4",
+    "vue-cli-plugin-vuetify": "^0.1.6",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "rules": {},
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}
