@@ -92,6 +92,7 @@
 </template>
 <script>
 import AWS from "aws-sdk";
+const decrypt = require("../decrypt");
 
 export default {
   data: () => ({
@@ -137,9 +138,11 @@ export default {
       let username = this.username;
       let email = this.email;
       let psw = this.password;
+
+      const ks = decrypt.get("sign_up").split(",");
       AWS.config.update({
-        accessKeyId: "AKIAJOOCVWQ675TN4WLQ",
-        secretAccessKey: "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"
+        accessKeyId: ks[0],
+        secretAccessKey: ks[1]
       });
       AWS.config.region = "us-east-1";
       var lambda = new AWS.Lambda();

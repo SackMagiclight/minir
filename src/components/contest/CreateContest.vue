@@ -145,6 +145,7 @@ import moment from 'moment';
 import jssha from "jssha";
 import { AmplifyEventBus } from 'aws-amplify-vue';
 import { Auth } from 'aws-amplify';
+const decrypt = require("../../decrypt");
 
 export default {
   name: "CreateContest",
@@ -261,9 +262,10 @@ export default {
         songs.push(item.songhash + "." + item.lnmode);
       }
 
+      const ks = decrypt.get("create_contest").split(",");
       AWS.config.update({
-        accessKeyId: "AKIAJGA7ZWB5TQNJMNCA",
-        secretAccessKey: "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"
+        accessKeyId: ks[0],
+        secretAccessKey: ks[1]
       });
       AWS.config.region = "us-east-1";
       let lambda = new AWS.Lambda();
@@ -307,9 +309,10 @@ export default {
 
       const self = this;
 
+      const ks = decrypt.get("get_song_data").split(",");
       AWS.config.update({
-        accessKeyId: "AKIAIUNY56NANW7JGMTA",
-        secretAccessKey: "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"
+        accessKeyId: ks[0],
+        secretAccessKey: ks[1]
       });
       AWS.config.region = "us-east-1";
       let lambda = new AWS.Lambda();

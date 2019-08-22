@@ -19,6 +19,7 @@
 /* eslint-disable */
 import AWS from "aws-sdk";
 import Tabulator from "tabulator-tables";
+const decrypt = require("../decrypt");
 
 export default {
   name: "CourceLatest",
@@ -86,9 +87,10 @@ export default {
       const self = this;
       this.tableData = [];
 
+      const ks = decrypt.get("get_cource_played_100").split(",");
       AWS.config.update({
-            accessKeyId: 'AKIAIUNY56NANW7JGMTA',
-            secretAccessKey: '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'
+        accessKeyId: ks[0],
+        secretAccessKey: ks[1]
       });
       AWS.config.region = 'us-east-1';
       var lambda = new AWS.Lambda();

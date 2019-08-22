@@ -112,6 +112,7 @@ import AWS from "aws-sdk";
 import Tabulator from "tabulator-tables";
 import { AmplifyEventBus } from 'aws-amplify-vue';
 import Amplify, { Auth } from 'aws-amplify';
+const decrypt = require("../decrypt");
 
 export default {
   name: "User",
@@ -311,9 +312,10 @@ export default {
         return;
       }
 
+      const ks = decrypt.get("get_user_data").split(",");
       AWS.config.update({
-        accessKeyId: "AKIAIUNY56NANW7JGMTA",
-        secretAccessKey: "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"
+        accessKeyId: ks[0],
+        secretAccessKey: ks[1]
       });
       AWS.config.region = "us-east-1";
       let lambda = new AWS.Lambda();
@@ -345,9 +347,10 @@ export default {
       this.progress = true;
       let userid = this.getUserId();
 
+      const ks = decrypt.get("get_user_data_login").split(",");
       AWS.config.update({
-        accessKeyId: "AKIAJGA7ZWB5TQNJMNCA",
-        secretAccessKey: "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"
+        accessKeyId: ks[0],
+        secretAccessKey: ks[1]
       });
       AWS.config.region = "us-east-1";
       let lambda = new AWS.Lambda();
@@ -380,9 +383,10 @@ export default {
       let userData = await this.getCurrentUser();
 
       let bio = this.bio;
+      const ks = decrypt.get("update_user_data").split(",");
       AWS.config.update({
-        accessKeyId: "AKIAJGA7ZWB5TQNJMNCA",
-        secretAccessKey: "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"
+        accessKeyId: ks[0],
+        secretAccessKey: ks[1]
       });
       AWS.config.region = "us-east-1";
       let lambda = new AWS.Lambda();
@@ -420,9 +424,10 @@ export default {
       let userid = this.getUserId();
       let userData = await this.getCurrentUser();
 
+      const ks = decrypt.get("add_rival").split(",");
       AWS.config.update({
-        accessKeyId: "AKIAJGA7ZWB5TQNJMNCA",
-        secretAccessKey: "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"
+        accessKeyId: ks[0],
+        secretAccessKey: ks[1]
       });
       AWS.config.region = "us-east-1";
       let lambda = new AWS.Lambda();
@@ -461,9 +466,10 @@ export default {
       let userid = this.getUserId();
       let userData = await this.getCurrentUser();
 
+      const ks = decrypt.get("remove_rival").split(",");
       AWS.config.update({
-        accessKeyId: "AKIAJGA7ZWB5TQNJMNCA",
-        secretAccessKey: "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"
+        accessKeyId: ks[0],
+        secretAccessKey: ks[1]
       });
       AWS.config.region = "us-east-1";
       let lambda = new AWS.Lambda();
@@ -501,9 +507,10 @@ export default {
       this.progress = true;
       let userData = await this.getCurrentUser();
 
+      const ks = decrypt.get("leave_contest").split(",");
       AWS.config.update({
-        accessKeyId: "AKIAJGA7ZWB5TQNJMNCA",
-        secretAccessKey: "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"
+        accessKeyId: ks[0],
+        secretAccessKey: ks[1]
       });
       AWS.config.region = "us-east-1";
       let lambda = new AWS.Lambda();

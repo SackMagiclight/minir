@@ -69,6 +69,7 @@
 import AWS from "aws-sdk";
 import axios from "axios";
 import Tabulator from "tabulator-tables";
+const decrypt = require("../decrypt");
 
 export default {
   name: "Cource",
@@ -242,9 +243,10 @@ export default {
 
       const self = this;
 
+      const ks = decrypt.get("get_cource_data").split(",");
       AWS.config.update({
-        accessKeyId: "AKIAIUNY56NANW7JGMTA",
-        secretAccessKey: "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"
+        accessKeyId: ks[0],
+        secretAccessKey: ks[1]
       });
       AWS.config.region = "us-east-1";
       let lambda = new AWS.Lambda();

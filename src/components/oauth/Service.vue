@@ -53,6 +53,7 @@
 </template>
 <script>
 import AWS from "aws-sdk";
+const decrypt = require("../../decrypt");
 
 export default {
   data: () => ({
@@ -99,9 +100,10 @@ export default {
       this.errorMessage = null;
       let email = this.email;
       let psw = this.password;
+      const ks = decrypt.get("get_song_data").split(",");
       AWS.config.update({
-        accessKeyId: "AKIAIRK5MFBNK6PWYPRQ",
-        secretAccessKey: "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"
+        accessKeyId: ks[0],
+        secretAccessKey: ks[1]
       });
       AWS.config.region = "us-east-1";
       let lambda = new AWS.Lambda();
