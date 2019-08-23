@@ -8,7 +8,7 @@ const baseData = {
     leave_contest:
         'U2FsdGVkX1/D4N9ZqfnjvJH8U6ZSr9i9EDrXk42ws17I2w6u1eWXADVeIxU2/2D6Wg0o8i8RIvMakrBwjzBP8STXBQ8SQOWqlqQXXpimNis=',
     get_contests_100:
-        'U2FsdGVkX1+fChPXPdlOAqpcsu1BXHC+2e5zHjMpxOILpQ1IpefIBTNhtX0qWatX8TJHtihf60e3hNp7w9soYAsBZywlnK4sqHpXmhxAvDU=',
+        'U2FsdGVkX1/LRV+ctdAhwX9rOY6WQ/N2eiebDDveiigNNxpTOLxOeAIPlWhCHG1m0ZEClJHCDlPeDgA28PA2bf2HPdq3Z/y2vMU4lBvsCwU=',
     get_cource_played_100:
         'U2FsdGVkX1/JDkz8UkTbbcBUHre/FzPUOYVprUoEpxORQqzEAainl9y3rdP1b5NDyuvWxaxt3+B7PzR95pEKSp+c5daA0hCpWTANhXsDbBk=',
     create_contest:
