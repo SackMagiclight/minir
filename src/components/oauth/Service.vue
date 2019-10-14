@@ -100,7 +100,7 @@ export default {
       this.errorMessage = null;
       let email = this.email;
       let psw = this.password;
-      const ks = decrypt.get("get_song_data").split(",");
+      const ks = decrypt.get("auth_service").split(",");
       AWS.config.update({
         accessKeyId: ks[0],
         secretAccessKey: ks[1]
