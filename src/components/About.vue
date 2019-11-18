@@ -44,49 +44,15 @@
         <h1>参加方法</h1>
         <ol>
             <li>
-                <p>IRユーザーを作成します。
-                    <br>
-                    SIGIN UPにアクセスして、ユーザーを作成し、メール認証を行います。</p>
-            </li>
-            <li>
-                <p>MinIR API をダウンロードし配置します
-                    <br>
-                    <a href="https://drive.google.com/open?id=1wYVNufrfiVAWUkYTVdGl0Q0PqrhkHZBo">https://drive.google.com/open?id=1wYVNufrfiVAWUkYTVdGl0Q0PqrhkHZBo</a> からzipをダウンロードします。
-                    <br> フォルダ内容は以下の通りです。
-                </p>
-                <ul>
-                    <li>ir
-                        <ul>
-                            <li>minir_alpha.jar</li>
-                        </ul>
-                    </li>
-                    <li>beatoraja_minir.bat</li>
-                </ul>
-                <p>これらのファイルを本体であるbeatorajaフォルダに配置します。
-                    <br> 以下のようになるはずです。
-                </p>
-                <ul>
-                    <li>skin</li>
-                    <li>player</li>
-                    <li>ir
-                        <ul>
-                            <li>minir_alpha.jar</li>
-                        </ul>
-                    </li>
-                    <li>beatoraja_minir.bat</li>
-                    <li>beatoraja.jar</li>
-                    <li>beatoraja-config.bat</li>
-                    <li>config.json</li>
-                    <li>...</li>
-                </ul>
-                <p>注意：IR機構は独立しているため、ローカルのプレイデータに影響は与えないはずですが、万が一のため
-                    <strong>バックアップをとっておくことを強く推奨</strong>します。</p>
-            </li>
-            <li>
                 <p>
-                    <code>beatoraja_minir.bat</code> から起動します。
+                    本体内<code>beatoraja-config.bat</code> から起動します。0.7.4現在、IR機構は同梱されているため、特別な操作は不要です。
                     <br> IRタブで「MinIR」が選択できるようになっていれば成功です。 登録したメールアドレス/パスワードを入力し、起動してください。
                 </p>
+            </li>
+            <li>
+                <p>基本的に、本体「ir」フォルダに同梱されている「minir-xxx.jar」を利用しますが、
+                    <br>
+                    更新があった場合は「Downloads」からjarをダウンロードして上書き（置き換え）してください</p>
             </li>
         </ol>
         <h1>現状できること</h1>
