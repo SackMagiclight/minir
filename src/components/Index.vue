@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-slide-y-transition mode="out-in">
       <v-layout column align-center>
-        <img width="80%" src="logo.png" alt="MinIR" class="mb-5">
+        <img :style="{ width: imageWidth + '%' }" src="logo.png" alt="MinIR" class="mb-5">
       </v-layout>
     </v-slide-y-transition>
     <h1 class="text-xs-center">Update history</h1>
@@ -46,8 +46,12 @@ export default {
       history : historyJson,
       styleObject: {
         background: 'rgba(255,255,255,0)'
-      }
+      },
+      imageWidth: 50
     };
+  },
+  mounted() {
+    this.imageWidth = window.innerWidth > 700 ? 50 : 80;
   }
 };
 </script>
