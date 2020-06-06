@@ -232,9 +232,11 @@ export default {
             field: "songhash",
             width: 80,
             formatter: function(cell, formatterParams) {
+              let data = cell.getRow().getData();
+              let pathString = data.type == 'cource' ? 'cource' : 'song'
               let value = cell.getValue();
               let songhashArray = value.split(".");
-              return `<a href="./#/viewer/song/${songhashArray[0]}/0">IR</a><br><a href="./#/viewer/song/${songhashArray[0]}/1">IR(CN)</a><br><a href="./#/viewer/song/${songhashArray[0]}/2">IR(HCN)</a>`;
+              return `<a href="./#/viewer/${pathString}/${songhashArray[0]}/0">IR</a><br><a href="./#/viewer/${pathString}/${songhashArray[0]}/1">IR(CN)</a><br><a href="./#/viewer/${pathString}/${songhashArray[0]}/2">IR(HCN)</a>`;
             },
             headerSort: false,
             resizable: false
