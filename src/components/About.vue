@@ -100,16 +100,6 @@
           <td>○</td>
           <td>×</td>
         </tr>
-        <tr>
-          <td>beatoraja 0.7.6</td>
-          <td>○</td>
-          <td>×</td>
-        </tr>
-        <tr>
-          <td>beatoraja 0.7.5</td>
-          <td>○</td>
-          <td>×</td>
-        </tr>
       </tbody>
     </table>
     <h1>現状できること</h1>
