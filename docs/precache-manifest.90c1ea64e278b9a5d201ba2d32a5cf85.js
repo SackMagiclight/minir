@@ -400,7 +400,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "img/fa-solid-900.ec763292.svg"
   },
   {
-    "revision": "6a0ac14c8ee428a1778c4f1d06ac7f1a",
+    "revision": "b1a0f65919717e8b96249f0280070122",
     "url": "index.html"
   },
   {
@@ -416,7 +416,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "logo.png"
   },
   {
-    "revision": "2de567749db9bfb9c1205c1ad4e902ee",
+    "revision": "45663d29ee228b85d279012d026867f1",
     "url": "manifest.json"
   },
   {
