@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "1bcc876e84111d5b3570",
+    "revision": "54ede1193c2ade51cfe6",
     "url": "css/app.61bb3b45.css"
   },
   {
@@ -356,35 +356,35 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "fonts/fa-solid-900.bea989e8.woff"
   },
   {
-    "revision": "9211f407f309e15b3699b8842e2c33f5",
+    "revision": "d5fbbd8e75fd923fe552f4f5c7b19464",
     "url": "images/icons/icon-128x128.png"
   },
   {
-    "revision": "e37ce300f01d70c923995357e34737ab",
+    "revision": "7f1b2493ea387e737f1bd30587702296",
     "url": "images/icons/icon-144x144.png"
   },
   {
-    "revision": "46002c5812ab39ae5b803f981a25bd33",
+    "revision": "c7b351d462bcf6e7e97c91e98dad92d9",
     "url": "images/icons/icon-152x152.png"
   },
   {
-    "revision": "8ab09ff5f35c896c555790759b4bfcaa",
+    "revision": "c9521fc2ef91fe7423235953b90745eb",
     "url": "images/icons/icon-192x192.png"
   },
   {
-    "revision": "484ff1f66d6c9b114e78d39ad99b2b12",
+    "revision": "de56b984783149101f6cb2e60f44f78b",
     "url": "images/icons/icon-384x384.png"
   },
   {
-    "revision": "484ff1f66d6c9b114e78d39ad99b2b12",
+    "revision": "4069bba28b5b51adbde32dc0d08d3c40",
     "url": "images/icons/icon-512x512.png"
   },
   {
-    "revision": "876388d930a249f774f7d0a23073f335",
+    "revision": "861b12bddbb98bc5eb955c8791959439",
     "url": "images/icons/icon-72x72.png"
   },
   {
-    "revision": "235938a36962af24b84a90f79efb7cb6",
+    "revision": "b03f13a7d95acaf3a056eab576c48d9f",
     "url": "images/icons/icon-96x96.png"
   },
   {
@@ -400,12 +400,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "img/fa-solid-900.ec763292.svg"
   },
   {
-    "revision": "3b34f414f4198efe6280c141d189fc03",
+    "revision": "cc891cc8f0af0adfa1e5add6116027e5",
     "url": "index.html"
   },
   {
-    "revision": "1bcc876e84111d5b3570",
-    "url": "js/app.e6a0f2ae.js"
+    "revision": "54ede1193c2ade51cfe6",
+    "url": "js/app.fd8e34cc.js"
   },
   {
     "revision": "c32f64e8e7d939a5665a",
