@@ -4,7 +4,7 @@
   "theme_color": "#66ced4",
   "background_color": "#ffffff",
   "display": "standalone",
-  "Scope": "/minir/",
+  "Scope": "./",
   "start_url": "./",
   "icons": [
     {
