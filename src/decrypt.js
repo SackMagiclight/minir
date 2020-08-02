@@ -44,6 +44,6 @@ function get(method) {
     const bytes = CryptoJS.AES.decrypt(ciphertext, '600c1113583268dd241ec91f221f2bf6cfcb8f83bb5d27b5a35390996035749a');
     const originalText = bytes.toString(CryptoJS.enc.Utf8);
     return originalText;
-};
+}
 
 exports.get = get;
