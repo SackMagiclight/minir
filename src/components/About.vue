@@ -86,11 +86,13 @@
         <tr>
           <th></th>
           <th>minir-420</th>
+          <th>minir-421</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td>beatoraja 0.7.9</td>
+          <td>▲(Cource送信不可)</td>
           <td>○</td>
         </tr>
       </tbody>
