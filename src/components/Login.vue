@@ -46,6 +46,7 @@
             </v-container>
         </v-card-text>
         <v-card-actions>
+            <v-btn flat @click.native="toForgetPassword()">ForgetPassword</v-btn>
             <v-spacer></v-spacer>
             <v-btn flat @click.native="cancel()">Close</v-btn>
             <v-btn type="submit" color="primary" flat @click.native="login()" :disabled="!validate()">Login</v-btn>
@@ -133,6 +134,10 @@ export default {
       this.email = "";
       this.password = "";
       this.errorMessage = null;
+    },
+    toForgetPassword: function() {
+      this.dialog = false;
+      this.$router.push(`/forget`);
     }
   }
 };

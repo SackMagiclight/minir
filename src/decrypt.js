@@ -25,6 +25,10 @@ const baseData = {
         'U2FsdGVkX1+kDo2ZnYolIjmoZRtqOqhF4KGi3PkO621LkJ5OtnbwJne6c/uPUZgQPWUgODBR4z54E4e7kQQmi5l/6+rd8/kvlTbFiahJ6eY=',
     sign_up:
         'U2FsdGVkX1+PbRLqxfrvdihxI03fx7Yij6yl9LEc0aIpJPHuXGnKX71lCWBEnjIJXT3osj0AA2wQGvHFt1YagxtgVh5IcVdwnTqt7cBY96M=',
+    forget_password:
+        'U2FsdGVkX1+PbRLqxfrvdihxI03fx7Yij6yl9LEc0aIpJPHuXGnKX71lCWBEnjIJXT3osj0AA2wQGvHFt1YagxtgVh5IcVdwnTqt7cBY96M=',
+    reset_password:
+        'U2FsdGVkX1+PbRLqxfrvdihxI03fx7Yij6yl9LEc0aIpJPHuXGnKX71lCWBEnjIJXT3osj0AA2wQGvHFt1YagxtgVh5IcVdwnTqt7cBY96M=',
     get_user_data:
         'U2FsdGVkX1+qlDrCpvJlfqL5sso14z7i8OUSTW3K+DrtfFTr+e+fs57UbcCtTbCSJwSED6+fIYxn2rtlbYED1O1DoJjWfKCgxTQsaGmJ6Cc=',
     get_user_data_login:
