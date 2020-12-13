@@ -58,6 +58,18 @@
         </v-list-tile>
 
         <v-divider></v-divider>
+        <v-list-tile
+          :to="'/search'"
+        >
+          <v-list-tile-action>
+            <v-icon>search</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Search Music</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+
+        <v-divider></v-divider>
 
         <v-subheader>Contest</v-subheader>
         <v-list-tile
@@ -97,6 +109,8 @@
             <v-list-tile-title v-text="item.title"></v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+
+        <v-divider></v-divider>
 
         <v-list-tile
           :to="'/viewer/cource-latest/'"

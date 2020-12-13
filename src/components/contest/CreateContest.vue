@@ -96,6 +96,48 @@
           </v-text-field>
         </v-flex>
         <v-flex xs12>
+          <v-card>
+            <v-card-text>
+              <v-layout row wrap>
+                <v-flex xs3>
+                  <v-subheader>Keyword</v-subheader>
+                </v-flex>
+                <v-flex xs7>
+                  <v-text-field
+                      v-model="title"
+                      :rules="[rules.required, rules.min]"
+                      type="text"
+                      name="input-10-1"
+                      hint="At least 3 characters"
+                  ></v-text-field>
+                </v-flex>
+                <v-flex xs2 class="text-xs-right">
+                  <v-btn 
+                    outline 
+                    flat
+                    color="primary" 
+                    @click.native="getSongData()" 
+                    :disabled="!validate()"
+                    :loading="loading">
+                    Search
+                  </v-btn>
+                </v-flex>
+                <v-flex xs12>
+                  <v-dialog v-model="progress" persistent max-width="290">
+                    <v-card>
+                      <v-card-text>
+                        <v-progress-linear indeterminate></v-progress-linear>
+                      </v-card-text>
+                    </v-card>
+                  </v-dialog>
+                  <div ref="table" style="height: 200px;"></div>
+                </v-flex>
+              </v-layout>
+            </v-card-text>
+          </v-card>
+        </v-flex>
+
+        <v-flex xs12>
           <v-list two-line>
             <template v-for="(item, index) in items">
               <v-subheader
@@ -143,6 +185,8 @@
 import AWS from "aws-sdk";
 import moment from 'moment';
 import jssha from "jssha";
+import axios from "axios";
+import Tabulator from "tabulator-tables";
 import { AmplifyEventBus } from 'aws-amplify-vue';
 import { Auth } from 'aws-amplify';
 const decrypt = require("../../decrypt");
@@ -155,12 +199,47 @@ export default {
   watch: {
     signedIn: async function(newValue, oldValue) {
       this.signedIn = newValue;
-    }
+    },
+    tableData:{
+      handler: function (newData) {
+        this.table.replaceData(newData);
+      },
+      deep: true,
+    },
+    addTargetSonghash: function(newValue) {
+      this.$nextTick(()=> {
+        const selectedData = this.table.getSelectedData();
+        if (selectedData.length && newValue != selectedData[0].sha256) {
+          this.table.deselectRow()
+        }
+      })
+    },
+  },
+  mounted: function() {
+    const self = this;
+    this.table = new Tabulator(this.$refs.table, {
+      layout: "fitDataStretch",
+      reactiveData:true,
+      columns: [
+        { formatter: "textarea", title: "Title", field: "title"},
+        { formatter: "textarea", title: "Artist", field: "artist"},
+        { formatter: "textarea", title: "sha256", field: "sha256" },
+      ],
+      rowClick:function(e, row){
+        const rowData = row.getData();
+        self.addTargetSonghash = rowData.sha256;
+      },
+      selectable:1,
+    });
   },
   data() {
     return {
       snackbar: false,
       snackbarText: "",
+      title: "",
+      table: null,
+      tableData: [],
+      progress: false,
       loading: false,
       errorMessages: '',
       contestName: "",
@@ -177,10 +256,39 @@ export default {
         { label: 'CN', value: 1 },
         { label: 'HCN', value: 2 }
       ],
-      selectLnMode: { label: 'LN or Default', value: 0 }
+      selectLnMode: { label: 'LN or Default', value: 0 },
+      rules: {
+        required: value => !!value || "Required.",
+        min: v => v.length >= 3 || "Min 3 characters."
+      }
     };
   },
   methods: {
+    validate: function() {
+      return (
+        this.rules.required(this.title) == true &&
+        this.rules.min(this.title) == true
+      );
+    },
+    getSongData: function() {
+      const self = this;
+      this.loading = true;
+      axios.get(`https://jdfts1v0wmdeklb-bms.adb.us-ashburn-1.oraclecloudapps.com/ords/bmsquery/bms_text/de6bd8b08c60?text=${this.title}`,{
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+          'Access-Control-Allow-Origin': '*',
+        }
+      })
+      .then((val) => {
+        if (val.data) {
+          self.tableData = val.data.items
+        }
+      }).catch((err) => {
+        self.tableData = []
+      }).finally(() => {
+        self.loading = false
+      });
+    },
     getCurrentUser: async function(){
       try{
         const data = await Auth.currentAuthenticatedUser();

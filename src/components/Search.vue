@@ -6,9 +6,6 @@
           <v-container text-xs-left>
             <v-layout row wrap>
               <v-flex xs12>
-                <h3>Search Restriction: Once a minute</h3>
-              </v-flex>
-              <v-flex xs12>
                 <v-alert
                 :value="errorMessage"
                 type="error"
@@ -17,20 +14,7 @@
                 </v-alert>
               </v-flex>
               <v-flex xs4>
-                <v-subheader>Play Mode</v-subheader>
-              </v-flex>
-              <v-flex xs8>
-                <v-select
-                  v-model="mode"
-                  :items="modes"
-                  item-text="title"
-                  item-value="key"
-                  label="Select mode"
-                  single-line
-                ></v-select>
-              </v-flex>
-              <v-flex xs4>
-                <v-subheader>Title Keyword</v-subheader>
+                <v-subheader>Keyword</v-subheader>
               </v-flex>
               <v-flex xs8>
                 <v-text-field
@@ -50,14 +34,6 @@
                   :disabled="!validate()"
                   :loading="loading">
                   Search
-                  <span slot="loader">
-                    <v-progress-circular
-                      :rotate="-90"
-                      :width="15"
-                      :value="loadingValue"
-                      color="primary"
-                    ></v-progress-circular>
-                  </span>
                 </v-btn>
               </v-flex>
             </v-layout>
@@ -83,6 +59,7 @@
 <script>
 /* eslint-disable */
 import AWS from "aws-sdk";
+import axios from "axios";
 import Tabulator from "tabulator-tables";
 const decrypt = require("../decrypt");
 
@@ -109,11 +86,11 @@ export default {
         { formatter: "textarea", title: "Artist", field: "artist", minWidth: 200, headerSort: false, resizable: false },
         {
           title: "IR Links",
-          field: "songhash",
+          field: "sha256",
           width: 80,
           formatter: function(cell, formatterParams) {
             let value = cell.getValue();
-            return `<a href="./#/viewer/song/${value}/0">IR</a><br><a href="./#/viewer/song/${value}/1">IR(CN)</a><br><a href="./#/viewer/song/${value}/2">IR(HCN)</a>`;
+            return `<a href="./#/viewer/song/${value}/0" target="_blank">IR</a><br><a href="./#/viewer/song/${value}/1" target="_blank">IR(CN)</a><br><a href="./#/viewer/song/${value}/2" target="_blank">IR(HCN)</a>`;
           },
           headerSort: false, 
           resizable: false
@@ -157,58 +134,20 @@ export default {
     getSongData: function() {
       const self = this;
       this.loading = true;
-      if(this.interval){
-        clearInterval(this.interval);
-        this.interval = null;
-      }
-      this.interval = setInterval(() => {
-        if (self.loadingValue < 0) {
-          self.loadingValue = 100
-          self.loading = false;
-          clearInterval(self.interval);
-          self.interval = null;
-          return;
+      axios.get(`https://jdfts1v0wmdeklb-bms.adb.us-ashburn-1.oraclecloudapps.com/ords/bmsquery/bms_text/de6bd8b08c60?text=${this.title}`,{
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+          'Access-Control-Allow-Origin': '*',
         }
-        self.loadingValue -= 10/6
-      }, 1000);
-
-      
-      this.errorMessage = null;
-      this.progress = true;
-      let mode = this.mode;
-      this.tableData = [];
-
-      const ks = decrypt.get("search_song_data").split(",");
-      AWS.config.update({
-        accessKeyId: ks[0],
-        secretAccessKey: ks[1]
-      });
-      AWS.config.region = "us-east-1";
-      var lambda = new AWS.Lambda();
-      var params = {
-        FunctionName: "search_song_data",
-        Payload: JSON.stringify({
-          mode: this.mode,
-          title: this.title
-        })
-      };
-
-      lambda.invoke(params, function(err, data) {
-        self.progress = false;
-        if (err) {
-        } else {
-          var json = JSON.parse(data.Payload.toString());
-          if (json.message == "success") {
-            console.log(json.songDatas);
-            self.tableData = json.songDatas;
-          } else {
-            if(json.errorMessage){
-              self.errorMessage = json.errorMessage;
-            } else if(json.message) {
-              self.errorMessage = json.message;
-            }
-          }
+      })
+      .then((val) => {
+        if (val.data) {
+          self.tableData = val.data.items
         }
+      }).catch((err) => {
+        self.tableData = []
+      }).finally(() => {
+        self.loading = false
       });
     }
   }
