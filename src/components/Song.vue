@@ -19,7 +19,7 @@
                                 <v-icon>music_note</v-icon>
                               </v-flex>
                               <v-flex xs10>
-                                {{ songData.genre }}
+                                <div style="overflow-wrap: anywhere;">{{ songData.genre }}</div>
                               </v-flex>
                             </v-layout>
                           </v-card>
@@ -31,7 +31,7 @@
                                 <v-icon>title</v-icon>
                               </v-flex>
                               <v-flex xs10>
-                                {{ songData.title }}
+                                <div style="overflow-wrap: anywhere;">{{ songData.title }}</div>
                               </v-flex>
                             </v-layout>
                           </v-card>
@@ -43,7 +43,7 @@
                                 <v-icon>person</v-icon>
                               </v-flex>
                               <v-flex xs10>
-                                {{ songData.artist }}
+                                <div style="overflow-wrap: anywhere;">{{ songData.artist }}</div>
                               </v-flex>
                             </v-layout>
                           </v-card>
