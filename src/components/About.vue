@@ -91,6 +91,16 @@
       </thead>
       <tbody>
         <tr>
+          <td>beatoraja 0.8.2</td>
+          <td>▲(Cource送信不可)</td>
+          <td>○</td>
+        </tr>
+        <tr>
+          <td>beatoraja 0.8.1</td>
+          <td>▲(Cource送信不可)</td>
+          <td>○</td>
+        </tr>
+        <tr>
           <td>beatoraja 0.8.0</td>
           <td>▲(Cource送信不可)</td>
           <td>○</td>
