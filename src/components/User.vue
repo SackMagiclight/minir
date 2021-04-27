@@ -35,12 +35,14 @@
         </v-flex>
         <v-flex xs12 md4>
           <v-card>
-            <v-btn 
+            <v-btn
+              v-if="!isRival"
               :loading="addRivalLoading"
               :disabled="addRivalLoading"
               color="primary" 
               @click.native="addRival()">Add Rival</v-btn>
-            <v-btn 
+            <v-btn
+              v-if="isRival"
               :loading="removeRivalLoading"
               :disabled="removeRivalLoading"
               color="error" 
@@ -189,12 +191,15 @@ export default {
       removeRivalLoading: false,
       updateBioLoading: false,
       generateApiKeyLoading: false,
+      isRival: false,
+      currentUser: {},
     };
   },
   methods: {
     setIsUserPage: async function(){
       try {
-        this.isUserPage = (await this.getCurrentUser()).UserId == this.getUserId();
+        this.currentUser = await this.getCurrentUser();
+        this.isUserPage = this.currentUser.UserId == this.getUserId();
       } catch (err) {
         this.isUserPage = false;
       }
@@ -207,8 +212,6 @@ export default {
             RefreshToken: data.signInUserSession.refreshToken.token,
             UserId: data.signInUserSession.idToken.payload.sub
         };
-        // eslint-disable-next-line
-        console.log(returnData);
         return returnData;
       } catch(err){
         // eslint-disable-next-line
@@ -312,6 +315,17 @@ export default {
       if (this.isUserPage) {
         this.getUserDataLogin();
         return;
+      } else if (this.signedIn) {
+        const data = await this.getUserDataLoginLambdaInvoke();
+        console.log(data)
+        let json = JSON.parse(data.Payload.toString());
+        if (json.message == "success") {
+          console.log(json.UserData);
+          this.isRival = !!json.UserData.rivals.find((r) => r.userid == userid);
+        } else {
+          this.isRival = false;
+          return;
+        }
       }
 
       const ks = decrypt.get("get_user_data").split(",");
@@ -347,8 +361,21 @@ export default {
     },
     getUserDataLogin: async function() {
       this.progress = true;
-      let userid = this.getUserId();
-
+      const data = await this.getUserDataLoginLambdaInvoke();
+      let json = JSON.parse(data.Payload.toString());
+      if (json.message == "success") {
+        this.createTable(json.ScoreDatas);
+        this.createRivalTable(json.UserData.rivals);
+        this.createContestTable(json.UserData.contest)
+        this.username = json.UserData.username;
+        this.bio = json.UserData.bio;
+        this.progress = false;
+      } else {
+        this.progress = false;
+        return;
+      }
+    },
+    getUserDataLoginLambdaInvoke: async function() {
       const ks = decrypt.get("get_user_data_login").split(",");
       AWS.config.update({
         accessKeyId: ks[0],
@@ -360,25 +387,12 @@ export default {
         FunctionName: "get_user_data_login",
         Payload: JSON.stringify(await this.getCurrentUser())
       };
-
-      const self = this;
-      lambda.invoke(params, function(err, data) {
-        self.progress = false;
-        if (err) {
-          return;
-        } else {
-          let json = JSON.parse(data.Payload.toString());
-          if (json.message == "success") {
-            self.createTable(json.ScoreDatas);
-            self.createRivalTable(json.UserData.rivals);
-            self.createContestTable(json.UserData.contest)
-            self.username = json.UserData.username;
-            self.bio = json.UserData.bio;
-          } else {
-            return;
-          }
-        }
-      });
+      try {
+        const data = await lambda.invoke(params).promise();
+        return data
+      } catch {
+        return;
+      }
     },
     updateBio: async function() {
       this.updateBioLoading = true;
@@ -453,6 +467,7 @@ export default {
           let json = JSON.parse(data.Payload.toString());
           if (json.message == "success") {
             self.snackbarText = "Successfully added rival.";
+            self.getUserData();
             self.snackbar = true;
             return;
           } else {
@@ -495,6 +510,7 @@ export default {
           let json = JSON.parse(data.Payload.toString());
           if (json.message == "success") {
             self.snackbarText = "Successfully removed rival.";
+            self.getUserData();
             self.snackbar = true;
             return;
           } else {
