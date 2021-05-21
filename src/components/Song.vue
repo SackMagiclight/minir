@@ -304,6 +304,7 @@ export default {
       return this.$route.params.lnmode;
     },
     createTable: function(notes) {
+      const self = this;
       this.table = new Tabulator(this.$refs.table, {
         layout: "fitColumns",
         pagination:"local",
@@ -335,7 +336,11 @@ export default {
             align: "left",
             formatter: "progress",
             formatterParams: { min: 0, max: notes * 2, legend: true },
-            headerSort: false
+            headerSort: false,
+            cellClick: (e, cell) => {
+              const data = cell.getRow().getData();
+              self.$router.push(`/viewer/song/${self.getSongHash()}/${self.getLnMode()}/score/${data.userid}`)
+            }
           },
           {
             title: "Combo",

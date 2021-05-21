@@ -5,6 +5,7 @@ import search from './components/Search';
 import latest from './components/Latest';
 import cource_latest from './components/CourceLatest';
 import song from './components/Song';
+import score from './components/Score';
 import cource from './components/Cource';
 import user from './components/User';
 import oauth_service from './components/oauth/Service';
@@ -47,6 +48,10 @@ export default [
     {
         path: '/viewer/song/:songhash/:lnmode',
         component: song
+    },
+    {
+        path: '/viewer/song/:songhash/:lnmode/score/:userid',
+        component: score
     },
     {
         path: '/viewer/cource/:courcehash/:lnmode',
