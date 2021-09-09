@@ -101,6 +101,16 @@
                                 <v-layout>
                                   <v-btn
                                     block
+                                    color="#FF7066" 
+                                    :href="getCinnamonURL" target="_blank">
+                                      <span style="color: white; text-transform: none;" >Cinnamon</span>
+                                  </v-btn>
+                                </v-layout>
+                              </v-flex>
+                              <v-flex xs12>
+                                <v-layout>
+                                  <v-btn
+                                    block
                                     color="#75491E" 
                                     :href="getMochaURL" target="_blank">
                                       <span style="color: white; text-transform: none;" >Mocha</span>
@@ -274,6 +284,9 @@ export default {
     },
     getMochaURL : function() {
       return `https://mocha-repository.info/song.php?sha256=${this.getSongHash()}&lnmode=${(Number(this.getLnMode())+1)}`;
+    },
+    getCinnamonURL : function() {
+      return `https://cinnamon.link/charts/${this.getSongHash()}`;
     }
   },
   methods: {
