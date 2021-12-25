@@ -11,6 +11,9 @@ const router = new VueRouter({
   routes: routes
 });
 
+import VueClipboard from 'vue-clipboard2'
+Vue.use(VueClipboard);
+
 import VueYouTubeEmbed from 'vue-youtube-embed'
 Vue.use(VueYouTubeEmbed);
 

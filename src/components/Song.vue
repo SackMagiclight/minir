@@ -84,6 +84,35 @@
                             </v-layout>
                           </v-card>
                         </v-flex>
+                        <v-flex xs12 mb-2 mt--2>
+                          <v-card flat>
+                            <v-layout>
+                              <v-flex xs2 d-flex justify-center>
+                                <v-icon>pin</v-icon>
+                              </v-flex>
+                              <v-flex xs10>
+                                <v-text-field
+                                  v-model="$route.params.songhash"
+                                  readonly
+                                  dense
+                                  hide-details
+                                  height="24px"
+                                  style="padding-top: 0; margin-top: 0;"
+                                >
+                                  <template v-slot:append>
+                                    <div style="margin-top: -4px;">
+                                      <button
+                                        v-clipboard:copy="$route.params.songhash"
+                                      >
+                                        <v-icon dense>content_paste</v-icon>
+                                      </button>
+                                    </div>
+                                  </template>
+                                </v-text-field>
+                              </v-flex>
+                            </v-layout>
+                          </v-card>
+                        </v-flex>
                         <v-flex xs12 mb-2 v-if="!progress">
                           <v-card flat>
                             <v-layout justify-start row>
