@@ -85,33 +85,23 @@
       <thead>
         <tr>
           <th></th>
-          <th>minir-420</th>
           <th>minir-421</th>
           <th>minir-430</th>
         </tr>
       </thead>
       <tbody>
         <tr>
+          <td>beatoraja 0.8.4</td>
+          <td>○</td>
+          <td>○</td>
+        </tr>
+        <tr>
           <td>beatoraja 0.8.3</td>
-          <td>▲(Cource送信不可)</td>
           <td>○</td>
           <td>○</td>
         </tr>
         <tr>
           <td>beatoraja 0.8.2</td>
-          <td>▲(Cource送信不可)</td>
-          <td>○</td>
-          <td>○</td>
-        </tr>
-        <tr>
-          <td>beatoraja 0.8.1</td>
-          <td>▲(Cource送信不可)</td>
-          <td>○</td>
-          <td>○</td>
-        </tr>
-        <tr>
-          <td>beatoraja 0.8.0</td>
-          <td>▲(Cource送信不可)</td>
           <td>○</td>
           <td>○</td>
         </tr>
