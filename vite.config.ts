@@ -14,6 +14,7 @@ export default defineConfig({
         alias: {
             '~': path.join(__dirname, 'src'),
             '@': __dirname,
+            './runtimeConfig': './runtimeConfig.browser',
         },
     },
     server: {
