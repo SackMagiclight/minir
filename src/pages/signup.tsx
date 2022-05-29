@@ -140,7 +140,7 @@ export default () => {
                         <form>
                             <Stack spacing={4} p="1rem" backgroundColor="whiteAlpha.900" boxShadow="md">
                                 <Flex alignItems={'center'} flexDirection={'column'} m={4}>
-                                    <Image boxSize={'40%'} objectFit={'cover'} src={'/icons/icon-512x512.png'}></Image>
+                                    <Image boxSize={'40%'} objectFit={'cover'} src={'./icons/icon-512x512.png'}></Image>
                                     <Heading size={'md'} textAlign={'center'}>
                                         Create Account
                                     </Heading>

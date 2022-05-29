@@ -21,7 +21,7 @@ export default () => {
                 <title>MinIR</title>
             </Helmet>
             <Flex justify={'center'}>
-                <Image boxSize={'60%'} objectFit={'cover'} src={'/logo.png'}></Image>
+                <Image boxSize={'60%'} objectFit={'cover'} src={'./logo.png'}></Image>
             </Flex>
             <Box padding={4} bg={'gray.100'}>
                 <Heading textAlign={'center'}>Update history</Heading>
