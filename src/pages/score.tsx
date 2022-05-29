@@ -13,15 +13,15 @@ import {
     Badge,
 } from '@chakra-ui/react'
 import { useParams } from 'react-router-dom'
-import Lambda from 'aws-sdk/clients/lambda'
+import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
 import { getAccessKeyAndSecret } from '~/util/decrypt'
-import AWS from 'aws-sdk'
 import { useEffect, useMemo, useState } from 'react'
 import { DefaultLayout } from '~/layout/Default'
 import { FaFacebook, FaLine, FaTwitter } from 'react-icons/fa'
 import { truncate } from 'lodash'
 import { Helmet } from 'react-helmet-async'
 import { PieChart, Pie, Cell, ResponsiveContainer, LabelList } from 'recharts'
+import { Buffer } from 'buffer'
 
 type IRData = {
     clear: number
@@ -74,33 +74,38 @@ export default () => {
         getSongData()
     }, [urlParams.songhash, urlParams.lnmode])
 
-    const getSongData = () => {
+    const getSongData = async () => {
         const ks = getAccessKeyAndSecret('get_song_data').split(',')
-        AWS.config.update({
-            accessKeyId: ks[0],
-            secretAccessKey: ks[1],
+        const client = new LambdaClient({
+            region: 'us-east-1',
+            credentials: {
+                accessKeyId: ks[0],
+                secretAccessKey: ks[1],
+            },
         })
-        const lambda = new Lambda()
         const params = {
             FunctionName: 'get_song_data',
-            Payload: JSON.stringify({
-                songhash: (urlParams.songhash ?? '') + (urlParams.lnmode ? `.${urlParams.lnmode}` : '.0'),
-                userid: urlParams.userId,
-            }),
+            Payload: Buffer.from(
+                JSON.stringify({
+                    songhash: (urlParams.songhash ?? '') + (urlParams.lnmode ? `.${urlParams.lnmode}` : '.0'),
+                    userid: urlParams.userId,
+                }),
+            ),
         }
 
-        lambda.invoke(params, function (err, data) {
-            if (err) {
+        try {
+            const command = new InvokeCommand(params)
+            const data = await client.send(command)
+            const json = JSON.parse(new TextDecoder().decode(data.Payload))
+            if (json.message == 'success') {
+                setIRData(json.IRDatas[0])
+                setSongData(json.SongData)
             } else {
-                var json = JSON.parse(data.Payload?.toString() ?? '')
-                if (json.message == 'success') {
-                    setIRData(json.IRDatas[0])
-                    setSongData(json.SongData)
-                } else {
-                }
             }
+        } catch {
+        } finally {
             setLoading(false)
-        })
+        }
     }
 
     const openInNewTab = (url: string) => {
@@ -167,23 +172,23 @@ export default () => {
                 break
             case 1:
                 backgroundColor = 'rgb(192, 192, 192)'
-                text =  'Failed'
+                text = 'Failed'
                 break
             case 2:
                 backgroundColor = 'rgb(149, 149, 255)'
-                text =  'AssistEasy'
+                text = 'AssistEasy'
                 break
             case 3:
                 backgroundColor = 'rgb(149, 149, 255)'
-                text =  'LightAssistEasy'
+                text = 'LightAssistEasy'
                 break
             case 4:
                 backgroundColor = 'rgb(152, 251, 152)'
-                text =  'Easy'
+                text = 'Easy'
                 break
             case 5:
                 backgroundColor = 'rgb(152, 251, 152)'
-                text =  'Normal'
+                text = 'Normal'
                 break
             case 6:
                 backgroundColor = 'rgb(255, 99, 71)'
@@ -191,25 +196,25 @@ export default () => {
                 break
             case 7:
                 backgroundColor = 'rgb(255, 217, 0)'
-                text =  'ExHard'
+                text = 'ExHard'
                 break
             case 8:
                 backgroundColor = 'rgb(255, 140, 0)'
-                text =  'FullCombo'
+                text = 'FullCombo'
                 break
             case 9:
                 backgroundColor = 'rgb(255, 140, 0)'
-                text =  'Perfect'
+                text = 'Perfect'
                 break
             case 10:
                 backgroundColor = 'rgb(255, 140, 0)'
-                text =  'Max'
+                text = 'Max'
                 break
             default:
                 backgroundColor = ''
-                text =  ''
+                text = ''
         }
-        return (<Badge backgroundColor={backgroundColor}>{text}</Badge>)
+        return <Badge backgroundColor={backgroundColor}>{text}</Badge>
     }, [irData])
 
     const maxScore = useMemo(() => {
@@ -269,9 +274,7 @@ export default () => {
                             </Tr>
                             <Tr>
                                 <Td>CLEAR</Td>
-                                <Td>
-                                    {clearElement}
-                                </Td>
+                                <Td>{clearElement}</Td>
                             </Tr>
                             <Tr>
                                 <Td>SCORE</Td>

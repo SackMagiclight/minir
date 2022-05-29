@@ -1,12 +1,12 @@
 import { Box, Link, Table, TableContainer, Tbody, Td, Th, Thead, Tr, Heading, Progress, Text } from '@chakra-ui/react'
-import Lambda from 'aws-sdk/clients/lambda'
+import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
 import { getAccessKeyAndSecret } from '~/util/decrypt'
-import AWS from 'aws-sdk'
 import { useEffect, useState } from 'react'
 import { Link as ReactLink } from 'react-router-dom'
 import { DefaultLayout } from '~/layout/Default'
 import { ExternalLinkIcon } from '@chakra-ui/icons'
 import { Helmet } from 'react-helmet-async'
+import { Buffer } from 'buffer'
 
 type CourseList = {
     name: string
@@ -25,24 +25,27 @@ export default () => {
 
     const getLatestData = async () => {
         const ks = getAccessKeyAndSecret('get_cource_played_100').split(',')
-        AWS.config.update({
-            accessKeyId: ks[0],
-            secretAccessKey: ks[1],
+        const client = new LambdaClient({
+            region: 'us-east-1',
+            credentials: {
+                accessKeyId: ks[0],
+                secretAccessKey: ks[1],
+            },
         })
-        const lambda = new Lambda()
         const params = {
             FunctionName: 'get_cource_played_100',
         }
 
         try {
-            const data = await lambda.invoke(params).promise()
-            const json = JSON.parse(data.Payload?.toString() ?? '')
+            const command = new InvokeCommand(params)
+            const data = await client.send(command)
+            const json = JSON.parse(new TextDecoder().decode(data.Payload))
             if (json.message == 'success') {
                 setTableData(json.courceDatas)
             } else {
             }
-        } catch{}
-        finally{
+        } catch {
+        } finally {
             setLoading(false)
         }
     }

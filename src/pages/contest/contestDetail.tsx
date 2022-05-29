@@ -24,9 +24,8 @@ import {
     useToast,
 } from '@chakra-ui/react'
 import { useNavigate, useParams } from 'react-router-dom'
-import Lambda from 'aws-sdk/clients/lambda'
+import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
 import { getAccessKeyAndSecret } from '~/util/decrypt'
-import AWS from 'aws-sdk'
 import { useEffect, useMemo, useState } from 'react'
 import { DefaultLayout } from '~/layout/Default'
 import dayjs from 'dayjs'
@@ -44,6 +43,7 @@ import { Helmet } from 'react-helmet-async'
 import { Link as ReactLink } from 'react-router-dom'
 import jssha from 'jssha'
 import { Auth } from 'aws-amplify'
+import { Buffer } from 'buffer'
 
 type IRData = {
     clear: number
@@ -218,32 +218,37 @@ export default () => {
         getCourseData()
     }, [urlParams.contestId])
 
-    const getCourseData = () => {
+    const getCourseData = async () => {
         const ks = getAccessKeyAndSecret('get_contest').split(',')
-        AWS.config.update({
-            accessKeyId: ks[0],
-            secretAccessKey: ks[1],
+        const client = new LambdaClient({
+            region: 'us-east-1',
+            credentials: {
+                accessKeyId: ks[0],
+                secretAccessKey: ks[1],
+            },
         })
-        const lambda = new Lambda()
         const params = {
             FunctionName: 'get_contest',
-            Payload: JSON.stringify({
-                contestId: urlParams.contestId,
-            }),
+            Payload: Buffer.from(
+                JSON.stringify({
+                    contestId: urlParams.contestId,
+                }),
+            ),
         }
 
-        lambda.invoke(params, function (err, data) {
-            if (err) {
+        try {
+            const command = new InvokeCommand(params)
+            const data = await client.send(command)
+            const json = JSON.parse(new TextDecoder().decode(data.Payload))
+            if (json.message == 'success') {
+                setIRData(json.contestScoreDatas)
+                setCourseData({ contestData: json.contestData, contestSongDatas: json.contestSongDatas })
             } else {
-                var json = JSON.parse(data.Payload?.toString() ?? '')
-                if (json.message == 'success') {
-                    setIRData(json.contestScoreDatas)
-                    setCourseData({ contestData: json.contestData, contestSongDatas: json.contestSongDatas })
-                } else {
-                }
             }
+        } catch {
+        } finally {
             setLoading(false)
-        })
+        }
     }
 
     const rowFormatter = (row: Tabulator.RowComponent) => {
@@ -277,9 +282,9 @@ export default () => {
     const socialFacebook = useMemo(() => {
         return () => {
             openInNewTab(
-                `https://www.facebook.com/sharer.php?quote=${socialText(courseData?.contestData?.contestName ?? '')}&u=${socialUrl(
-                    urlParams.contestId ?? '',
-                )}`,
+                `https://www.facebook.com/sharer.php?quote=${socialText(
+                    courseData?.contestData?.contestName ?? '',
+                )}&u=${socialUrl(urlParams.contestId ?? '')}`,
             )
         }
     }, [courseData])
@@ -336,23 +341,28 @@ export default () => {
         }
 
         const ks = getAccessKeyAndSecret('join_contest').split(',')
-        AWS.config.update({
-            accessKeyId: ks[0],
-            secretAccessKey: ks[1],
+        const client = new LambdaClient({
+            region: 'us-east-1',
+            credentials: {
+                accessKeyId: ks[0],
+                secretAccessKey: ks[1],
+            },
         })
-        const lambda = new Lambda()
         const params = {
             FunctionName: 'join_contest',
-            Payload: JSON.stringify({
-                AccessToken: userData.AccessToken,
-                RefreshToken: userData.RefreshToken,
-                contestId: urlParams.contestId,
-            }),
+            Payload: Buffer.from(
+                JSON.stringify({
+                    AccessToken: userData.AccessToken,
+                    RefreshToken: userData.RefreshToken,
+                    contestId: urlParams.contestId,
+                }),
+            ),
         }
 
         try {
-            const data = await lambda.invoke(params).promise()
-            const json = JSON.parse(data.Payload?.toString() ?? '')
+            const command = new InvokeCommand(params)
+            const data = await client.send(command)
+            const json = JSON.parse(new TextDecoder().decode(data.Payload))
             if (json.message == 'success') {
                 toast({
                     description: 'Successfully join Contest.',
@@ -393,23 +403,28 @@ export default () => {
         }
 
         const ks = getAccessKeyAndSecret('leave_contest').split(',')
-        AWS.config.update({
-            accessKeyId: ks[0],
-            secretAccessKey: ks[1],
+        const client = new LambdaClient({
+            region: 'us-east-1',
+            credentials: {
+                accessKeyId: ks[0],
+                secretAccessKey: ks[1],
+            },
         })
-        const lambda = new Lambda()
         const params = {
             FunctionName: 'leave_contest',
-            Payload: JSON.stringify({
-                AccessToken: userData.AccessToken,
-                RefreshToken: userData.RefreshToken,
-                contestId: urlParams.contestId,
-            }),
+            Payload: Buffer.from(
+                JSON.stringify({
+                    AccessToken: userData.AccessToken,
+                    RefreshToken: userData.RefreshToken,
+                    contestId: urlParams.contestId,
+                }),
+            ),
         }
 
         try {
-            const data = await lambda.invoke(params).promise()
-            const json = JSON.parse(data.Payload?.toString() ?? '')
+            const command = new InvokeCommand(params)
+            const data = await client.send(command)
+            const json = JSON.parse(new TextDecoder().decode(data.Payload))
             if (json.message == 'success') {
                 toast({
                     description: 'Successfully leave Contest.',
@@ -513,7 +528,7 @@ export default () => {
                                         </Thead>
                                         <Tbody>
                                             {courseData?.contestSongDatas.map((s, index) => (
-                                                <Tr key={index} >
+                                                <Tr key={index}>
                                                     <Td>{index + 1}</Td>
                                                     <Td>
                                                         <Link as={ReactLink} to={`/viewer/song/${s.songhash}/${s.lnmode}`}>

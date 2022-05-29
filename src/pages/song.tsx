@@ -16,9 +16,8 @@ import {
     ButtonGroup,
 } from '@chakra-ui/react'
 import { useNavigate, useParams } from 'react-router-dom'
-import Lambda from 'aws-sdk/clients/lambda'
+import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
 import { getAccessKeyAndSecret } from '~/util/decrypt'
-import AWS from 'aws-sdk'
 import { useEffect, useMemo, useState } from 'react'
 import { DefaultLayout } from '~/layout/Default'
 
@@ -32,6 +31,7 @@ import { useQuery } from 'react-query'
 import axios from 'axios'
 import { truncate } from 'lodash'
 import { Helmet } from 'react-helmet-async'
+import { Buffer } from 'buffer'
 
 type IRData = {
     clear: number
@@ -208,32 +208,37 @@ export default () => {
         getSongData()
     }, [urlParams.songhash, urlParams.lnmode])
 
-    const getSongData = () => {
+    const getSongData = async () => {
         const ks = getAccessKeyAndSecret('get_song_data').split(',')
-        AWS.config.update({
-            accessKeyId: ks[0],
-            secretAccessKey: ks[1],
+        const client = new LambdaClient({
+            region: 'us-east-1',
+            credentials: {
+                accessKeyId: ks[0],
+                secretAccessKey: ks[1],
+            },
         })
-        const lambda = new Lambda()
         const params = {
             FunctionName: 'get_song_data',
-            Payload: JSON.stringify({
-                songhash: (urlParams.songhash ?? '') + (urlParams.lnmode ? `.${urlParams.lnmode}` : '.0'),
-            }),
+            Payload: Buffer.from(
+                JSON.stringify({
+                    songhash: (urlParams.songhash ?? '') + (urlParams.lnmode ? `.${urlParams.lnmode}` : '.0'),
+                }),
+            ),
         }
 
-        lambda.invoke(params, function (err, data) {
-            if (err) {
+        try {
+            const command = new InvokeCommand(params)
+            const data = await client.send(command)
+            const json = JSON.parse(new TextDecoder().decode(data.Payload))
+            if (json.message == 'success') {
+                setIRData(json.IRDatas)
+                setSongData(json.SongData)
             } else {
-                var json = JSON.parse(data.Payload?.toString() ?? '')
-                if (json.message == 'success') {
-                    setIRData(json.IRDatas)
-                    setSongData(json.SongData)
-                } else {
-                }
             }
+        } catch {
+        } finally {
             setLoading(false)
-        })
+        }
     }
 
     const rowFormatter = (row: Tabulator.RowComponent) => {

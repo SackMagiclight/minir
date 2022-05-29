@@ -7,7 +7,6 @@ export default defineConfig({
     base: '/minir/',
     plugins: [react()],
     build: {
-        outDir: 'build',
         sourcemap: true,
     },
     resolve: {

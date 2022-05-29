@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom'
 import { createRoot } from 'react-dom/client'
 import { HelmetProvider } from 'react-helmet-async'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import AWS from 'aws-sdk'
 
 import { GeneralGtag } from '~/components/uiParts/Gtag/GeneralGtag'
 import { useVh } from '~/hooks/useVh'
@@ -16,7 +15,6 @@ import { StepsStyleConfig as StepsConfig } from 'chakra-ui-steps'
 const Root: FC<{ children: any }> = ({ children }) => {
     const { VhVariable } = useVh()
     const queryClient = new QueryClient()
-    AWS.config.region = 'us-east-1'
 
     const theme = extendTheme({
         components: {

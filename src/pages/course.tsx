@@ -19,10 +19,10 @@ import {
     AccordionItem,
     AccordionPanel,
 } from '@chakra-ui/react'
+import { Buffer } from 'buffer'
 import { useNavigate, useParams } from 'react-router-dom'
-import Lambda from 'aws-sdk/clients/lambda'
+import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
 import { getAccessKeyAndSecret } from '~/util/decrypt'
-import AWS from 'aws-sdk'
 import { useEffect, useMemo, useState } from 'react'
 import { DefaultLayout } from '~/layout/Default'
 
@@ -197,32 +197,37 @@ export default () => {
         getCourseData()
     }, [urlParams.coursehash, urlParams.lnmode])
 
-    const getCourseData = () => {
+    const getCourseData = async () => {
         const ks = getAccessKeyAndSecret('get_cource_data').split(',')
-        AWS.config.update({
-            accessKeyId: ks[0],
-            secretAccessKey: ks[1],
+        const client = new LambdaClient({
+            region: 'us-east-1',
+            credentials: {
+                accessKeyId: ks[0],
+                secretAccessKey: ks[1],
+            },
         })
-        const lambda = new Lambda()
         const params = {
             FunctionName: 'get_cource_data',
-            Payload: JSON.stringify({
-                songhash: (urlParams.coursehash ?? '') + (urlParams.lnmode ? `.${urlParams.lnmode}` : '.0'),
-            }),
+            Payload: Buffer.from(
+                JSON.stringify({
+                    songhash: (urlParams.coursehash ?? '') + (urlParams.lnmode ? `.${urlParams.lnmode}` : '.0'),
+                }),
+            ),
         }
 
-        lambda.invoke(params, function (err, data) {
-            if (err) {
+        try {
+            const command = new InvokeCommand(params)
+            const data = await client.send(command)
+            const json = JSON.parse(new TextDecoder().decode(data.Payload))
+            if (json.message == 'success') {
+                setIRData(json.IRDatas)
+                setCourseData(json.CourceData)
             } else {
-                var json = JSON.parse(data.Payload?.toString() ?? '')
-                if (json.message == 'success') {
-                    setIRData(json.IRDatas)
-                    setCourseData(json.CourceData)
-                } else {
-                }
             }
+        } catch {
+        } finally {
             setLoading(false)
-        })
+        }
     }
 
     const rowFormatter = (row: Tabulator.RowComponent) => {

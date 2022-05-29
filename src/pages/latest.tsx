@@ -1,13 +1,13 @@
 import { Box, Link, Table, TableContainer, Tbody, Td, Th, Thead, Tr, Heading, Progress, Text } from '@chakra-ui/react'
 import { useParams } from 'react-router-dom'
-import Lambda from 'aws-sdk/clients/lambda'
+import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
 import { getAccessKeyAndSecret } from '~/util/decrypt'
-import AWS from 'aws-sdk'
 import { useEffect, useState } from 'react'
 import { Link as ReactLink } from 'react-router-dom'
 import { DefaultLayout } from '~/layout/Default'
 import { ExternalLinkIcon } from '@chakra-ui/icons'
 import { Helmet } from 'react-helmet-async'
+import { Buffer } from 'buffer'
 
 type SongList = {
     title: string
@@ -26,31 +26,36 @@ export default () => {
         getLatestData()
     }, [urlParams.key])
 
-    const getLatestData = () => {
+    const getLatestData = async () => {
         const ks = getAccessKeyAndSecret('get_played_100').split(',')
-        AWS.config.update({
-            accessKeyId: ks[0],
-            secretAccessKey: ks[1],
+        const client = new LambdaClient({
+            region: 'us-east-1',
+            credentials: {
+                accessKeyId: ks[0],
+                secretAccessKey: ks[1],
+            },
         })
-        const lambda = new Lambda()
         const params = {
             FunctionName: 'get_played_100',
-            Payload: JSON.stringify({
-                mode: urlParams.key ?? 'beat-7k',
-            }),
+            Payload: Buffer.from(
+                JSON.stringify({
+                    mode: urlParams.key ?? 'beat-7k',
+                }),
+            ),
         }
 
-        lambda.invoke(params, function (err, data) {
-            if (err) {
+        try {
+            const command = new InvokeCommand(params)
+            const data = await client.send(command)
+            const json = JSON.parse(new TextDecoder().decode(data.Payload))
+            if (json.message == 'success') {
+                setTableData(json.songDatas)
             } else {
-                var json = JSON.parse(data.Payload?.toString() ?? '')
-                if (json.message == 'success') {
-                    setTableData(json.songDatas)
-                } else {
-                }
             }
+        } catch {
+        } finally {
             setLoading(false)
-        })
+        }
     }
 
     return (

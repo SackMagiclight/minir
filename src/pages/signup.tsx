@@ -30,9 +30,10 @@ import { FaLock, FaUserAlt } from 'react-icons/fa'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getAccessKeyAndSecret } from '~/util/decrypt'
-import AWS from 'aws-sdk'
+import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
 import React from 'react'
 import { MdAlternateEmail } from 'react-icons/md'
+import { Buffer } from 'buffer'
 
 export default () => {
     const [showPassword, setShowPassword] = useBoolean()
@@ -61,23 +62,28 @@ export default () => {
         !(async () => {
             try {
                 const ks = getAccessKeyAndSecret('sign_up').split(',')
-                AWS.config.update({
-                    accessKeyId: ks[0],
-                    secretAccessKey: ks[1],
+                const client = new LambdaClient({
+                    region: 'us-east-1',
+                    credentials: {
+                        accessKeyId: ks[0],
+                        secretAccessKey: ks[1],
+                    },
                 })
-
-                const lambda = new AWS.Lambda()
                 const params = {
                     FunctionName: 'sign_up',
-                    Payload: JSON.stringify({
-                        username: userName,
-                        email: email,
-                        password: password,
-                    }),
+                    Payload: Buffer.from(
+                        JSON.stringify({
+                            username: userName,
+                            email: email,
+                            password: password,
+                        }),
+                    ),
                 }
-                const data = await lambda.invoke(params).promise()
-                if (data.Payload != 'true') {
-                    const json = JSON.parse(data.Payload?.toString() ?? '')
+
+                const command = new InvokeCommand(params)
+                const data = await client.send(command)
+                if (new TextDecoder().decode(data.Payload) != 'true') {
+                    const json = JSON.parse(new TextDecoder().decode(data.Payload))
                     if (json.errorMessage) {
                         errorMsg = JSON.stringify(json.errorMessage, undefined, 1)
                     }

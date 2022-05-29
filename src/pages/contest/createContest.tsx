@@ -26,9 +26,9 @@ import {
     Badge,
     Spacer,
 } from '@chakra-ui/react'
-import Lambda from 'aws-sdk/clients/lambda'
+import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
+import { Buffer } from 'buffer'
 import { getAccessKeyAndSecret } from '~/util/decrypt'
-import AWS from 'aws-sdk'
 import { useEffect, useRef, useState } from 'react'
 import { Link as ReactLink, useNavigate } from 'react-router-dom'
 import { DefaultLayout } from '~/layout/Default'
@@ -195,20 +195,26 @@ export default () => {
         }
 
         const ks = getAccessKeyAndSecret('get_song_data').split(',')
-        AWS.config.update({
-            accessKeyId: ks[0],
-            secretAccessKey: ks[1],
+        const client = new LambdaClient({
+            region: 'us-east-1',
+            credentials: {
+                accessKeyId: ks[0],
+                secretAccessKey: ks[1],
+            },
         })
-        const lambda = new AWS.Lambda()
         const params = {
             FunctionName: 'get_song_data',
-            Payload: JSON.stringify({
-                songhash: songhash + '.' + selectLnMode,
-            }),
+            Payload: Buffer.from(
+                JSON.stringify({
+                    songhash: songhash + '.' + selectLnMode,
+                }),
+            ),
         }
+
         try {
-            const data = await lambda.invoke(params).promise()
-            const json = JSON.parse(data.Payload?.toString() ?? '')
+            const command = new InvokeCommand(params)
+            const data = await client.send(command)
+            const json = JSON.parse(new TextDecoder().decode(data.Payload))
 
             if (!json.message) {
                 throw new Error('Song not found')
@@ -265,27 +271,33 @@ export default () => {
         }
 
         const ks = getAccessKeyAndSecret('create_contest').split(',')
-        AWS.config.update({
-            accessKeyId: ks[0],
-            secretAccessKey: ks[1],
+        const client = new LambdaClient({
+            region: 'us-east-1',
+            credentials: {
+                accessKeyId: ks[0],
+                secretAccessKey: ks[1],
+            },
         })
-        const lambda = new AWS.Lambda()
         const params = {
             FunctionName: 'create_contest',
-            Payload: JSON.stringify({
-                AccessToken: userData.AccessToken,
-                RefreshToken: userData.RefreshToken,
-                contestName: contestName,
-                description: description ? description : null,
-                password: _password ? _password : null,
-                startDateTime: _startDateTime,
-                endDateTime: _endDateTime,
-                songs: songs,
-            }),
+            Payload: Buffer.from(
+                JSON.stringify({
+                    AccessToken: userData.AccessToken,
+                    RefreshToken: userData.RefreshToken,
+                    contestName: contestName,
+                    description: description ? description : null,
+                    password: _password ? _password : null,
+                    startDateTime: _startDateTime,
+                    endDateTime: _endDateTime,
+                    songs: songs,
+                }),
+            ),
         }
+
         try {
-            const data = await lambda.invoke(params).promise()
-            const json = JSON.parse(data.Payload?.toString() ?? '')
+            const command = new InvokeCommand(params)
+            const data = await client.send(command)
+            const json = JSON.parse(new TextDecoder().decode(data.Payload))
             navigate(`/viewer/contest/${json.contestId}`)
         } catch (e) {
             console.error(e)

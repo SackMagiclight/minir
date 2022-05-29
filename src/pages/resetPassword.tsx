@@ -23,10 +23,11 @@ import { FaLock } from 'react-icons/fa'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link as ReactLink, useNavigate } from 'react-router-dom'
 import { getAccessKeyAndSecret } from '~/util/decrypt'
-import AWS from 'aws-sdk'
+import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
 import React from 'react'
 import { MdAlternateEmail } from 'react-icons/md'
 import { Step, Steps, useSteps } from 'chakra-ui-steps'
+import { Buffer } from 'buffer'
 
 export default () => {
     const [showPassword, setShowPassword] = useBoolean()
@@ -59,20 +60,25 @@ export default () => {
         !(async () => {
             try {
                 const ks = getAccessKeyAndSecret('forget_password').split(',')
-                AWS.config.update({
-                    accessKeyId: ks[0],
-                    secretAccessKey: ks[1],
+                const client = new LambdaClient({
+                    region: 'us-east-1',
+                    credentials: {
+                        accessKeyId: ks[0],
+                        secretAccessKey: ks[1],
+                    },
                 })
-                const lambda = new AWS.Lambda()
                 const params = {
                     FunctionName: 'forget_password',
-                    Payload: JSON.stringify({
-                        username: email,
-                    }),
+                    Payload: Buffer.from(
+                        JSON.stringify({
+                            username: email,
+                        }),
+                    ),
                 }
 
-                const data = await lambda.invoke(params).promise()
-                const json = JSON.parse(data.Payload?.toString() ?? '')
+                const command = new InvokeCommand(params)
+                const data = await client.send(command)
+                const json = JSON.parse(new TextDecoder().decode(data.Payload))
                 if (json.message != 'success') {
                     if (json.errorMessage) {
                         errorMsg = JSON.stringify(json.errorMessage, undefined, 1)
@@ -96,22 +102,27 @@ export default () => {
         !(async () => {
             try {
                 const ks = getAccessKeyAndSecret('reset_password').split(',')
-                AWS.config.update({
-                    accessKeyId: ks[0],
-                    secretAccessKey: ks[1],
+                const client = new LambdaClient({
+                    region: 'us-east-1',
+                    credentials: {
+                        accessKeyId: ks[0],
+                        secretAccessKey: ks[1],
+                    },
                 })
-
-                const lambda = new AWS.Lambda()
                 const params = {
                     FunctionName: 'reset_password',
-                    Payload: JSON.stringify({
-                        username: email,
-                        verifyCode,
-                        newPassword: password,
-                    }),
+                    Payload: Buffer.from(
+                        JSON.stringify({
+                            username: email,
+                            verifyCode,
+                            newPassword: password,
+                        }),
+                    ),
                 }
-                const data = await lambda.invoke(params).promise()
-                const json = JSON.parse(data.Payload?.toString() ?? '')
+
+                const command = new InvokeCommand(params)
+                const data = await client.send(command)
+                const json = JSON.parse(new TextDecoder().decode(data.Payload))
                 if (json.message != 'success') {
                     if (json.errorMessage) {
                         errorMsg = JSON.stringify(json.errorMessage, undefined, 1)
@@ -264,7 +275,11 @@ export default () => {
                             <Heading fontSize="xl" textAlign="center">
                                 Reset Success
                             </Heading>
-                            <Text textAlign={'center'} >Please login to new Password.<br/>新しいパスワードでログインしてください。</Text>
+                            <Text textAlign={'center'}>
+                                Please login to new Password.
+                                <br />
+                                新しいパスワードでログインしてください。
+                            </Text>
                             <Button as={ReactLink} to={'/login'}>
                                 Return to Login page
                             </Button>

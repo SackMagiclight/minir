@@ -22,13 +22,14 @@ import {
 } from '@chakra-ui/react'
 import { useParams } from 'react-router-dom'
 import { getAccessKeyAndSecret } from '~/util/decrypt'
-import AWS from 'aws-sdk'
+import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
 import { useEffect, useMemo, useState } from 'react'
 import { DefaultLayout } from '~/layout/Default'
 import { CopyIcon, ExternalLinkIcon } from '@chakra-ui/icons'
 import { Helmet } from 'react-helmet-async'
 import { Auth } from 'aws-amplify'
 import { Link as ReactLink } from 'react-router-dom'
+import { Buffer } from 'buffer'
 
 type UserData = {
     username: string
@@ -120,20 +121,26 @@ export default () => {
 
             setLoadingUserData.on()
             const ks = getAccessKeyAndSecret('get_user_data').split(',')
-            AWS.config.update({
-                accessKeyId: ks[0],
-                secretAccessKey: ks[1],
+            const client = new LambdaClient({
+                region: 'us-east-1',
+                credentials: {
+                    accessKeyId: ks[0],
+                    secretAccessKey: ks[1],
+                },
             })
-            const lambda = new AWS.Lambda()
             const params = {
                 FunctionName: 'get_user_data',
-                Payload: JSON.stringify({
-                    userId,
-                }),
+                Payload: Buffer.from(
+                    JSON.stringify({
+                        userId,
+                    }),
+                ),
             }
+
             try {
-                const data = await lambda.invoke(params).promise()
-                const json = JSON.parse(data.Payload?.toString() ?? '')
+                const command = new InvokeCommand(params)
+                const data = await client.send(command)
+                const json = JSON.parse(new TextDecoder().decode(data.Payload))
                 setUserData(json.UserData)
                 setSongData(json.ScoreDatas)
             } catch (e) {}
@@ -143,18 +150,22 @@ export default () => {
     const getLoginUserData = async (cognitoData: CognitoType) => {
         setLoadingLoginUserData.on()
         const ks = getAccessKeyAndSecret('get_user_data_login').split(',')
-        AWS.config.update({
-            accessKeyId: ks[0],
-            secretAccessKey: ks[1],
+        const client = new LambdaClient({
+            region: 'us-east-1',
+            credentials: {
+                accessKeyId: ks[0],
+                secretAccessKey: ks[1],
+            },
         })
-        const lambda = new AWS.Lambda()
         const params = {
             FunctionName: 'get_user_data_login',
-            Payload: JSON.stringify(cognitoData),
+            Payload: Buffer.from(JSON.stringify(cognitoData)),
         }
+
         try {
-            const data = await lambda.invoke(params).promise()
-            const json = JSON.parse(data.Payload?.toString() ?? '')
+            const command = new InvokeCommand(params)
+            const data = await client.send(command)
+            const json = JSON.parse(new TextDecoder().decode(data.Payload))
             return json as {
                 UserData: UserDataLogin
                 ScoreDatas: SongList[]
@@ -200,23 +211,28 @@ export default () => {
 
         setUpdateBio.on()
         const ks = getAccessKeyAndSecret('update_user_data').split(',')
-        AWS.config.update({
-            accessKeyId: ks[0],
-            secretAccessKey: ks[1],
+        const client = new LambdaClient({
+            region: 'us-east-1',
+            credentials: {
+                accessKeyId: ks[0],
+                secretAccessKey: ks[1],
+            },
         })
-        const lambda = new AWS.Lambda()
         const params = {
             FunctionName: 'update_user_data',
-            Payload: JSON.stringify({
-                bio: loginUserBio,
-                AccessToken: loginUser.AccessToken,
-                RefreshToken: loginUser.RefreshToken,
-            }),
+            Payload: Buffer.from(
+                JSON.stringify({
+                    bio: loginUserBio,
+                    AccessToken: loginUser.AccessToken,
+                    RefreshToken: loginUser.RefreshToken,
+                }),
+            ),
         }
 
         try {
-            const data = await lambda.invoke(params).promise()
-            const json = JSON.parse(data.Payload?.toString() ?? '')
+            const command = new InvokeCommand(params)
+            const data = await client.send(command)
+            const json = JSON.parse(new TextDecoder().decode(data.Payload))
             if (json.message == 'success') {
                 toast({
                     description: 'Successfully updated bio.',
@@ -245,23 +261,28 @@ export default () => {
         if (!loginUser || !userId) return
 
         const ks = getAccessKeyAndSecret(`${command}_rival`).split(',')
-        AWS.config.update({
-            accessKeyId: ks[0],
-            secretAccessKey: ks[1],
+        const client = new LambdaClient({
+            region: 'us-east-1',
+            credentials: {
+                accessKeyId: ks[0],
+                secretAccessKey: ks[1],
+            },
         })
-        const lambda = new AWS.Lambda()
         const params = {
             FunctionName: `${command}_rival`,
-            Payload: JSON.stringify({
-                AccessToken: loginUser.AccessToken,
-                RefreshToken: loginUser.RefreshToken,
-                rivalId: userId,
-            }),
+            Payload: Buffer.from(
+                JSON.stringify({
+                    AccessToken: loginUser.AccessToken,
+                    RefreshToken: loginUser.RefreshToken,
+                    rivalId: userId,
+                }),
+            ),
         }
 
         try {
-            const data = await lambda.invoke(params).promise()
-            const json = JSON.parse(data.Payload?.toString() ?? '')
+            const command = new InvokeCommand(params)
+            const data = await client.send(command)
+            const json = JSON.parse(new TextDecoder().decode(data.Payload))
             if (json.message == 'success') {
                 toast({
                     description: `Successfully ${command} rival.`,
