@@ -36,6 +36,7 @@ import { ReactTabulator } from 'react-tabulator'
 import { Tabulator } from 'react-tabulator/lib/types/TabulatorTypes'
 import 'react-tabulator/lib/styles.css'
 import 'react-tabulator/lib/css/tabulator_semanticui.min.css'
+import '~/css/tabulator.css'
 import { ExternalLinkIcon, SmallAddIcon, SmallCloseIcon } from '@chakra-ui/icons'
 import { FaFacebook, FaLine, FaLock, FaTwitter } from 'react-icons/fa'
 import { truncate } from 'lodash'
@@ -46,20 +47,8 @@ import { Auth } from 'aws-amplify'
 import { Buffer } from 'buffer'
 
 type IRData = {
-    clear: number
-    combo: number
-    datetime: string
-    egr: number
-    epg: number
-    lgr: number
-    lpg: number
-    notes: number
-    novalidate: boolean
-    score: number
-    songhash: string
-    userid: string
-    username: string
-    type: string
+    [key: string]: any
+    total: number
 }
 
 type SongData = {
@@ -101,103 +90,58 @@ export default () => {
     const [isLoading, setLoading] = useState(false)
 
     const columns = useMemo<Tabulator.ColumnDefinition[]>(() => {
-        return [
-            { formatter: 'rownum', hozAlign: 'center', width: 40, headerSort: false, resizable: false, title: '', responsive: 0 },
+        const columns = [
+            { formatter: 'rownum', align: 'center', width: 40, headerSort: false, resizable: false },
             {
                 title: 'Name',
                 field: 'username',
                 resizable: false,
-                minWidth: 100,
-                responsive: 0,
-                headerSort: false,
-                cellClick: (e: UIEvent, cell: Tabulator.CellComponent) => {
-                    const data = cell.getRow().getData()
-                    const userId = data.userid
-                    navigate(`/viewer/user/${userId}`)
-                },
-                tooltip: 'go to user page.',
-            },
-            {
-                title: 'Score',
-                field: 'score',
-                minWidth: 100,
-                responsive: 0,
-                resizable: false,
-                hozAlign: 'left',
-                formatter: 'progress',
-                formatterParams: { min: 0, max: (irData[0]?.notes ?? 0) * 2, legend: true },
-                headerSort: false,
-                cellClick: (e: any, cell: any) => {
-                    // const data = cell.getRow().getData()
-                    // self.$router.push(`/viewer/song/${self.getSongHash()}/${self.getLnMode()}/score/${data.userid}`)
-                },
-                tooltip: 'go to score page.',
-            },
-            {
-                title: 'Combo',
-                field: 'combo',
                 minWidth: 150,
-                responsive: 1,
-                resizable: false,
-                hozAlign: 'left',
+                headerSort: false,
+                formatter: function (cell: Tabulator.CellComponent, formatterParams: any) {
+                    let data = cell.getRow().getData()
+                    let userid = data.userid
+                    return `<a href="./#/viewer/user/${userid}">${cell.getValue()}</a>`
+                },
+            },
+        ] as any[]
+        let totalMaxExScore = 0
+        for (let songhash of courseData?.contestData.songs ?? []) {
+            const sh = songhash.split('.')[0]
+            const ln = songhash.split('.')[1]
+            const lnString = ln == 0 ? 'LN or Default' : ln == 1 ? 'CN' : 'HCN'
+            const songData = courseData?.contestSongDatas.find((element) => {
+                return element.songhash == sh
+            })
+            const cl = {
+                title: songData!.title + `<br>(LNMode: ${lnString})`,
+                field: sh + '-' + ln,
+                align: 'left',
                 formatter: 'progress',
-                formatterParams: {
-                    min: 0,
-                    max: irData[0]?.notes ?? 0,
-                    color: 'orange',
-                    legend: true,
-                },
+                formatterParams: { min: 0, max: songData!.notes * 2, legend: true },
                 headerSort: false,
-            },
-            {
-                title: 'Clear',
-                field: 'clear',
-                hozAlign: 'center',
-                width: 100,
-                responsive: 2,
+                minWidth: 150,
                 resizable: false,
-                headerSort: false,
-                formatter: (cell: Tabulator.CellComponent) => {
-                    switch (cell.getValue()) {
-                        case 0:
-                            cell.getElement().style.backgroundColor = 'rgb(255, 255, 255)'
-                            return 'NoPlay'
-                        case 1:
-                            cell.getElement().style.backgroundColor = 'rgb(192, 192, 192)'
-                            return 'Failed'
-                        case 2:
-                            cell.getElement().style.backgroundColor = 'rgb(149, 149, 255)'
-                            return 'AssistEasy'
-                        case 3:
-                            cell.getElement().style.backgroundColor = 'rgb(149, 149, 255)'
-                            return 'LightAssistEasy'
-                        case 4:
-                            cell.getElement().style.backgroundColor = 'rgb(152, 251, 152)'
-                            return 'Easy'
-                        case 5:
-                            cell.getElement().style.backgroundColor = 'rgb(152, 251, 152)'
-                            return 'Normal'
-                        case 6:
-                            cell.getElement().style.backgroundColor = 'rgb(255, 99, 71)'
-                            return 'Hard'
-                        case 7:
-                            cell.getElement().style.backgroundColor = 'rgb(255, 217, 0)'
-                            return 'ExHard'
-                        case 8:
-                            cell.getElement().style.backgroundColor = 'rgb(255, 140, 0)'
-                            return 'FullCombo'
-                        case 9:
-                            cell.getElement().style.backgroundColor = 'rgb(255, 140, 0)'
-                            return 'Perfect'
-                        case 10:
-                            cell.getElement().style.backgroundColor = 'rgb(255, 140, 0)'
-                            return 'Max'
-                        default:
-                            return ''
-                    }
-                },
+            }
+            totalMaxExScore = totalMaxExScore + songData!.notes * 2
+            columns.push(cl)
+        }
+        columns.push({
+            title: 'Total Score',
+            field: 'total',
+            align: 'left',
+            formatter: 'progress',
+            formatterParams: {
+                min: 0,
+                max: totalMaxExScore,
+                color: 'orange',
+                legend: true,
             },
-        ]
+            headerSort: false,
+            minWidth: 150,
+            resizable: false,
+        })
+        return columns
     }, [courseData])
 
     const contestDatetime = useMemo(() => {
@@ -241,7 +185,8 @@ export default () => {
             const data = await client.send(command)
             const json = JSON.parse(new TextDecoder().decode(data.Payload))
             if (json.message == 'success') {
-                setIRData(json.contestScoreDatas)
+                console.log(json)
+                setIRData(createScoreDataView(json.contestData, json.contestSongDatas, json.contestScoreDatas))
                 setCourseData({ contestData: json.contestData, contestSongDatas: json.contestSongDatas })
             } else {
             }
@@ -249,6 +194,39 @@ export default () => {
         } finally {
             setLoading(false)
         }
+    }
+
+    const createScoreDataView = (contestData: any, songDatas: any[], scoreDatas: any[]) => {
+        const scores = [] as IRData[]
+
+        for (let score of scoreDatas) {
+            const userData = {} as IRData
+            userData.username = score.username
+            userData.userid = score.userid
+            let totalExScore = 0
+            for (let songhash of contestData.songs) {
+                const sh = songhash.split('.')[0]
+                const ln = songhash.split('.')[1]
+                const songScore = score.scores.find((element: any) => {
+                    return element.songhash == songhash
+                })
+                if (!songScore) {
+                    userData[sh + '-' + ln] = 0
+                    continue
+                } else {
+                    userData[sh + '-' + ln] = songScore.score
+                    totalExScore = totalExScore + songScore.score
+                }
+            }
+
+            userData.total = totalExScore
+            // console.log(userData);
+            scores.push(userData)
+        }
+        scores.sort((a, b) => {
+            return b.total - a.total
+        })
+        return scores
     }
 
     const rowFormatter = (row: Tabulator.RowComponent) => {
