@@ -30,7 +30,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { DefaultLayout } from '~/layout/Default'
 import dayjs from 'dayjs'
 import isBetween from 'dayjs/plugin/isBetween'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 dayjs.extend(isBetween)
+dayjs.extend(isSameOrBefore)
 
 import { ReactTabulator } from 'react-tabulator'
 import { Tabulator } from 'react-tabulator/lib/types/TabulatorTypes'
@@ -282,6 +284,11 @@ export default () => {
         setPassword(e.target.value)
     }
 
+    const isPasswordContest = useMemo(() => {
+        console.log(!!courseData?.contestData?.password)
+        return !!courseData?.contestData?.password
+    }, [courseData])
+
     const enableJoinButton = useMemo(() => {
         if (!courseData?.contestData?.password) {
             return true
@@ -304,7 +311,7 @@ export default () => {
 
     const isBeforeDate = useMemo(() => {
         if (!courseData?.contestData?.endDateTime) return true
-        return dayjs().isSameOrAfter(dayjs(courseData.contestData.endDateTime), 'day')
+        return dayjs().isSameOrBefore(dayjs(courseData.contestData.endDateTime), 'day')
     }, [courseData])
 
     const [isContestLoading, setContestLoading] = useState(false)
@@ -525,16 +532,18 @@ export default () => {
                     </Accordion>
                 </Box>
                 <Box m={2} p={2} shadow={'md'}>
-                    <InputGroup mb={2}>
-                        <InputLeftElement pointerEvents="none" color="gray.300" children={<FaLock color="#CBD5E0" />} />
-                        <Input
-                            name="password"
-                            type="text"
-                            placeholder="Contest password"
-                            onChange={changePassword}
-                            value={password}
-                        />
-                    </InputGroup>
+                    {isPasswordContest && (
+                        <InputGroup mb={2}>
+                            <InputLeftElement pointerEvents="none" color="gray.300" children={<FaLock color="#CBD5E0" />} />
+                            <Input
+                                name="password"
+                                type="text"
+                                placeholder="Contest password"
+                                onChange={changePassword}
+                                value={password}
+                            />
+                        </InputGroup>
+                    )}
                     <ButtonGroup variant="outline" spacing="2">
                         {isBeforeDate && (
                             <Button
