@@ -51,6 +51,7 @@ type IRData = {
     userid: string
     username: string
     type: string
+    avgjudge: number
 }
 
 type SongData = {
@@ -136,6 +137,19 @@ export default () => {
                     max: irData[0]?.notes ?? 0,
                     color: 'orange',
                     legend: true,
+                },
+                headerSort: false,
+            },
+            {
+                title: 'Duration',
+                field: 'avgjudge',
+                minWidth: 100,
+                maxWidth: 120,
+                responsive: 1,
+                resizable: false,
+                hozAlign: 'left',
+                formatter: (cell: Tabulator.CellComponent) => {
+                    return cell.getValue() ? `${cell.getValue() / 1000}ms` : ''
                 },
                 headerSort: false,
             },

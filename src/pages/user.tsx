@@ -451,7 +451,7 @@ export default () => {
                                     {songData?.map((d, index) => (
                                         <Tr key={index}>
                                             <Td>
-                                                <Link as={ReactLink} to={`/viewer/song/${d.songhash.split('.')[0]}/0`}>
+                                                <Link as={ReactLink} to={`/viewer/${d.songhash.length == 67 ? 'course' : 'song'}/${d.songhash.split('.')[0]}/0`}>
                                                     <ExternalLinkIcon />
                                                 </Link>
                                             </Td>
