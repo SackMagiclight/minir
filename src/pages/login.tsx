@@ -10,6 +10,7 @@ import {
     InputRightElement,
     Link,
     Stack,
+    Text,
     useBoolean,
 } from '@chakra-ui/react'
 import { DefaultLayout } from '~/layout/Default'
@@ -25,6 +26,7 @@ export default () => {
     const [isLoading, setLoading] = useBoolean()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [errorMessage, setErrorMessage] = useState<string>()
     const navigate = useNavigate()
 
     const changeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,10 +41,12 @@ export default () => {
         setLoading.toggle()
         !(async () => {
             try {
+                setErrorMessage(undefined)
                 await Auth.signIn(email, password)
                 navigate('/viewer/user')
             } catch (e) {
                 console.log(JSON.stringify(e, undefined, 1))
+                setErrorMessage((e as {message: string}).message)
             } finally {
                 setLoading.toggle()
             }
@@ -59,6 +63,7 @@ export default () => {
                     <Box minW={{ base: '90%', md: '468px' }}>
                         <form>
                             <Stack spacing={4} p="1rem" backgroundColor="whiteAlpha.900" boxShadow="md">
+                                { errorMessage && <Text color="red.500">{errorMessage}</Text> }
                                 <FormControl>
                                     <InputGroup>
                                         <InputLeftElement pointerEvents="none" children={<MdAlternateEmail color="#CBD5E0" />} />
