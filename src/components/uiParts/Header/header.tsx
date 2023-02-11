@@ -24,7 +24,8 @@ import { FcAbout } from 'react-icons/fc'
 import { MdFileDownload, MdSearch, MdSecurity } from 'react-icons/md'
 import { RiPlayList2Fill, RiPlayListAddFill, RiPlayListFill } from 'react-icons/ri'
 import { Auth, Hub } from 'aws-amplify'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
+import { useQuery } from 'react-query'
 
 const Header = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -43,6 +44,37 @@ const Header = () => {
         { title: 'KM 24KEYS', key: 'keyboard-24k' },
         { title: 'KM 48KEYS', key: 'keyboard-48k' },
     ]
+
+    const { isLoading, error, data } = useQuery(
+        'stellaData',
+        () => fetch('https://phfvsk24n737l7awzuhf3c4dfi0phcak.lambda-url.us-east-1.on.aws/').then((res) => res.text()),
+        { staleTime: 1000 * 60 * 10, cacheTime: Infinity },
+    )
+    const stateDom = useMemo(() => {
+        return (
+            <Box>
+                <Heading size={'sm'}>Service Status</Heading>
+                <Flex>
+                    <Text fontSize="xs" mr={1}>
+                        Stella Status:
+                    </Text>
+                    {data === 'OK' ? (
+                        <Text fontSize="xs" color={'green.700'}>
+                            Operational
+                        </Text>
+                    ) : data === 'ALARM' ? (
+                        <Text fontSize="xs" color={'red.700'}>
+                            Too many errors
+                        </Text>
+                    ) : (
+                        <Text fontSize="xs" color={'gray.700'}>
+                            {isLoading ? 'Loading...' : 'Unknown'}
+                        </Text>
+                    )}
+                </Flex>
+            </Box>
+        )
+    }, [data])
 
     const [user, setUser] = useState<any | null>(null)
     const getUser = async () => {
@@ -110,7 +142,7 @@ const Header = () => {
                                     Login
                                 </Button>
                                 <Flex justify={'space-between'}>
-                                    <Link as={ReactLink} fontSize="sm" to={'/signup'} >
+                                    <Link as={ReactLink} fontSize="sm" to={'/signup'}>
                                         Create Account
                                     </Link>
                                 </Flex>
@@ -205,6 +237,8 @@ const Header = () => {
                                     </Flex>
                                 </Link>
                             </ListItem>
+                            <Divider />
+                            <ListItem>{stateDom}</ListItem>
                         </List>
                     </DrawerBody>
                 </DrawerContent>
