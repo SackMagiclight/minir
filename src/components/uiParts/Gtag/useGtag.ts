@@ -2,7 +2,7 @@ export const useGtag: () => {
     trackingId: string
     gtag: Gtag.Gtag
 } = () => {
-    const trackingId = ''
+    const trackingId = 'GTM-TLHGRTS'
 
     window.dataLayer = window.dataLayer || []
 

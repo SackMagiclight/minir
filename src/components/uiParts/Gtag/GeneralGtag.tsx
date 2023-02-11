@@ -18,7 +18,7 @@ export const GeneralGtagView = () => {
                         function gtag(){dataLayer.push(arguments);}
 
                         gtag('js', new Date())
-                        gtag('config', '${trackingId}', { send_page_view: false })
+                        gtag('config', '${trackingId}', { send_page_view: true })
                 `}
                 </script>
             </Helmet>
