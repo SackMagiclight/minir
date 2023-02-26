@@ -47,7 +47,7 @@ export default () => {
 
     const getLatestData = async () => {
         const { data } = await axios.get(
-            `https://jdfts1v0wmdeklb-bms.adb.us-ashburn-1.oraclecloudapps.com/ords/bmsquery/bms_text/de6bd8b08c60?text=${searchText}`,
+            `https://jdfts1v0wmdeklb-songs.adb.us-ashburn-1.oraclecloudapps.com/ords/bmsquery/bms_text/de6bd8b08c60?text=${searchText}`,
             {
                 headers: {
                     'Content-Type': 'application/json;charset=UTF-8',
