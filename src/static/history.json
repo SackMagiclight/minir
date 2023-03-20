@@ -2,6 +2,11 @@
     {
         "date": "2022/05/25",
         "icon": "InfoIcon",
+        "text": "MinIR API を更新しました。本体0.8.5の平均差分(Duration)の送信に対応しました。"
+    },
+    {
+        "date": "2022/05/25",
+        "icon": "InfoIcon",
         "text": "MinIR API を更新しました。 IRランキング順位が正常に表示されない不具合を修正しました。"
     },
     {
