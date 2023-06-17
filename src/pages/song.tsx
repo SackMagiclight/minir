@@ -49,6 +49,8 @@ type IRData = {
     username: string
     type: string
     avgjudge: number
+    beatorajaVer: string
+    skinName: string
 }
 
 type SongData = {
@@ -112,6 +114,7 @@ export default () => {
                 responsive: 0,
                 resizable: false,
                 hozAlign: 'left',
+                vertAlign: 'bottom',
                 formatter: 'progress',
                 formatterParams: { min: 0, max: (songData?.notes ?? 0) * 2, legend: true },
                 headerSort: false,
@@ -128,6 +131,7 @@ export default () => {
                 responsive: 1,
                 resizable: false,
                 hozAlign: 'left',
+                vertAlign: 'middle',
                 formatter: 'progress',
                 formatterParams: {
                     min: 0,
@@ -145,6 +149,7 @@ export default () => {
                 responsive: 1,
                 resizable: false,
                 hozAlign: 'left',
+                vertAlign: 'middle',
                 formatter: (cell: Tabulator.CellComponent) => {
                     return cell.getValue() ? `${cell.getValue() / 1000}ms` : ''
                 },
@@ -154,7 +159,8 @@ export default () => {
                 title: 'Clear',
                 field: 'clear',
                 hozAlign: 'center',
-                width: 100,
+                vertAlign: 'middle',
+                width: 110,
                 responsive: 2,
                 resizable: false,
                 headerSort: false,
@@ -197,6 +203,20 @@ export default () => {
                             return ''
                     }
                 },
+            },
+            {
+                title: 'Env',
+                field: 'beatorajaVer',
+                minWidth: 100,
+                maxWidth: 140,
+                responsive: 1,
+                resizable: false,
+                hozAlign: 'left',
+                formatter: (cell: Tabulator.CellComponent) => {
+                    const data = cell.getRow().getData()
+                    return `${data.beatorajaVer ?? ''} <br/> ${data.skinName ?? ''}`
+                },
+                headerSort: false,
             },
         ]
     }, [songData])
