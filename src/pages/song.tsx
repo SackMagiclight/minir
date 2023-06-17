@@ -214,6 +214,7 @@ export default () => {
                 hozAlign: 'left',
                 formatter: (cell: Tabulator.CellComponent) => {
                     const data = cell.getRow().getData()
+                    cell.getElement().style.fontSize = '10px'
                     return `${data.beatorajaVer ?? ''} <br/> ${data.skinName ?? ''}`
                 },
                 headerSort: false,
