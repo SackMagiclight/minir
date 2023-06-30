@@ -20,14 +20,6 @@ export default () => {
             <Helmet>
                 <title>MinIR</title>
             </Helmet>
-            <Alert status='error'>
-                <AlertIcon />
-                <AlertTitle>重要なAPIの更新</AlertTitle>
-                <AlertDescription>サポートされるAPI範囲が変更になります。詳しくは
-                    <Link href={'https://twitter.com/sack_magiclight/status/1670029939662544896'} isExternal>
-                    「こちら」</Link>を参照ください。
-                </AlertDescription>
-            </Alert>
             <Flex justify={'center'}>
                 <Image boxSize={'60%'} objectFit={'cover'} src={'./logo.png'}></Image>
             </Flex>
