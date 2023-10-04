@@ -1,5 +1,10 @@
 [
     {
+        "date": "2023/10/04",
+        "icon": "InfoIcon",
+        "text": "MinIR API を更新しました。本体0.8.6に対応しました。なお、以前までのAPIと互換性がありません。"
+    },
+    {
         "date": "2023/03/20",
         "icon": "InfoIcon",
         "text": "MinIR API を更新しました。本体0.8.5の平均差分(Duration)の送信に対応しました。"
