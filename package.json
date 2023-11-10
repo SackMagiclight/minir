@@ -18,7 +18,7 @@
     "@tanstack/react-table": "^8.0.0-alpha.58",
     "aws-amplify": "^4.3.20",
     "aws-amplify-react": "^5.1.9",
-    "axios": "^0.27.2",
+    "axios": "^1.6.0",
     "chakra-ui-markdown-renderer": "^4.0.0",
     "chakra-ui-steps": "^1.7.3",
     "crypto-js": "^4.1.1",
