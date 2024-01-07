@@ -30,6 +30,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getTokens, getUserId, setAccessToken, setRefreshToken } from '../../store/userStore'
 import { useDeleteRivalRemoveMutation, useGetUserQuery, usePostMeMutation, usePutRivalAddMutation, usePutUserUpdateMutation } from '../api'
 import { IMinIRScoreEntity, IMinIRUserEntity } from '../entities'
+import { cloneDeep } from 'lodash'
 
 type UserDataLogin = {
     message: string
@@ -45,7 +46,6 @@ type UserDataLogin = {
 
 export default () => {
     const urlParams = useParams<{ userId?: string }>()
-    const [isLoadingUserData, setLoadingUserData] = useBoolean()
     const [isLoadingLoginUserData, setLoadingLoginUserData] = useBoolean()
     const [isUpdateBio, setUpdateBio] = useBoolean()
     const toast = useToast()
@@ -67,7 +67,7 @@ export default () => {
 
     useEffect(() => {
         !(async () => {
-            setLoadingUserData.on()
+            setLoadingLoginUserData.on()
             if (!urlParams.userId || urlParams.userId === loginUserId) {
                 const data = await getUserDataQuery({
                     accessToken: tokens?.accessToken ?? '',
@@ -90,10 +90,6 @@ export default () => {
     useEffect(() => {
         setLoadingLoginUserData.off()
     }, [loginUserData])
-
-    useEffect(() => {
-        if (isSuccess) setLoadingUserData.off()
-    }, [isSuccess])
 
     const handleCopy = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
@@ -127,7 +123,7 @@ export default () => {
             dispatch(setRefreshToken(result.refreshToken))
             setLoginUserData((state) => {
                 if (!state) return state
-                const newVal = { ...state }
+                const newVal = cloneDeep(state)
                 newVal.userData.bio = result.dynamoUser.bio
                 return newVal
             })
@@ -164,7 +160,7 @@ export default () => {
                 }).unwrap()
                 setLoginUserData((state) => {
                     if (!state) return state
-                    const newVal = { ...state }
+                    const newVal = cloneDeep(state)
                     newVal.userData.rivals = newRivals
                     return newVal
                 })
@@ -176,7 +172,7 @@ export default () => {
                 }).unwrap()
                 setLoginUserData((state) => {
                     if (!state) return state
-                    const newVal = { ...state }
+                    const newVal = cloneDeep(state)
                     newVal.userData.rivals = newRivals
                     return newVal
                 })
@@ -196,14 +192,22 @@ export default () => {
         }
     }
 
+    const scoreData = useMemo(() => {
+        if (tokens.accessToken) {
+            return loginUserData?.scoreDatas
+        } else {
+            return userData?.scoreDatas
+        }
+    }, [userData, loginUserData])
+
     return (
         <DefaultLayout>
             <Helmet>
                 <title>{userData?.userData.userName ?? loginUserData?.userData.userName ?? ''}</title>
             </Helmet>
             <Box padding={4}>
-                {(isLoadingUserData || isLoadingLoginUserData) && <Progress size="xs" isIndeterminate />}
-                {!isLoadingUserData && !isLoadingLoginUserData && (
+                {(isSuccess || isLoadingLoginUserData) && <Progress size="xs" isIndeterminate />}
+                {!isSuccess && !isLoadingLoginUserData && (
                     <>
                         <TableContainer>
                             <Table size="sm">
@@ -300,7 +304,7 @@ export default () => {
                                     </Tr>
                                 </Thead>
                                 <Tbody>
-                                    {(userData?.scoreDatas && loginUserData?.scoreDatas)?.map((d, index) => (
+                                    {scoreData?.map((d, index) => (
                                         <Tr key={index}>
                                             <Td>
                                                 <Link

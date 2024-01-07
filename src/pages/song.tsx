@@ -6,7 +6,6 @@ import {
     Td,
     Tr,
     Progress,
-    useDisclosure,
     Button,
     Input,
     IconButton,
@@ -16,9 +15,7 @@ import {
     ButtonGroup,
 } from '@chakra-ui/react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
-import { getAccessKeyAndSecret } from '~/util/decrypt'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { DefaultLayout } from '~/layout/Default'
 
 import { ReactTabulator } from 'react-tabulator'
@@ -29,51 +26,9 @@ import { CopyIcon } from '@chakra-ui/icons'
 import { FaFacebook, FaLine, FaTwitter } from 'react-icons/fa'
 import { useQuery } from 'react-query'
 import axios from 'axios'
-import { truncate } from 'lodash'
+import { cloneDeep, truncate } from 'lodash'
 import { Helmet } from 'react-helmet-async'
-import { Buffer } from 'buffer'
 import { useGetSongScoreListQuery } from '../api'
-
-type IRData = {
-    clear: number
-    combo: number
-    datetime: string
-    egr: number
-    epg: number
-    lgr: number
-    lpg: number
-    notes: number
-    novalidate: boolean
-    score: number
-    songhash: string
-    userid: string
-    username: string
-    type: string
-    avgjudge: number
-    beatorajaVer: string
-    skinName: string
-}
-
-type SongData = {
-    artist: string
-    bpm: number
-    datetime: string
-    genre: string
-    judgerank: number
-    level: string
-    maxbpm: number
-    minbpm: number
-    mode: string
-    notes: number
-    songhash: string
-    title: string
-    total: number
-    lnmode?: number
-    video?: {
-        videoid: string
-        updateUserId: string
-    }
-}
 
 export default () => {
     const navigate = useNavigate()
@@ -81,7 +36,7 @@ export default () => {
     const toast = useToast()
 
     const {data, isLoading} = useGetSongScoreListQuery({
-        songhash: `${urlParams.songhash ?? ''}${urlParams.lnmode ? `.${urlParams.lnmode}` : '.0'}'}`,
+        songhash: `${urlParams.songhash ?? ''}${urlParams.lnmode ? `.${urlParams.lnmode}` : '.0'}`,
     })
 
     const columns = useMemo<Tabulator.ColumnDefinition[]>(() => {
@@ -314,6 +269,10 @@ export default () => {
         navigate(routeLNModeUrl(urlParams.songhash ?? '', '2'))
     }
 
+    const irData = useMemo(() => {
+        return cloneDeep(data?.IRDatas)
+    }, [data])
+
     return (
         <DefaultLayout>
             <Helmet>
@@ -438,7 +397,7 @@ export default () => {
                 </TableContainer>
                 <ReactTabulator
                     className={'compact'}
-                    data={data?.IRDatas}
+                    data={irData}
                     columns={columns}
                     options={{
                         responsiveLayout: true,

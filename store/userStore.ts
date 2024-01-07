@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { RootState } from './store'
 
 export const userSlice = createSlice({
     name: 'user',
@@ -27,19 +28,17 @@ export const userSlice = createSlice({
             state.userId = undefined
         },
     },
-    selectors: {
-        getTokens: (state) => {
-            return {
-                accessToken: state.accessToken,
-                refreshToken: state.refreshToken,
-            }
-        },
-        getUserId: (state) => {
-            return state.userId
-        },
-    }
+    selectors: {},
 })
 
 export const { setAccessToken, setRefreshToken, setUserId, reset } = userSlice.actions
-export const { getTokens, getUserId } = userSlice.selectors
+
+export const getTokens = (state: RootState) => {
+    return state.persistedReducer.user
+}
+
+export const getUserId = (state: RootState) => {
+    return state.persistedReducer.user.userId
+}
+
 export default userSlice.reducer

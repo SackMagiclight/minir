@@ -108,7 +108,7 @@ const Header = () => {
                         <Flex justify={'end'} w={'full'} marginBottom={1}>
                             <CloseButton onClick={handleToggle} />
                         </Flex>
-                        {!tokens && (
+                        {!tokens.accessToken && (
                             <>
                                 <Button w={'full'} size={'sm'} as={ReactLink} to={'/login'}>
                                     Login
@@ -120,7 +120,7 @@ const Header = () => {
                                 </Flex>
                             </>
                         )}
-                        {tokens && (
+                        {tokens.accessToken && (
                             <>
                                 <Button w={'full'} size={'sm'} colorScheme={'teal'} as={ReactLink} to={'/viewer/user'} mb={2}>
                                     User Page
@@ -169,25 +169,6 @@ const Header = () => {
                                     </Flex>
                                 </Link>
                             </ListItem>
-                            <Divider />
-                            <ListItem>
-                                <Link as={ReactLink} to={'/viewer/contest-latest'}>
-                                    <Flex align={'center'}>
-                                        <Icon as={RiPlayListFill} />
-                                        <Text marginLeft={1}>Contest List</Text>
-                                    </Flex>
-                                </Link>
-                            </ListItem>
-                            {tokens && (
-                                <ListItem>
-                                    <Link as={ReactLink} to={'/viewer/contest-create'}>
-                                        <Flex align={'center'}>
-                                            <Icon as={RiPlayListAddFill} />
-                                            <Text marginLeft={1}>Create Contest</Text>
-                                        </Flex>
-                                    </Link>
-                                </ListItem>
-                            )}
                             <Divider />
                             <Heading size={'md'}>Latest 100 played</Heading>
                             {played.map((item, index) => (

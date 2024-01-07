@@ -19,11 +19,8 @@ import {
     AccordionItem,
     AccordionPanel,
 } from '@chakra-ui/react'
-import { Buffer } from 'buffer'
 import { useNavigate, useParams } from 'react-router-dom'
-import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
-import { getAccessKeyAndSecret } from '~/util/decrypt'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { DefaultLayout } from '~/layout/Default'
 
 import { ReactTabulator } from 'react-tabulator'
@@ -32,65 +29,17 @@ import 'react-tabulator/lib/styles.css'
 import 'react-tabulator/lib/css/tabulator_semanticui.min.css'
 import { ExternalLinkIcon } from '@chakra-ui/icons'
 import { FaFacebook, FaLine, FaTwitter } from 'react-icons/fa'
-import { truncate } from 'lodash'
+import { cloneDeep, truncate } from 'lodash'
 import { Helmet } from 'react-helmet-async'
 import { Link as ReactLink } from 'react-router-dom'
 import { useGetCourceScoreListQuery } from '../api'
-
-type IRData = {
-    clear: number
-    combo: number
-    datetime: string
-    egr: number
-    epg: number
-    lgr: number
-    lpg: number
-    notes: number
-    novalidate: boolean
-    score: number
-    songhash: string
-    userid: string
-    username: string
-    type: string
-    avgjudge: number
-}
-
-type SongData = {
-    artist: string
-    bpm: number
-    datetime: string
-    genre: string
-    judgerank: number
-    level: string
-    maxbpm: number
-    minbpm: number
-    mode: string
-    notes: number
-    songhash: string
-    title: string
-    total: number
-    lnmode?: number
-    video?: {
-        videoid: string
-        updateUserId: string
-    }
-}
-
-type CourseData = {
-    courcehash: string
-    datetime: string
-    name: string
-    status: string
-    songs: string
-    constraints: string[]
-}
 
 export default () => {
     const navigate = useNavigate()
     const urlParams = useParams<{ coursehash: string; lnmode: string }>()
 
-    const {data, isLoading} = useGetCourceScoreListQuery({
-        songhash: `${urlParams.coursehash ?? ''}${urlParams.lnmode ? `.${urlParams.lnmode}` : '.0'}'}`,
+    const { data, isLoading } = useGetCourceScoreListQuery({
+        songhash: `${urlParams.coursehash ?? ''}${urlParams.lnmode ? `.${urlParams.lnmode}` : '.0'}`,
     })
 
     const columns = useMemo<Tabulator.ColumnDefinition[]>(() => {
@@ -266,6 +215,10 @@ export default () => {
         navigate(routeLNModeUrl(urlParams.coursehash ?? '', '2'))
     }
 
+    const irData = useMemo(() => {
+        return cloneDeep(data?.IRDatas)
+    }, [data])
+
     return (
         <DefaultLayout>
             <Helmet>
@@ -366,8 +319,13 @@ export default () => {
                                             </Tr>
                                         </Thead>
                                         <Tbody>
-                                            {data?.courceData?.songs.map((s, index) => (
-                                                <Tr>
+                                            {(
+                                                JSON.parse(data?.courceData?.songs ?? '[]') as {
+                                                    title: string
+                                                    songhash: string
+                                                }[]
+                                            ).map((s, index) => (
+                                                <Tr key={index}>
                                                     <Td>{index + 1}</Td>
                                                     <Td>
                                                         <Link as={ReactLink} to={`/viewer/song/${s.songhash}/0`}>
@@ -386,7 +344,7 @@ export default () => {
                 </Box>
                 <ReactTabulator
                     className={'compact'}
-                    data={data?.IRDatas}
+                    data={irData}
                     columns={columns}
                     options={{
                         responsiveLayout: true,

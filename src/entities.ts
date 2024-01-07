@@ -44,10 +44,7 @@ export interface IMinIRCourceEntity {
     datetime: string
     name: string
     status: string
-    songs: {
-        title: string
-        songhash: string
-    }[]
+    songs: string
     constraints: string[]
 }
 
