@@ -59,7 +59,7 @@ export default () => {
                 await resetPasswordQuery({ email }).unwrap()
                 nextStep()
             } catch (e: any) {
-                console.log(JSON.stringify(e, undefined, 1))
+                console.log(e)
                 setErrorMessage(e.message)
             } finally {
                 setLoading.off()
@@ -77,7 +77,7 @@ export default () => {
                 await confirmPasswordQuery({ email, password, code: verifyCode }).unwrap()
                 nextStep()
             } catch (e: any) {
-                console.log(JSON.stringify(e, undefined, 1))
+                console.log(e)
                 setErrorMessage(e.message)
             } finally {
                 setLoading.off()

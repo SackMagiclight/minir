@@ -14,7 +14,10 @@ import {
 } from './entities'
 
 export const api = createApi({
-    baseQuery: fetchBaseQuery({ baseUrl: 'https://dpvj7h4ns4bkvqowuxu2zxpwpy0nrxly.lambda-url.us-east-1.on.aws/' }),
+    baseQuery: fetchBaseQuery({
+        baseUrl: 'https://dpvj7h4ns4bkvqowuxu2zxpwpy0nrxly.lambda-url.us-east-1.on.aws/',
+        responseHandler: 'content-type',
+    }),
     endpoints: (builder) => ({
         getSongLatest: builder.query<IMinIRSongEntity[], { mode: string; count: number }>({
             query: (arg) => {
@@ -147,7 +150,7 @@ export const api = createApi({
             }),
         }),
         postForget: builder.mutation<
-            string,
+            String,
             {
                 email: string
             }
