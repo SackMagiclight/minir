@@ -35,6 +35,7 @@ import { FaFacebook, FaLine, FaTwitter } from 'react-icons/fa'
 import { truncate } from 'lodash'
 import { Helmet } from 'react-helmet-async'
 import { Link as ReactLink } from 'react-router-dom'
+import { useGetCourceScoreListQuery } from '../api'
 
 type IRData = {
     clear: number
@@ -87,9 +88,10 @@ type CourseData = {
 export default () => {
     const navigate = useNavigate()
     const urlParams = useParams<{ coursehash: string; lnmode: string }>()
-    const [irData, setIRData] = useState<IRData[]>([])
-    const [courseData, setCourseData] = useState<CourseData>()
-    const [isLoading, setLoading] = useState(false)
+
+    const {data, isLoading} = useGetCourceScoreListQuery({
+        songhash: `${urlParams.coursehash ?? ''}${urlParams.lnmode ? `.${urlParams.lnmode}` : '.0'}'}`,
+    })
 
     const columns = useMemo<Tabulator.ColumnDefinition[]>(() => {
         return [
@@ -116,12 +118,8 @@ export default () => {
                 resizable: false,
                 hozAlign: 'left',
                 formatter: 'progress',
-                formatterParams: { min: 0, max: (irData[0]?.notes ?? 0) * 2, legend: true },
+                formatterParams: { min: 0, max: (data?.IRDatas[0]?.notes ?? 0) * 2, legend: true },
                 headerSort: false,
-                cellClick: (e: any, cell: any) => {
-                    // const data = cell.getRow().getData()
-                    // self.$router.push(`/viewer/song/${self.getSongHash()}/${self.getLnMode()}/score/${data.userid}`)
-                },
                 tooltip: 'go to score page.',
             },
             {
@@ -134,7 +132,7 @@ export default () => {
                 formatter: 'progress',
                 formatterParams: {
                     min: 0,
-                    max: irData[0]?.notes ?? 0,
+                    max: data?.IRDatas[0]?.notes ?? 0,
                     color: 'orange',
                     legend: true,
                 },
@@ -202,47 +200,7 @@ export default () => {
                 },
             },
         ]
-    }, [courseData])
-
-    useEffect(() => {
-        setLoading(true)
-        setIRData([])
-        setCourseData(undefined)
-        getCourseData()
-    }, [urlParams.coursehash, urlParams.lnmode])
-
-    const getCourseData = async () => {
-        const ks = getAccessKeyAndSecret('get_cource_data').split(',')
-        const client = new LambdaClient({
-            region: 'us-east-1',
-            credentials: {
-                accessKeyId: ks[0],
-                secretAccessKey: ks[1],
-            },
-        })
-        const params = {
-            FunctionName: 'get_cource_data',
-            Payload: Buffer.from(
-                JSON.stringify({
-                    songhash: (urlParams.coursehash ?? '') + (urlParams.lnmode ? `.${urlParams.lnmode}` : '.0'),
-                }),
-            ),
-        }
-
-        try {
-            const command = new InvokeCommand(params)
-            const data = await client.send(command)
-            const json = JSON.parse(new TextDecoder().decode(data.Payload))
-            if (json.message == 'success') {
-                setIRData(json.IRDatas)
-                setCourseData(json.CourceData)
-            } else {
-            }
-        } catch {
-        } finally {
-            setLoading(false)
-        }
-    }
+    }, [data])
 
     const rowFormatter = (row: Tabulator.RowComponent) => {
         if (row.getData().novalidate) {
@@ -266,34 +224,34 @@ export default () => {
     const socialTwitter = useMemo(() => {
         return () => {
             openInNewTab(
-                `https://twitter.com/intent/tweet?text=${socialText(courseData?.name ?? '')}%0D%0A${socialUrl(
+                `https://twitter.com/intent/tweet?text=${socialText(data?.courceData?.name ?? '')}%0D%0A${socialUrl(
                     urlParams.coursehash ?? '',
                     urlParams.lnmode,
                 )}`,
             )
         }
-    }, [courseData])
+    }, [data])
     const socialFacebook = useMemo(() => {
         return () => {
             openInNewTab(
-                `https://www.facebook.com/sharer.php?quote=${socialText(courseData?.name ?? '')}&u=${socialUrl(
+                `https://www.facebook.com/sharer.php?quote=${socialText(data?.courceData?.name ?? '')}&u=${socialUrl(
                     urlParams.coursehash ?? '',
                     urlParams.lnmode,
                 )}`,
             )
         }
-    }, [courseData])
+    }, [data])
 
     const socialLine = useMemo(() => {
         return () => {
             openInNewTab(
-                `https://social-plugins.line.me/lineit/share?text=${socialText(courseData?.name ?? '')}&url=${socialUrl(
+                `https://social-plugins.line.me/lineit/share?text=${socialText(data?.courceData?.name ?? '')}&url=${socialUrl(
                     urlParams.coursehash ?? '',
                     urlParams.lnmode,
                 )}`,
             )
         }
-    }, [courseData])
+    }, [data])
 
     const routeLNModeUrl = (hash: string, lnmode: string) => {
         return `/viewer/course/${hash}/${lnmode}`
@@ -311,7 +269,7 @@ export default () => {
     return (
         <DefaultLayout>
             <Helmet>
-                <title>{courseData?.name ?? 'MinIR'}</title>
+                <title>{data?.courceData?.name ?? 'MinIR'}</title>
             </Helmet>
             <Box padding={4}>
                 {isLoading && <Progress size="xs" isIndeterminate />}
@@ -320,13 +278,13 @@ export default () => {
                         <Tbody>
                             <Tr>
                                 <Td>NAME</Td>
-                                <Td>{courseData?.name}</Td>
+                                <Td>{data?.courceData?.name}</Td>
                             </Tr>
                             <Tr>
                                 <Td>ALLOW</Td>
                                 <Td>
                                     <HStack spacing={2}>
-                                        {courseData?.constraints.map((c, index) => (
+                                        {data?.courceData?.constraints.map((c, index) => (
                                             <Tag key={index}>{c}</Tag>
                                         ))}
                                     </HStack>
@@ -408,7 +366,7 @@ export default () => {
                                             </Tr>
                                         </Thead>
                                         <Tbody>
-                                            {(JSON.parse(courseData?.songs ?? '[]') as SongData[]).map((s, index) => (
+                                            {data?.courceData?.songs.map((s, index) => (
                                                 <Tr>
                                                     <Td>{index + 1}</Td>
                                                     <Td>
@@ -428,7 +386,7 @@ export default () => {
                 </Box>
                 <ReactTabulator
                     className={'compact'}
-                    data={irData}
+                    data={data?.IRDatas}
                     columns={columns}
                     options={{
                         responsiveLayout: true,

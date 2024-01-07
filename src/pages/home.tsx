@@ -20,11 +20,6 @@ export default () => {
             <Helmet>
                 <title>MinIR</title>
             </Helmet>
-            <Alert status='info'>
-                <AlertIcon />
-                <AlertTitle>コンテスト機能終了のお知らせ</AlertTitle>
-                <AlertDescription>「期間限定のスコアアタック」機能であった「コンテスト」ですが、近日中に廃止を予定しています。バックアップが必要な方はお早めにお願いします。</AlertDescription>
-            </Alert>
             <Flex justify={'center'}>
                 <Image boxSize={'60%'} objectFit={'cover'} src={'./logo.png'}></Image>
             </Flex>

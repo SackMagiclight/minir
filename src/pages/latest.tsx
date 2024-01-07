@@ -7,56 +7,14 @@ import { Link as ReactLink } from 'react-router-dom'
 import { DefaultLayout } from '~/layout/Default'
 import { ExternalLinkIcon } from '@chakra-ui/icons'
 import { Helmet } from 'react-helmet-async'
-import { Buffer } from 'buffer'
-
-type SongList = {
-    title: string
-    artist: string
-    songhash: string
-}
+import { useGetSongLatestQuery } from '../api'
 
 export default () => {
     const urlParams = useParams<{ key: string }>()
-    const [tableData, setTableData] = useState<SongList[]>([])
-    const [isLoading, setLoading] = useState(false)
-
-    useEffect(() => {
-        setLoading(true)
-        setTableData([])
-        getLatestData()
-    }, [urlParams.key])
-
-    const getLatestData = async () => {
-        const ks = getAccessKeyAndSecret('get_played_100').split(',')
-        const client = new LambdaClient({
-            region: 'us-east-1',
-            credentials: {
-                accessKeyId: ks[0],
-                secretAccessKey: ks[1],
-            },
-        })
-        const params = {
-            FunctionName: 'get_played_100',
-            Payload: Buffer.from(
-                JSON.stringify({
-                    mode: urlParams.key ?? 'beat-7k',
-                }),
-            ),
-        }
-
-        try {
-            const command = new InvokeCommand(params)
-            const data = await client.send(command)
-            const json = JSON.parse(new TextDecoder().decode(data.Payload))
-            if (json.message == 'success') {
-                setTableData(json.songDatas)
-            } else {
-            }
-        } catch {
-        } finally {
-            setLoading(false)
-        }
-    }
+    const {data, isLoading} = useGetSongLatestQuery({
+        mode: urlParams.key ?? 'beat-7k',
+        count: 100,
+    })
 
     return (
         <DefaultLayout>
@@ -75,7 +33,7 @@ export default () => {
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {tableData.map((d, index) => (
+                            {data?.map((d, index) => (
                                 <Tr key={index}>
                                     <Td>
                                         <Link as={ReactLink} to={`/viewer/song/${d.songhash}/0`}>

@@ -23,16 +23,20 @@ import { ExternalLinkIcon, HamburgerIcon } from '@chakra-ui/icons'
 import { FcAbout } from 'react-icons/fc'
 import { MdFileDownload, MdSearch, MdSecurity } from 'react-icons/md'
 import { RiPlayList2Fill, RiPlayListAddFill, RiPlayListFill } from 'react-icons/ri'
-import { Auth, Hub } from 'aws-amplify'
-import { useEffect, useState, useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useQuery } from 'react-query'
+import { getTokens, reset } from '../../../../store/userStore'
+import { useDispatch, useSelector } from 'react-redux'
 
 const Header = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const handleToggle = () => (isOpen ? onClose() : onOpen())
     const navigate = useNavigate()
     const location = useLocation()
+    const dispatch = useDispatch()
     const showTopLink = location.pathname !== '/'
+
+    const tokens = useSelector(getTokens)
 
     const played = [
         { title: '7KEYS', key: 'beat-7k' },
@@ -76,40 +80,8 @@ const Header = () => {
         )
     }, [data])
 
-    const [user, setUser] = useState<any | null>(null)
-    const getUser = async () => {
-        try {
-            const userData = await Auth.currentAuthenticatedUser()
-            return userData
-        } catch (e) {
-            return console.log('Not signed in')
-        }
-    }
-
-    const listener = ({ payload: { event, data } }: { payload: { event: string; data?: any } }) => {
-        switch (event) {
-            case 'signIn':
-            case 'cognitoHostedUI':
-                void getUser().then((userData) => setUser(userData))
-                break
-            case 'signOut':
-                setUser(null)
-                break
-            case 'signIn_failure':
-            case 'cognitoHostedUI_failure':
-            default:
-                console.log('Sign in failure', data)
-                break
-        }
-    }
-
-    useEffect(() => {
-        Hub.listen('auth', listener)
-        void getUser().then((userData) => setUser(userData))
-    }, [])
-
     const logout = async () => {
-        await Auth.signOut()
+        dispatch(reset())
         navigate('/')
     }
 
@@ -136,7 +108,7 @@ const Header = () => {
                         <Flex justify={'end'} w={'full'} marginBottom={1}>
                             <CloseButton onClick={handleToggle} />
                         </Flex>
-                        {!user && (
+                        {!tokens && (
                             <>
                                 <Button w={'full'} size={'sm'} as={ReactLink} to={'/login'}>
                                     Login
@@ -148,7 +120,7 @@ const Header = () => {
                                 </Flex>
                             </>
                         )}
-                        {user && (
+                        {tokens && (
                             <>
                                 <Button w={'full'} size={'sm'} colorScheme={'teal'} as={ReactLink} to={'/viewer/user'} mb={2}>
                                     User Page
@@ -206,7 +178,7 @@ const Header = () => {
                                     </Flex>
                                 </Link>
                             </ListItem>
-                            {user && (
+                            {tokens && (
                                 <ListItem>
                                     <Link as={ReactLink} to={'/viewer/contest-create'}>
                                         <Flex align={'center'}>

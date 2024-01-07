@@ -2,9 +2,6 @@ import { HashRouter, Route, Routes } from 'react-router-dom'
 
 import { GtagRouter } from '~/components/uiParts/Gtag/gtagRouter'
 import About from './about'
-import ContestDetail from './contest/contestDetail'
-import ContestLatest from './contest/contestLatest'
-import CreateContest from './contest/createContest'
 import Course from './course'
 import CourseLatest from './courseLatest'
 import Home from './home'
@@ -68,16 +65,6 @@ const AppRoot = () => {
 
                 <Route path="/search">
                     <Route index element={<Search />} />
-                </Route>
-
-                <Route path="/viewer/contest-latest">
-                    <Route index element={<ContestLatest />} />
-                </Route>
-                <Route path="/viewer/contest-create">
-                    <Route index element={<CreateContest />} />
-                </Route>
-                <Route path="/viewer/contest/:contestId">
-                    <Route index element={<ContestDetail />} />
                 </Route>
 
                 <Route path="/oauth/:serviceName/:serviceToken">
