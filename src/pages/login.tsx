@@ -59,7 +59,7 @@ export default () => {
                 navigate('/viewer/user')
             } catch (e) {
                 console.log(JSON.stringify(e, undefined, 1))
-                setErrorMessage((e as { message: string }).message)
+                setErrorMessage('Invalid email or password')
             } finally {
                 setLoading.toggle()
             }

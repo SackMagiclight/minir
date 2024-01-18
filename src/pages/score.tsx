@@ -13,59 +13,18 @@ import {
     Badge,
 } from '@chakra-ui/react'
 import { useParams } from 'react-router-dom'
-import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
-import { getAccessKeyAndSecret } from '~/util/decrypt'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { DefaultLayout } from '~/layout/Default'
 import { FaFacebook, FaLine, FaTwitter } from 'react-icons/fa'
 import { truncate } from 'lodash'
 import { Helmet } from 'react-helmet-async'
 import { PieChart, Pie, Cell, ResponsiveContainer, LabelList } from 'recharts'
-import { Buffer } from 'buffer'
-import { useGetSongScoreListQuery, useGetSongScoreQuery } from '../api'
-
-type IRData = {
-    clear: number
-    combo: number
-    datetime: string
-    egr: number
-    epg: number
-    lgr: number
-    lpg: number
-    notes: number
-    novalidate: boolean
-    score: number
-    songhash: string
-    userid: string
-    username: string
-    type: string
-}
-
-type SongData = {
-    artist: string
-    bpm: number
-    datetime: string
-    genre: string
-    judgerank: number
-    level: string
-    maxbpm: number
-    minbpm: number
-    mode: string
-    notes: number
-    songhash: string
-    title: string
-    total: number
-    lnmode?: number
-    video?: {
-        videoid: string
-        updateUserId: string
-    }
-}
+import { useGetSongScoreQuery } from '../api'
 
 export default () => {
     const urlParams = useParams<{ songhash: string; lnmode: string; userId: string }>()
     const { data, isLoading } = useGetSongScoreQuery({
-        songhash: urlParams.songhash ?? '',
+        songhash: (urlParams.songhash ?? '') + (urlParams.lnmode ? `.${urlParams.lnmode}` : ''),
         userid: urlParams.userId ?? '',
     }, {
         skip: !urlParams.songhash || !urlParams.userId,

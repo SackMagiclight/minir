@@ -225,7 +225,7 @@ export const api = createApi({
                 }
             },
         }),
-        putRivalAdd: builder.mutation<
+        postRivalAdd: builder.mutation<
             {
                 userId: string
                 userName: string | undefined
@@ -234,7 +234,7 @@ export const api = createApi({
         >({
             query: (body) => ({
                 url: `rival/add`,
-                method: 'PUT',
+                method: 'POST',
                 body,
             }),
         }),
@@ -284,7 +284,7 @@ export const {
     useGetUserQuery,
     usePutUserUpdateMutation,
     useGetRivalListQuery,
-    usePutRivalAddMutation,
+    usePostRivalAddMutation,
     useDeleteRivalRemoveMutation,
     usePutServiceAddMutation,
 } = api

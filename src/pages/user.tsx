@@ -19,6 +19,7 @@ import {
     Text,
     Button,
     Flex,
+    Center,
 } from '@chakra-ui/react'
 import { useParams } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
@@ -28,7 +29,13 @@ import { Helmet } from 'react-helmet-async'
 import { Link as ReactLink } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { getTokens, getUserId, setAccessToken, setRefreshToken } from '../../store/userStore'
-import { useDeleteRivalRemoveMutation, useGetUserQuery, usePostMeMutation, usePutRivalAddMutation, usePutUserUpdateMutation } from '../api'
+import {
+    useDeleteRivalRemoveMutation,
+    useGetUserQuery,
+    usePostMeMutation,
+    usePostRivalAddMutation,
+    usePutUserUpdateMutation,
+} from '../api'
 import { IMinIRScoreEntity, IMinIRUserEntity } from '../entities'
 import { cloneDeep } from 'lodash'
 
@@ -46,7 +53,7 @@ type UserDataLogin = {
 
 export default () => {
     const urlParams = useParams<{ userId?: string }>()
-    const [isLoadingLoginUserData, setLoadingLoginUserData] = useBoolean()
+    const [isLoadingLoginUserData, setLoadingLoginUserData] = useBoolean(false)
     const [isUpdateBio, setUpdateBio] = useBoolean()
     const toast = useToast()
 
@@ -56,7 +63,7 @@ export default () => {
     const tokens = useSelector(getTokens)
     const loginUserId = useSelector(getUserId)
     const [getUserDataQuery] = usePostMeMutation()
-    const { data: userData, isSuccess } = useGetUserQuery(
+    const { data: userData, isFetching, isSuccess } = useGetUserQuery(
         { userId: urlParams.userId ?? '' },
         {
             skip: !urlParams.userId,
@@ -65,9 +72,15 @@ export default () => {
     const [putBioQuery] = usePutUserUpdateMutation()
     const dispatch = useDispatch()
 
+    const isMyPage = useMemo(() => {
+        if (!loginUserData) return false
+        return !urlParams.userId || loginUserData.userData.userid === urlParams.userId
+    }, [loginUserData, urlParams])
+
     useEffect(() => {
         !(async () => {
             setLoadingLoginUserData.on()
+            console.log('useEffect')
             if (!urlParams.userId || urlParams.userId === loginUserId) {
                 const data = await getUserDataQuery({
                     accessToken: tokens?.accessToken ?? '',
@@ -80,7 +93,7 @@ export default () => {
                 setLoginUserBio('')
             }
         })()
-    }, [urlParams.userId])
+    }, [urlParams])
 
     const isRival = useMemo(() => {
         if (!loginUserData) return false
@@ -110,7 +123,7 @@ export default () => {
     }
 
     const updateBio = async () => {
-        if (!loginUserData || !tokens) return
+        if (!isMyPage) return
         setUpdateBio.on()
 
         try {
@@ -144,12 +157,11 @@ export default () => {
         }
     }
 
-    const [addRivalQuery] = usePutRivalAddMutation()
+    const [addRivalQuery] = usePostRivalAddMutation()
     const [removeRivalQuery] = useDeleteRivalRemoveMutation()
-    
 
     const addRemoveRival = async (command: 'add' | 'remove') => {
-        if (!loginUserData || !tokens) return
+        if (!isMyPage || !loginUserData) return
 
         try {
             if (command === 'add' && loginUserData.userData.rivals.length < 10) {
@@ -193,21 +205,29 @@ export default () => {
     }
 
     const scoreData = useMemo(() => {
-        if (tokens.accessToken) {
+        if (isMyPage) {
             return loginUserData?.scoreDatas
         } else {
             return userData?.scoreDatas
         }
-    }, [userData, loginUserData])
+    }, [userData, loginUserData, urlParams.userId, tokens.accessToken])
+
+    const queryUserData = useMemo(() => {
+        if (isMyPage) {
+            return loginUserData?.userData
+        } else {
+            return userData?.userData
+        }
+    }, [userData, loginUserData, isMyPage])
 
     return (
         <DefaultLayout>
             <Helmet>
-                <title>{userData?.userData.userName ?? loginUserData?.userData.userName ?? ''}</title>
+                <title>{queryUserData?.userName ?? ''}</title>
             </Helmet>
             <Box padding={4}>
-                {(isSuccess || isLoadingLoginUserData) && <Progress size="xs" isIndeterminate />}
-                {!isSuccess && !isLoadingLoginUserData && (
+                {(!queryUserData) && <Progress size="xs" isIndeterminate />}
+                {!!queryUserData && (
                     <>
                         <TableContainer>
                             <Table size="sm">
@@ -235,15 +255,15 @@ export default () => {
                                     </Tr>
                                     <Tr>
                                         <Td>NAME</Td>
-                                        <Td>{userData?.userData.userName ?? loginUserData?.userData.userName ?? ''}</Td>
+                                        <Td>{queryUserData?.userName ?? ''}</Td>
                                     </Tr>
                                     <Tr>
                                         <Td>BIO</Td>
                                         <Td>
-                                            {!!urlParams.userId && userData && (
-                                                <Textarea readOnly rows={10} value={userData?.userData.bio ?? ''}></Textarea>
+                                            {!!urlParams.userId && (
+                                                <Textarea readOnly rows={10} value={queryUserData?.bio ?? ''}></Textarea>
                                             )}
-                                            {!urlParams.userId && !userData && (
+                                            {!urlParams.userId && (
                                                 <Flex flexDirection={'column'}>
                                                     <Textarea
                                                         rows={10}
@@ -259,23 +279,29 @@ export default () => {
                                             )}
                                         </Td>
                                     </Tr>
-                                    {!urlParams.userId && loginUserData && (
+                                    {isMyPage && loginUserData && (
                                         <>
                                             {!!loginUserData.userData.rivals.length && (
                                                 <Tr>
                                                     <Td>RIVAL</Td>
                                                     <Td>
-                                                        {loginUserData.userData.rivals.map((r, index) => (
-                                                            <Link key={index} as={ReactLink} to={`/viewer/user/${r.userId}`}>
-                                                                {r.userName}
-                                                            </Link>
-                                                        ))}
+                                                        <Box display={'flex'} flexDirection={'row'} columnGap={2}>
+                                                            {loginUserData.userData.rivals.map((r, index) => (
+                                                                <Box key={index}>
+                                                                    <Link
+                                                                        as={ReactLink}
+                                                                        to={`/viewer/user/${r.userId}`}>
+                                                                        {r.userName}
+                                                                    </Link>
+                                                                </Box>
+                                                            ))}
+                                                        </Box>
                                                     </Td>
                                                 </Tr>
                                             )}
                                         </>
                                     )}
-                                    {!!urlParams.userId && !!userData && !!tokens && (
+                                    {!isMyPage && (
                                         <Tr>
                                             <Td>RIVAL</Td>
                                             <Td>
@@ -299,21 +325,41 @@ export default () => {
                             <Table variant="striped" size="sm">
                                 <Thead>
                                     <Tr>
-                                        <Th w={'32px'}>IR</Th>
+                                        <Th w={10} px={1}>
+                                            <Center>IR</Center>
+                                        </Th>
+                                        <Th w={10} px={1}>
+                                            <Center>SCORE</Center>
+                                        </Th>
                                         <Th maxW={'95vw'}>TITLE</Th>
                                     </Tr>
                                 </Thead>
                                 <Tbody>
                                     {scoreData?.map((d, index) => (
                                         <Tr key={index}>
-                                            <Td>
-                                                <Link
-                                                    as={ReactLink}
-                                                    to={`/viewer/${d.songhash.split('.')[0].length == 67 ? 'course' : 'song'}/${
-                                                        d.songhash.split('.')[0]
-                                                    }/0`}>
-                                                    <ExternalLinkIcon />
-                                                </Link>
+                                            <Td px={2}>
+                                                <Center>
+                                                    <Link
+                                                        as={ReactLink}
+                                                        to={`/viewer/${
+                                                            d.songhash.split('.')[0].length == 67 ? 'course' : 'song'
+                                                        }/${d.songhash.split('.')[0]}/0`}>
+                                                        <ExternalLinkIcon />
+                                                    </Link>
+                                                </Center>
+                                            </Td>
+                                            <Td px={2}>
+                                                <Center>
+                                                    <Link
+                                                        as={ReactLink}
+                                                        to={`/viewer/${
+                                                            d.songhash.split('.')[0].length == 67 ? 'course' : 'song'
+                                                        }/${d.songhash.split('.')[0]}/${d.songhash.split('.')[1]}/score/${
+                                                            d.userid
+                                                        }`}>
+                                                        <ExternalLinkIcon />
+                                                    </Link>
+                                                </Center>
                                             </Td>
                                             <Td maxW={'95vw'}>
                                                 <Text isTruncated>{d.title}</Text>
