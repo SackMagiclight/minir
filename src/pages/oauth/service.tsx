@@ -19,11 +19,11 @@ import { Helmet } from 'react-helmet-async'
 import { FaLock } from 'react-icons/fa'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { getAccessKeyAndSecret } from '~/util/decrypt'
-import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
 import React from 'react'
 import { MdAlternateEmail } from 'react-icons/md'
-import { Buffer } from 'buffer'
+import { usePostLoginMutation, usePostServiceAddMutation } from '~/api'
+import { setAccessToken, setRefreshToken } from '../../../store/userStore'
+import { useDispatch } from 'react-redux'
 
 export default () => {
     const urlParams = useParams<{ serviceName: string; serviceToken: string }>()
@@ -47,46 +47,50 @@ export default () => {
         return ret.join('&')
     }
 
+    const [addServiceQuery] = usePostServiceAddMutation()
+    const [loginQuery] = usePostLoginMutation()
+    const dispatch = useDispatch()
+
     const login = () => {
+        if (!email || !password || !urlParams.serviceToken) return
+
         setLoading.toggle()
         let errorMsg = ''
         !(async () => {
             try {
-                const ks = getAccessKeyAndSecret('auth_service').split(',')
-                const client = new LambdaClient({
-                    region: 'us-east-1',
-                    credentials: {
-                        accessKeyId: ks[0],
-                        secretAccessKey: ks[1],
-                    },
-                })
-                const params = {
-                    FunctionName: 'auth_service',
-                    Payload: Buffer.from(
-                        JSON.stringify({
-                            username: email,
-                            password: password,
-                            serviceToken: urlParams.serviceToken,
-                            serviceName: urlParams.serviceName,
-                        }),
-                    ),
+
+                let _accessToken = ''
+                let _refreshToken = ''
+                try {
+                    const { accessToken, refreshToken } = await loginQuery({ email, password }).unwrap()
+                    dispatch(setAccessToken(accessToken))
+                    dispatch(setRefreshToken(refreshToken))
+                    _accessToken = accessToken
+                    _refreshToken = refreshToken
+                } catch (e) {
+                    errorMsg = 'invalid email or password.'
+                    throw e
                 }
 
-                const command = new InvokeCommand(params)
-                const data = await client.send(command)
-                const json = JSON.parse(new TextDecoder().decode(data.Payload))
-                if (json.errorMessage) {
-                    errorMsg = JSON.stringify(json.errorMessage, undefined, 1)
-                    return
-                } else {
-                    let url = json.ReturnObj.Url
-                    url += '?userid=' + json.UserId
-                    if (json.ReturnObj.QueryParams) {
-                        url += '&'
-                        url += encodeQueryData(json.ReturnObj.QueryParams)
-                    }
-                    window.location.href = url
+                const json = await addServiceQuery({
+                    accessToken: _accessToken,
+                    refreshToken: _refreshToken,
+                    token: urlParams.serviceToken ?? '',
+                    serviceName: urlParams.serviceName ?? '',
+                }).unwrap()
+
+                const obj = json.returnObj as {
+                    Url: string
+                    QueryParams: any
                 }
+
+                let url = obj.Url
+                url += '?userid=' + json.userId
+                if (obj.QueryParams) {
+                    url += '&'
+                    url += encodeQueryData(obj.QueryParams)
+                }
+                window.location.href = url
             } catch (e) {
                 console.log(JSON.stringify(e, undefined, 1))
             } finally {

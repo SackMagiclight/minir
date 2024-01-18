@@ -251,7 +251,7 @@ export const api = createApi({
                 body,
             }),
         }),
-        putServiceAdd: builder.mutation<
+        postServiceAdd: builder.mutation<
             {
                 userId: string
                 returnObj: unknown
@@ -261,8 +261,8 @@ export const api = createApi({
             AddServiceRequestDto
         >({
             query: (body) => ({
-                url: `rival/add`,
-                method: 'PUT',
+                url: `service/add`,
+                method: 'POST',
                 body,
             }),
         }),
@@ -286,5 +286,5 @@ export const {
     useGetRivalListQuery,
     usePostRivalAddMutation,
     useDeleteRivalRemoveMutation,
-    usePutServiceAddMutation,
+    usePostServiceAddMutation,
 } = api

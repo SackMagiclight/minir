@@ -24,7 +24,6 @@ import { DefaultLayout } from '~/layout/Default'
 import { ExternalLinkIcon, SearchIcon } from '@chakra-ui/icons'
 import { Helmet } from 'react-helmet-async'
 import axios from 'axios'
-import { Buffer } from 'buffer'
 
 type SongList = {
     title: string

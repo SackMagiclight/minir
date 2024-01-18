@@ -9,7 +9,6 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
-    "@aws-sdk/client-lambda": "^3.485.0",
     "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.3",
@@ -17,8 +16,6 @@
     "@reduxjs/toolkit": "^2.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@tanstack/react-table": "^8.11.3",
-    "aws-amplify": "^6.0.10",
-    "aws-amplify-react": "^5.1.9",
     "axios": "^1.6.5",
     "chakra-ui-markdown-renderer": "^4.1.0",
     "chakra-ui-steps": "^2.1.0",

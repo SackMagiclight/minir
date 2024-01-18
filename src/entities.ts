@@ -88,4 +88,5 @@ export type RemoveRivalRequestDto = {
 
 export type AddServiceRequestDto = {
     token: string
+    serviceName: string
 } & AuthRequestDto

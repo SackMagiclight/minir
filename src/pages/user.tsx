@@ -53,7 +53,6 @@ type UserDataLogin = {
 
 export default () => {
     const urlParams = useParams<{ userId?: string }>()
-    const [isLoadingLoginUserData, setLoadingLoginUserData] = useBoolean(false)
     const [isUpdateBio, setUpdateBio] = useBoolean()
     const toast = useToast()
 
@@ -62,8 +61,8 @@ export default () => {
 
     const tokens = useSelector(getTokens)
     const loginUserId = useSelector(getUserId)
-    const [getUserDataQuery] = usePostMeMutation()
-    const { data: userData, isFetching, isSuccess } = useGetUserQuery(
+    const [getUserDataQuery, userDataState] = usePostMeMutation()
+    const { data: _userData, isFetching } = useGetUserQuery(
         { userId: urlParams.userId ?? '' },
         {
             skip: !urlParams.userId,
@@ -72,15 +71,21 @@ export default () => {
     const [putBioQuery] = usePutUserUpdateMutation()
     const dispatch = useDispatch()
 
+    const userData = useMemo(() => {
+        if (!_userData) return undefined
+        if (!urlParams.userId || urlParams.userId === loginUserId) return undefined
+        return _userData
+    }, [_userData, urlParams.userId, loginUserId])
+
     const isMyPage = useMemo(() => {
         if (!loginUserData) return false
         return !urlParams.userId || loginUserData.userData.userid === urlParams.userId
     }, [loginUserData, urlParams])
 
     useEffect(() => {
+        setLoginUserData(undefined)
+        setLoginUserBio('')
         !(async () => {
-            setLoadingLoginUserData.on()
-            console.log('useEffect')
             if (!urlParams.userId || urlParams.userId === loginUserId) {
                 const data = await getUserDataQuery({
                     accessToken: tokens?.accessToken ?? '',
@@ -98,10 +103,6 @@ export default () => {
     const isRival = useMemo(() => {
         if (!loginUserData) return false
         return !!loginUserData.userData.rivals.find((r) => r.userId === urlParams.userId)
-    }, [loginUserData])
-
-    useEffect(() => {
-        setLoadingLoginUserData.off()
     }, [loginUserData])
 
     const handleCopy = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -226,14 +227,14 @@ export default () => {
                 <title>{queryUserData?.userName ?? ''}</title>
             </Helmet>
             <Box padding={4}>
-                {(!queryUserData) && <Progress size="xs" isIndeterminate />}
-                {!!queryUserData && (
+                {!queryUserData || userDataState.isLoading || (isFetching && <Progress size="xs" isIndeterminate />)}
+                {!!queryUserData && !userDataState.isLoading && !isFetching && (
                     <>
                         <TableContainer>
                             <Table size="sm">
                                 <Tbody>
                                     <Tr>
-                                        <Td>USER ID</Td>
+                                        <Td w={10}>USER ID</Td>
                                         <Td>
                                             <InputGroup size="sm">
                                                 <Input
@@ -281,18 +282,39 @@ export default () => {
                                     </Tr>
                                     {isMyPage && loginUserData && (
                                         <>
-                                            {!!loginUserData.userData.rivals.length && (
+                                            {!!loginUserData.userData.rivals?.length && (
                                                 <Tr>
                                                     <Td>RIVAL</Td>
                                                     <Td>
                                                         <Box display={'flex'} flexDirection={'row'} columnGap={2}>
                                                             {loginUserData.userData.rivals.map((r, index) => (
                                                                 <Box key={index}>
-                                                                    <Link
-                                                                        as={ReactLink}
-                                                                        to={`/viewer/user/${r.userId}`}>
+                                                                    <Link as={ReactLink} to={`/viewer/user/${r.userId}`}>
                                                                         {r.userName}
                                                                     </Link>
+                                                                </Box>
+                                                            ))}
+                                                        </Box>
+                                                    </Td>
+                                                </Tr>
+                                            )}
+                                            {!!loginUserData.userData.services?.length && (
+                                                <Tr>
+                                                    <Td>CONNECTED</Td>
+                                                    <Td>
+                                                        <Box display={'flex'} flexDirection={'row'} columnGap={2}>
+                                                            {loginUserData.userData.services.map((r, index) => (
+                                                                <Box key={index}>
+                                                                    {r === 'Stella' && (
+                                                                        <Link href={'https://stellabms.xyz/'} isExternal>
+                                                                            <Flex gap={1}>
+                                                                                <Text>
+                                                                                    Stella
+                                                                                    <ExternalLinkIcon mx="2px" />
+                                                                                </Text>
+                                                                            </Flex>
+                                                                        </Link>
+                                                                    )}
                                                                 </Box>
                                                             ))}
                                                         </Box>

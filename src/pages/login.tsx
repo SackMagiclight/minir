@@ -15,11 +15,11 @@ import {
 } from '@chakra-ui/react'
 import { DefaultLayout } from '~/layout/Default'
 import { Helmet } from 'react-helmet-async'
-import { FaLock, FaUserAlt } from 'react-icons/fa'
+import { FaLock } from 'react-icons/fa'
 import { useState } from 'react'
 import { Link as ReactLink, useNavigate } from 'react-router-dom'
 import { MdAlternateEmail } from 'react-icons/md'
-import { usePostForgetMutation, usePostLoginMutation, usePostMeMutation } from '../api'
+import { usePostLoginMutation, usePostMeMutation } from '../api'
 import { useDispatch } from 'react-redux'
 import { setAccessToken, setRefreshToken, setUserId } from '../../store/userStore'
 

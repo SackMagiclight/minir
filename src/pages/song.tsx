@@ -179,7 +179,7 @@ export default () => {
         ]
     }, [data])
 
-    const { data: stellaUrl, isLoading: isStellaLoading } = useQuery(
+    const { data: stellaUrl } = useQuery(
         'posts',
         async () => {
             const { data } = await axios.get(`https://stellabms.xyz/sha256/${urlParams.songhash}`, {

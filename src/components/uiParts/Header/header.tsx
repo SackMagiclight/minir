@@ -22,7 +22,7 @@ import { Link as ReactLink, useLocation, useNavigate } from 'react-router-dom'
 import { ExternalLinkIcon, HamburgerIcon } from '@chakra-ui/icons'
 import { FcAbout } from 'react-icons/fc'
 import { MdFileDownload, MdSearch, MdSecurity } from 'react-icons/md'
-import { RiPlayList2Fill, RiPlayListAddFill, RiPlayListFill } from 'react-icons/ri'
+import { RiPlayList2Fill, RiPlayListFill } from 'react-icons/ri'
 import { useMemo } from 'react'
 import { useQuery } from 'react-query'
 import { getTokens, reset } from '../../../../store/userStore'
@@ -49,7 +49,7 @@ const Header = () => {
         { title: 'KM 48KEYS', key: 'keyboard-48k' },
     ]
 
-    const { isLoading, error, data } = useQuery(
+    const { isLoading, data } = useQuery(
         'stellaData',
         () => fetch('https://phfvsk24n737l7awzuhf3c4dfi0phcak.lambda-url.us-east-1.on.aws/').then((res) => res.text()),
         { staleTime: 1000 * 60 * 10, cacheTime: Infinity },

@@ -1,4 +1,4 @@
-import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Flex, Heading, Icon, Image, Link, List, ListIcon, ListItem, Text } from '@chakra-ui/react'
+import { Box, Flex, Heading, Image, List, ListIcon, ListItem, Text } from '@chakra-ui/react'
 import { DefaultLayout } from '~/layout/Default'
 import histories from '~/static/history.json'
 import { InfoIcon, WarningIcon } from '@chakra-ui/icons'

@@ -10,7 +10,6 @@ import {
     InputRightElement,
     Stack,
     useBoolean,
-    useDisclosure,
     Container,
     Heading,
     FormErrorMessage,
@@ -19,7 +18,7 @@ import { DefaultLayout } from '~/layout/Default'
 import { Helmet } from 'react-helmet-async'
 import { FaLock } from 'react-icons/fa'
 import { useEffect, useMemo, useState } from 'react'
-import { Link as ReactLink, useNavigate } from 'react-router-dom'
+import { Link as ReactLink } from 'react-router-dom'
 import React from 'react'
 import { MdAlternateEmail } from 'react-icons/md'
 import { Step, Steps, useSteps } from 'chakra-ui-steps'
@@ -27,15 +26,13 @@ import { usePostForgetConfirmMutation, usePostForgetMutation } from '../api'
 
 export default () => {
     const [showPassword, setShowPassword] = useBoolean()
-    const { isOpen, onOpen, onClose } = useDisclosure()
     const [isLoading, setLoading] = useBoolean()
     const [verifyCode, setVerifyCode] = useState<string>()
     const [email, setEmail] = useState<string>()
     const [password, setPassword] = useState<string>()
     const [errorMessage, setErrorMessage] = useState('')
-    const navigate = useNavigate()
 
-    const { nextStep, prevStep, setStep, reset, activeStep } = useSteps({
+    const { nextStep, activeStep } = useSteps({
         initialStep: 0,
     })
 
