@@ -10,36 +10,29 @@ import {
     InputRightElement,
     Stack,
     useBoolean,
-    useDisclosure,
     Container,
     Heading,
     FormErrorMessage,
-    Link,
 } from '@chakra-ui/react'
-import { FocusableElement } from '@chakra-ui/utils'
 import { DefaultLayout } from '~/layout/Default'
 import { Helmet } from 'react-helmet-async'
 import { FaLock } from 'react-icons/fa'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link as ReactLink, useNavigate } from 'react-router-dom'
-import { getAccessKeyAndSecret } from '~/util/decrypt'
-import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
+import { useEffect, useMemo, useState } from 'react'
+import { Link as ReactLink } from 'react-router-dom'
 import React from 'react'
 import { MdAlternateEmail } from 'react-icons/md'
 import { Step, Steps, useSteps } from 'chakra-ui-steps'
-import { Buffer } from 'buffer'
+import { usePostForgetConfirmMutation, usePostForgetMutation } from '../api'
 
 export default () => {
     const [showPassword, setShowPassword] = useBoolean()
-    const { isOpen, onOpen, onClose } = useDisclosure()
     const [isLoading, setLoading] = useBoolean()
     const [verifyCode, setVerifyCode] = useState<string>()
     const [email, setEmail] = useState<string>()
     const [password, setPassword] = useState<string>()
     const [errorMessage, setErrorMessage] = useState('')
-    const navigate = useNavigate()
 
-    const { nextStep, prevStep, setStep, reset, activeStep } = useSteps({
+    const { nextStep, activeStep } = useSteps({
         initialStep: 0,
     })
 
@@ -53,96 +46,40 @@ export default () => {
         setPassword(e.target.value)
     }
 
+    const [resetPasswordQuery] = usePostForgetMutation()
     const resetRequest = (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (!email) return
         e.preventDefault()
         setLoading.on()
-        let errorMsg = ''
         !(async () => {
             try {
-                const ks = getAccessKeyAndSecret('forget_password').split(',')
-                const client = new LambdaClient({
-                    region: 'us-east-1',
-                    credentials: {
-                        accessKeyId: ks[0],
-                        secretAccessKey: ks[1],
-                    },
-                })
-                const params = {
-                    FunctionName: 'forget_password',
-                    Payload: Buffer.from(
-                        JSON.stringify({
-                            username: email,
-                        }),
-                    ),
-                }
-
-                const command = new InvokeCommand(params)
-                const data = await client.send(command)
-                const json = JSON.parse(new TextDecoder().decode(data.Payload))
-                if (json.message != 'success') {
-                    if (json.errorMessage) {
-                        errorMsg = JSON.stringify(json.errorMessage, undefined, 1)
-                    }
-                } else {
-                    nextStep()
-                }
-            } catch (e) {
-                console.log(JSON.stringify(e, undefined, 1))
+                await resetPasswordQuery({ email }).unwrap()
+                nextStep()
+            } catch (e: any) {
+                console.log(e)
+                setErrorMessage(e.message)
             } finally {
-                setErrorMessage(errorMsg)
-                setLoading.toggle()
+                setLoading.off()
             }
         })()
     }
 
+    const [confirmPasswordQuery] = usePostForgetConfirmMutation()
     const clickSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (!verifyCode || !email || !password) return
         e.preventDefault()
-        setLoading.toggle()
-        let errorMsg = ''
+        setLoading.on()
         !(async () => {
             try {
-                const ks = getAccessKeyAndSecret('reset_password').split(',')
-                const client = new LambdaClient({
-                    region: 'us-east-1',
-                    credentials: {
-                        accessKeyId: ks[0],
-                        secretAccessKey: ks[1],
-                    },
-                })
-                const params = {
-                    FunctionName: 'reset_password',
-                    Payload: Buffer.from(
-                        JSON.stringify({
-                            username: email,
-                            verifyCode,
-                            newPassword: password,
-                        }),
-                    ),
-                }
-
-                const command = new InvokeCommand(params)
-                const data = await client.send(command)
-                const json = JSON.parse(new TextDecoder().decode(data.Payload))
-                if (json.message != 'success') {
-                    if (json.errorMessage) {
-                        errorMsg = JSON.stringify(json.errorMessage, undefined, 1)
-                    }
-                } else {
-                    nextStep()
-                }
-            } catch (e) {
-                console.log(JSON.stringify(e, undefined, 1))
+                await confirmPasswordQuery({ email, password, code: verifyCode }).unwrap()
+                nextStep()
+            } catch (e: any) {
+                console.log(e)
+                setErrorMessage(e.message)
             } finally {
-                setErrorMessage(errorMsg)
-                setLoading.toggle()
+                setLoading.off()
             }
         })()
-    }
-
-    const cancelRef = useRef<FocusableElement>(null)
-    const completeClose = () => {
-        onClose()
-        navigate('/')
     }
 
     const [errors, setErrors] = useState({ verifyCode: '', email: '', password: '' })

@@ -13,100 +13,22 @@ import {
     Badge,
 } from '@chakra-ui/react'
 import { useParams } from 'react-router-dom'
-import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
-import { getAccessKeyAndSecret } from '~/util/decrypt'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { DefaultLayout } from '~/layout/Default'
 import { FaFacebook, FaLine, FaTwitter } from 'react-icons/fa'
 import { truncate } from 'lodash'
 import { Helmet } from 'react-helmet-async'
 import { PieChart, Pie, Cell, ResponsiveContainer, LabelList } from 'recharts'
-import { Buffer } from 'buffer'
-
-type IRData = {
-    clear: number
-    combo: number
-    datetime: string
-    egr: number
-    epg: number
-    lgr: number
-    lpg: number
-    notes: number
-    novalidate: boolean
-    score: number
-    songhash: string
-    userid: string
-    username: string
-    type: string
-}
-
-type SongData = {
-    artist: string
-    bpm: number
-    datetime: string
-    genre: string
-    judgerank: number
-    level: string
-    maxbpm: number
-    minbpm: number
-    mode: string
-    notes: number
-    songhash: string
-    title: string
-    total: number
-    lnmode?: number
-    video?: {
-        videoid: string
-        updateUserId: string
-    }
-}
+import { useGetSongScoreQuery } from '../api'
 
 export default () => {
     const urlParams = useParams<{ songhash: string; lnmode: string; userId: string }>()
-    const [irData, setIRData] = useState<IRData>()
-    const [songData, setSongData] = useState<SongData>()
-    const [isLoading, setLoading] = useState(false)
-
-    useEffect(() => {
-        setLoading(true)
-        setIRData(undefined)
-        setSongData(undefined)
-        getSongData()
-    }, [urlParams.songhash, urlParams.lnmode])
-
-    const getSongData = async () => {
-        const ks = getAccessKeyAndSecret('get_song_data').split(',')
-        const client = new LambdaClient({
-            region: 'us-east-1',
-            credentials: {
-                accessKeyId: ks[0],
-                secretAccessKey: ks[1],
-            },
-        })
-        const params = {
-            FunctionName: 'get_song_data',
-            Payload: Buffer.from(
-                JSON.stringify({
-                    songhash: (urlParams.songhash ?? '') + (urlParams.lnmode ? `.${urlParams.lnmode}` : '.0'),
-                    userid: urlParams.userId,
-                }),
-            ),
-        }
-
-        try {
-            const command = new InvokeCommand(params)
-            const data = await client.send(command)
-            const json = JSON.parse(new TextDecoder().decode(data.Payload))
-            if (json.message == 'success') {
-                setIRData(json.IRDatas[0])
-                setSongData(json.SongData)
-            } else {
-            }
-        } catch {
-        } finally {
-            setLoading(false)
-        }
-    }
+    const { data, isLoading } = useGetSongScoreQuery({
+        songhash: (urlParams.songhash ?? '') + (urlParams.lnmode ? `.${urlParams.lnmode}` : ''),
+        userid: urlParams.userId ?? '',
+    }, {
+        skip: !urlParams.songhash || !urlParams.userId,
+    })
 
     const openInNewTab = (url: string) => {
         const newWindow = window.open(url, '_blank', 'noopener,noreferrer')
@@ -127,45 +49,45 @@ export default () => {
         return () => {
             openInNewTab(
                 `https://twitter.com/intent/tweet?text=${socialText(
-                    songData?.title ?? '',
-                    irData?.username ?? '',
-                    irData?.score ?? 0,
+                    data?.songData?.title ?? '',
+                    data?.IRDatas?.username ?? '',
+                    data?.IRDatas?.score ?? 0,
                 )}%0D%0A${socialUrl(urlParams.songhash ?? '', urlParams.lnmode ?? '', urlParams.userId ?? '')}`,
             )
         }
-    }, [songData])
+    }, [data])
     const socialFacebook = useMemo(() => {
         return () => {
             openInNewTab(
                 `https://www.facebook.com/sharer.php?quote=${socialText(
-                    songData?.title ?? '',
-                    irData?.username ?? '',
-                    irData?.score ?? 0,
+                    data?.songData?.title ?? '',
+                    data?.IRDatas?.username ?? '',
+                    data?.IRDatas?.score ?? 0,
                 )}&u=${socialUrl(urlParams.songhash ?? '', urlParams.lnmode ?? '', urlParams.userId ?? '')}`,
             )
         }
-    }, [songData])
+    }, [data])
 
     const socialLine = useMemo(() => {
         return () => {
             openInNewTab(
                 `https://social-plugins.line.me/lineit/share?text=${socialText(
-                    songData?.title ?? '',
-                    irData?.username ?? '',
-                    irData?.score ?? 0,
+                    data?.songData?.title ?? '',
+                    data?.IRDatas?.username ?? '',
+                    data?.IRDatas?.score ?? 0,
                 )}&url=${socialUrl(urlParams.songhash ?? '', urlParams.lnmode ?? '', urlParams.userId ?? '')}`,
             )
         }
-    }, [songData])
+    }, [data])
 
     const score = useMemo(() => {
-        return irData?.score ?? 0
-    }, [irData])
+        return data?.IRDatas?.score ?? 0
+    }, [data])
 
     const clearElement = useMemo(() => {
         let backgroundColor = ''
         let text = ''
-        switch (irData?.clear) {
+        switch (data?.IRDatas?.clear) {
             case 0:
                 backgroundColor = 'rgb(255, 255, 255)'
                 text = 'NoPlay'
@@ -215,11 +137,11 @@ export default () => {
                 text = ''
         }
         return <Badge backgroundColor={backgroundColor}>{text}</Badge>
-    }, [irData])
+    }, [data])
 
     const maxScore = useMemo(() => {
-        return (songData?.notes ?? 0) * 2
-    }, [songData])
+        return (data?.songData?.notes ?? 0) * 2
+    }, [data])
 
     const rate = useMemo(() => {
         return (Math.floor((score / maxScore) * 10000) * 100) / 10000
@@ -227,37 +149,37 @@ export default () => {
 
     const earlyLate = useMemo(() => {
         return [
-            { name: 'PGREAT', value: irData?.epg ?? 0, color: '#0088FE' },
-            { name: 'GREAT', value: irData?.egr ?? 0, color: '#0088FE' },
-            { name: 'PGREAT', value: irData?.lpg ?? 0, color: '#FF8042' },
-            { name: 'GREAT', value: irData?.lgr ?? 0, color: '#FF8042' },
+            { name: 'PGREAT', value: data?.IRDatas?.epg ?? 0, color: '#0088FE' },
+            { name: 'GREAT', value: data?.IRDatas?.egr ?? 0, color: '#0088FE' },
+            { name: 'PGREAT', value: data?.IRDatas?.lpg ?? 0, color: '#FF8042' },
+            { name: 'GREAT', value: data?.IRDatas?.lgr ?? 0, color: '#FF8042' },
         ]
-    }, [irData])
+    }, [data])
 
     const earlyLate2 = useMemo(() => {
         return [
-            { name: 'EARLY', value: (irData?.epg ?? 0) + (irData?.egr ?? 0), color: '#0088FE' },
-            { name: 'LATE', value: (irData?.lpg ?? 0) + (irData?.lgr ?? 0), color: '#FF8042' },
+            { name: 'EARLY', value: (data?.IRDatas?.epg ?? 0) + (data?.IRDatas?.egr ?? 0), color: '#0088FE' },
+            { name: 'LATE', value: (data?.IRDatas?.lpg ?? 0) + (data?.IRDatas?.lgr ?? 0), color: '#FF8042' },
         ]
-    }, [irData])
+    }, [data])
 
     const judgeMap = useMemo(() => {
         return [
-            { name: 'PGREAT', value: (irData?.epg ?? 0) + (irData?.lpg ?? 0), color: '#0088FE' },
-            { name: 'GREAT', value: (irData?.egr ?? 0) + (irData?.lgr ?? 0), color: '#00C49F' },
+            { name: 'PGREAT', value: (data?.IRDatas?.epg ?? 0) + (data?.IRDatas?.lpg ?? 0), color: '#0088FE' },
+            { name: 'GREAT', value: (data?.IRDatas?.egr ?? 0) + (data?.IRDatas?.lgr ?? 0), color: '#00C49F' },
             {
                 name: '',
                 value:
-                    (songData?.notes ?? 0) - ((irData?.epg ?? 0) + (irData?.lpg ?? 0) + (irData?.egr ?? 0) + (irData?.lgr ?? 0)),
+                    (data?.songData?.notes ?? 0) - ((data?.IRDatas?.epg ?? 0) + (data?.IRDatas?.lpg ?? 0) + (data?.IRDatas?.egr ?? 0) + (data?.IRDatas?.lgr ?? 0)),
                 color: '#FF8042',
             },
         ]
-    }, [irData])
+    }, [data])
 
     return (
         <DefaultLayout>
             <Helmet>
-                <title>{`${songData?.title ?? 'MinIR'} - ${irData?.username ?? ''} `}</title>
+                <title>{`${data?.songData?.title ?? 'MinIR'} - ${data?.IRDatas?.username ?? ''} `}</title>
             </Helmet>
             <Box padding={4}>
                 {isLoading && <Progress size="xs" isIndeterminate />}
@@ -266,11 +188,11 @@ export default () => {
                         <Tbody>
                             <Tr>
                                 <Td>TITLE</Td>
-                                <Td>{songData?.title}</Td>
+                                <Td>{data?.songData?.title}</Td>
                             </Tr>
                             <Tr>
                                 <Td>USER NAME</Td>
-                                <Td>{irData?.username}</Td>
+                                <Td>{data?.IRDatas?.username}</Td>
                             </Tr>
                             <Tr>
                                 <Td>CLEAR</Td>

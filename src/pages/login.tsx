@@ -15,11 +15,13 @@ import {
 } from '@chakra-ui/react'
 import { DefaultLayout } from '~/layout/Default'
 import { Helmet } from 'react-helmet-async'
-import { FaLock, FaUserAlt } from 'react-icons/fa'
+import { FaLock } from 'react-icons/fa'
 import { useState } from 'react'
-import { Auth } from 'aws-amplify'
 import { Link as ReactLink, useNavigate } from 'react-router-dom'
 import { MdAlternateEmail } from 'react-icons/md'
+import { usePostLoginMutation, usePostMeMutation } from '../api'
+import { useDispatch } from 'react-redux'
+import { setAccessToken, setRefreshToken, setUserId } from '../../store/userStore'
 
 export default () => {
     const [showPassword, setShowPassword] = useBoolean()
@@ -28,6 +30,10 @@ export default () => {
     const [password, setPassword] = useState('')
     const [errorMessage, setErrorMessage] = useState<string>()
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+
+    const [loginQuery] = usePostLoginMutation()
+    const [meQuery] = usePostMeMutation()
 
     const changeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value)
@@ -42,11 +48,18 @@ export default () => {
         !(async () => {
             try {
                 setErrorMessage(undefined)
-                await Auth.signIn(email, password)
+                const { accessToken, refreshToken } = await loginQuery({ email, password }).unwrap()
+                dispatch(setAccessToken(accessToken))
+                dispatch(setRefreshToken(refreshToken))
+                const { userData } = await meQuery({
+                    accessToken,
+                    refreshToken,
+                }).unwrap()
+                dispatch(setUserId(userData.userid))
                 navigate('/viewer/user')
             } catch (e) {
                 console.log(JSON.stringify(e, undefined, 1))
-                setErrorMessage((e as {message: string}).message)
+                setErrorMessage('Invalid email or password')
             } finally {
                 setLoading.toggle()
             }
@@ -63,7 +76,7 @@ export default () => {
                     <Box minW={{ base: '90%', md: '468px' }}>
                         <form>
                             <Stack spacing={4} p="1rem" backgroundColor="whiteAlpha.900" boxShadow="md">
-                                { errorMessage && <Text color="red.500">{errorMessage}</Text> }
+                                {errorMessage && <Text color="red.500">{errorMessage}</Text>}
                                 <FormControl>
                                     <InputGroup>
                                         <InputLeftElement pointerEvents="none" children={<MdAlternateEmail color="#CBD5E0" />} />

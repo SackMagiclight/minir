@@ -6,7 +6,6 @@ import {
     Td,
     Tr,
     Progress,
-    useDisclosure,
     Button,
     Input,
     IconButton,
@@ -16,9 +15,7 @@ import {
     ButtonGroup,
 } from '@chakra-ui/react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
-import { getAccessKeyAndSecret } from '~/util/decrypt'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { DefaultLayout } from '~/layout/Default'
 
 import { ReactTabulator } from 'react-tabulator'
@@ -29,58 +26,18 @@ import { CopyIcon } from '@chakra-ui/icons'
 import { FaFacebook, FaLine, FaTwitter } from 'react-icons/fa'
 import { useQuery } from 'react-query'
 import axios from 'axios'
-import { truncate } from 'lodash'
+import { cloneDeep, truncate } from 'lodash'
 import { Helmet } from 'react-helmet-async'
-import { Buffer } from 'buffer'
-
-type IRData = {
-    clear: number
-    combo: number
-    datetime: string
-    egr: number
-    epg: number
-    lgr: number
-    lpg: number
-    notes: number
-    novalidate: boolean
-    score: number
-    songhash: string
-    userid: string
-    username: string
-    type: string
-    avgjudge: number
-    beatorajaVer: string
-    skinName: string
-}
-
-type SongData = {
-    artist: string
-    bpm: number
-    datetime: string
-    genre: string
-    judgerank: number
-    level: string
-    maxbpm: number
-    minbpm: number
-    mode: string
-    notes: number
-    songhash: string
-    title: string
-    total: number
-    lnmode?: number
-    video?: {
-        videoid: string
-        updateUserId: string
-    }
-}
+import { useGetSongScoreListQuery } from '../api'
 
 export default () => {
     const navigate = useNavigate()
     const urlParams = useParams<{ songhash: string; lnmode: string }>()
-    const [irData, setIRData] = useState<IRData[]>([])
-    const [songData, setSongData] = useState<SongData>()
-    const [isLoading, setLoading] = useState(false)
     const toast = useToast()
+
+    const {data, isLoading} = useGetSongScoreListQuery({
+        songhash: `${urlParams.songhash ?? ''}${urlParams.lnmode ? `.${urlParams.lnmode}` : '.0'}`,
+    })
 
     const columns = useMemo<Tabulator.ColumnDefinition[]>(() => {
         return [
@@ -116,7 +73,7 @@ export default () => {
                 hozAlign: 'left',
                 vertAlign: 'bottom',
                 formatter: 'progress',
-                formatterParams: { min: 0, max: (songData?.notes ?? 0) * 2, legend: true },
+                formatterParams: { min: 0, max: (data?.songData?.notes ?? 0) * 2, legend: true },
                 headerSort: false,
                 cellClick: (e: any, cell: any) => {
                     const data = cell.getRow().getData()
@@ -135,7 +92,7 @@ export default () => {
                 formatter: 'progress',
                 formatterParams: {
                     min: 0,
-                    max: songData?.notes ?? 0,
+                    max: data?.songData?.notes ?? 0,
                     color: 'orange',
                     legend: true,
                 },
@@ -220,9 +177,9 @@ export default () => {
                 headerSort: false,
             },
         ]
-    }, [songData])
+    }, [data])
 
-    const { data: stellaUrl, isLoading: isStellaLoading } = useQuery(
+    const { data: stellaUrl } = useQuery(
         'posts',
         async () => {
             const { data } = await axios.get(`https://stellabms.xyz/sha256/${urlParams.songhash}`, {
@@ -235,46 +192,6 @@ export default () => {
         },
         { retry: 0 },
     )
-
-    useEffect(() => {
-        setLoading(true)
-        setIRData([])
-        setSongData(undefined)
-        getSongData()
-    }, [urlParams.songhash, urlParams.lnmode])
-
-    const getSongData = async () => {
-        const ks = getAccessKeyAndSecret('get_song_data').split(',')
-        const client = new LambdaClient({
-            region: 'us-east-1',
-            credentials: {
-                accessKeyId: ks[0],
-                secretAccessKey: ks[1],
-            },
-        })
-        const params = {
-            FunctionName: 'get_song_data',
-            Payload: Buffer.from(
-                JSON.stringify({
-                    songhash: (urlParams.songhash ?? '') + (urlParams.lnmode ? `.${urlParams.lnmode}` : '.0'),
-                }),
-            ),
-        }
-
-        try {
-            const command = new InvokeCommand(params)
-            const data = await client.send(command)
-            const json = JSON.parse(new TextDecoder().decode(data.Payload))
-            if (json.message == 'success') {
-                setIRData(json.IRDatas)
-                setSongData(json.SongData)
-            } else {
-            }
-        } catch {
-        } finally {
-            setLoading(false)
-        }
-    }
 
     const rowFormatter = (row: Tabulator.RowComponent) => {
         if (row.getData().novalidate) {
@@ -310,34 +227,34 @@ export default () => {
     const socialTwitter = useMemo(() => {
         return () => {
             openInNewTab(
-                `https://twitter.com/intent/tweet?text=${socialText(songData?.title ?? '')}%0D%0A${socialUrl(
+                `https://twitter.com/intent/tweet?text=${socialText(data?.songData?.title ?? '')}%0D%0A${socialUrl(
                     urlParams.songhash ?? '',
                     urlParams.lnmode,
                 )}`,
             )
         }
-    }, [songData])
+    }, [data])
     const socialFacebook = useMemo(() => {
         return () => {
             openInNewTab(
-                `https://www.facebook.com/sharer.php?quote=${socialText(songData?.title ?? '')}&u=${socialUrl(
+                `https://www.facebook.com/sharer.php?quote=${socialText(data?.songData?.title ?? '')}&u=${socialUrl(
                     urlParams.songhash ?? '',
                     urlParams.lnmode,
                 )}`,
             )
         }
-    }, [songData])
+    }, [data])
 
     const socialLine = useMemo(() => {
         return () => {
             openInNewTab(
-                `https://social-plugins.line.me/lineit/share?text=${socialText(songData?.title ?? '')}&url=${socialUrl(
+                `https://social-plugins.line.me/lineit/share?text=${socialText(data?.songData?.title ?? '')}&url=${socialUrl(
                     urlParams.songhash ?? '',
                     urlParams.lnmode,
                 )}`,
             )
         }
-    }, [songData])
+    }, [data])
 
     const routeLNModeUrl = (hash: string, lnmode: string) => {
         return `/viewer/song/${hash}/${lnmode}`
@@ -352,10 +269,14 @@ export default () => {
         navigate(routeLNModeUrl(urlParams.songhash ?? '', '2'))
     }
 
+    const irData = useMemo(() => {
+        return cloneDeep(data?.IRDatas)
+    }, [data])
+
     return (
         <DefaultLayout>
             <Helmet>
-                <title>{songData?.title ?? 'MinIR'}</title>
+                <title>{data?.songData?.title ?? 'MinIR'}</title>
             </Helmet>
             <Box padding={4}>
                 {isLoading && <Progress size="xs" isIndeterminate />}
@@ -380,16 +301,16 @@ export default () => {
                             </Tr>
                             <Tr>
                                 <Td>TITLE</Td>
-                                <Td>{songData?.title}</Td>
+                                <Td>{data?.songData?.title}</Td>
                             </Tr>
                             <Tr>
                                 <Td>ARTIST</Td>
-                                <Td>{songData?.artist}</Td>
+                                <Td>{data?.songData?.artist}</Td>
                             </Tr>
                             <Tr>
                                 <Td>INFO</Td>
                                 <Td>
-                                    ☆{songData?.level} / {songData?.notes}notes / {songData?.total}total
+                                    ☆{data?.songData?.level} / {data?.songData?.notes}notes / {data?.songData?.total}total
                                 </Td>
                             </Tr>
                             <Tr>
@@ -458,13 +379,13 @@ export default () => {
                                         <Button
                                             mr={'-px'}
                                             colorScheme={'teal'}
-                                            variant={!songData?.lnmode && urlParams.lnmode === '1' ? 'solid' : 'outline'}
+                                            variant={!data?.songData?.lnmode && urlParams.lnmode === '1' ? 'solid' : 'outline'}
                                             onClick={() => routeCN()}>
                                             CN
                                         </Button>
                                         <Button
                                             colorScheme={'teal'}
-                                            variant={!songData?.lnmode && urlParams.lnmode === '2' ? 'solid' : 'outline'}
+                                            variant={!data?.songData?.lnmode && urlParams.lnmode === '2' ? 'solid' : 'outline'}
                                             onClick={() => routeHCN()}>
                                             HCN
                                         </Button>

@@ -1,5 +1,4 @@
 import React, { FC } from 'react'
-import ReactDOM from 'react-dom'
 import { createRoot } from 'react-dom/client'
 import { HelmetProvider } from 'react-helmet-async'
 import { QueryClient, QueryClientProvider } from 'react-query'
@@ -8,9 +7,10 @@ import { GeneralGtag } from '~/components/uiParts/Gtag/GeneralGtag'
 import { useVh } from '~/hooks/useVh'
 import App from '~/pages/_app'
 import { ChakraProvider, extendTheme } from '@chakra-ui/react'
-import { Amplify } from 'aws-amplify'
-import awsConfig from './util/aws'
-import { StepsStyleConfig as StepsConfig } from 'chakra-ui-steps'
+import { StepsTheme as StepsConfig } from 'chakra-ui-steps'
+import { PersistGate } from 'redux-persist/integration/react'
+import { Provider } from "react-redux";
+import { store, persistor } from "../store/store";
 
 const Root: FC<{ children: any }> = ({ children }) => {
     const { VhVariable } = useVh()
@@ -28,21 +28,25 @@ const Root: FC<{ children: any }> = ({ children }) => {
                 <HelmetProvider>
                     <GeneralGtag />
                     {VhVariable}
-                    <ChakraProvider theme={theme} resetCSS>{children}</ChakraProvider>
+                    <ChakraProvider theme={theme} resetCSS>
+                        {children}
+                    </ChakraProvider>
                 </HelmetProvider>
             </QueryClientProvider>
         </>
     )
 }
 
-Amplify.configure(awsConfig)
-
 const root = createRoot(document.getElementById('root')!)
 
 root.render(
     <React.StrictMode>
-        <Root>
-            <App />
-        </Root>
+        <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+                <Root>
+                    <App />
+                </Root>
+            </PersistGate>
+        </Provider>
     </React.StrictMode>,
 )

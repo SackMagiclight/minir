@@ -1,4 +1,3 @@
-import type { VFC } from 'react'
 import { Helmet } from 'react-helmet-async'
 
 import { useGtag } from './useGtag'

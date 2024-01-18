@@ -29,11 +29,9 @@ import { Helmet } from 'react-helmet-async'
 import { FaLock, FaUserAlt } from 'react-icons/fa'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getAccessKeyAndSecret } from '~/util/decrypt'
-import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
 import React from 'react'
 import { MdAlternateEmail } from 'react-icons/md'
-import { Buffer } from 'buffer'
+import { usePostSignupMutation } from '../api'
 
 export default () => {
     const [showPassword, setShowPassword] = useBoolean()
@@ -55,46 +53,21 @@ export default () => {
         setPassword(e.target.value)
     }
 
+    const [postSignupQuery] = usePostSignupMutation()
+
     const clickSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (!userName || !email || !password) return
         e.preventDefault()
-        setLoading.toggle()
-        let errorMsg = ''
+        setLoading.on()
         !(async () => {
             try {
-                const ks = getAccessKeyAndSecret('sign_up').split(',')
-                const client = new LambdaClient({
-                    region: 'us-east-1',
-                    credentials: {
-                        accessKeyId: ks[0],
-                        secretAccessKey: ks[1],
-                    },
-                })
-                const params = {
-                    FunctionName: 'sign_up',
-                    Payload: Buffer.from(
-                        JSON.stringify({
-                            username: userName,
-                            email: email,
-                            password: password,
-                        }),
-                    ),
-                }
-
-                const command = new InvokeCommand(params)
-                const data = await client.send(command)
-                if (new TextDecoder().decode(data.Payload) != 'true') {
-                    const json = JSON.parse(new TextDecoder().decode(data.Payload))
-                    if (json.errorMessage) {
-                        errorMsg = JSON.stringify(json.errorMessage, undefined, 1)
-                    }
-                } else {
-                    onOpen()
-                }
-            } catch (e) {
+                await postSignupQuery({ username: userName, email, password }).unwrap()
+                onOpen()
+            } catch (e: any) {
                 console.log(JSON.stringify(e, undefined, 1))
+                setErrorMessage(e.message)
             } finally {
-                setErrorMessage(errorMsg)
-                setLoading.toggle()
+                setLoading.off()
             }
         })()
     }
