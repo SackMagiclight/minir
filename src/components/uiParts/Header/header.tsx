@@ -25,7 +25,7 @@ import { MdFileDownload, MdSearch, MdSecurity } from 'react-icons/md'
 import { RiPlayList2Fill, RiPlayListFill } from 'react-icons/ri'
 import { useMemo } from 'react'
 import { useQuery } from 'react-query'
-import { getTokens, reset } from '../../../../store/userStore'
+import { getTokens, reset } from '../../../store/userStore'
 import { useDispatch, useSelector } from 'react-redux'
 
 const Header = () => {

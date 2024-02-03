@@ -10,7 +10,7 @@ import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import { StepsTheme as StepsConfig } from 'chakra-ui-steps'
 import { PersistGate } from 'redux-persist/integration/react'
 import { Provider } from "react-redux";
-import { store, persistor } from "../store/store";
+import { store, persistor } from "./store/store";
 
 const Root: FC<{ children: any }> = ({ children }) => {
     const { VhVariable } = useVh()

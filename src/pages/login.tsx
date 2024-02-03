@@ -21,7 +21,7 @@ import { Link as ReactLink, useNavigate } from 'react-router-dom'
 import { MdAlternateEmail } from 'react-icons/md'
 import { usePostLoginMutation, usePostMeMutation } from '../api'
 import { useDispatch } from 'react-redux'
-import { setAccessToken, setRefreshToken, setUserId } from '../../store/userStore'
+import { setAccessToken, setRefreshToken, setUserId } from '../store/userStore'
 
 export default () => {
     const [showPassword, setShowPassword] = useBoolean()

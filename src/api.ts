@@ -246,7 +246,7 @@ export const api = createApi({
             RemoveRivalRequestDto
         >({
             query: (body) => ({
-                url: `rival/add`,
+                url: `rival/remove`,
                 method: 'DELETE',
                 body,
             }),

@@ -4,7 +4,7 @@ import storage from 'redux-persist/lib/storage'
 import { setupListeners } from '@reduxjs/toolkit/query'
 
 import userStore from './userStore'
-import { api } from '../src/api'
+import { api } from '../api'
 
 const persistConfig = {
     key: 'MinIR',

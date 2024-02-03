@@ -28,7 +28,7 @@ import { CopyIcon, ExternalLinkIcon } from '@chakra-ui/icons'
 import { Helmet } from 'react-helmet-async'
 import { Link as ReactLink } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { getTokens, getUserId, setAccessToken, setRefreshToken } from '../../store/userStore'
+import { getTokens, getUserId, setAccessToken, setRefreshToken } from '../store/userStore'
 import {
     useDeleteRivalRemoveMutation,
     useGetUserQuery,
@@ -83,16 +83,17 @@ export default () => {
     }, [loginUserData, urlParams])
 
     useEffect(() => {
+        console.log(tokens)
         setLoginUserData(undefined)
         setLoginUserBio('')
         !(async () => {
-            if (!urlParams.userId || urlParams.userId === loginUserId) {
+            if (!!tokens.accessToken && !!tokens.refreshToken) {
                 const data = await getUserDataQuery({
-                    accessToken: tokens?.accessToken ?? '',
-                    refreshToken: tokens?.refreshToken ?? '',
+                    accessToken: tokens?.accessToken,
+                    refreshToken: tokens?.refreshToken,
                 }).unwrap()
-                setLoginUserData(data)
-                setLoginUserBio(data.userData.bio)
+                setLoginUserData(() => data)
+                setLoginUserBio(() => data.userData.bio)
             } else {
                 setLoginUserData(undefined)
                 setLoginUserBio('')
@@ -162,7 +163,7 @@ export default () => {
     const [removeRivalQuery] = useDeleteRivalRemoveMutation()
 
     const addRemoveRival = async (command: 'add' | 'remove') => {
-        if (!isMyPage || !loginUserData) return
+        if (isMyPage || !loginUserData) return
 
         try {
             if (command === 'add' && loginUserData.userData.rivals.length < 10) {
