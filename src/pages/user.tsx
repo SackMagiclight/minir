@@ -207,9 +207,9 @@ export default () => {
 
     const scoreData = useMemo(() => {
         if (isMyPage) {
-            return loginUserData?.scoreDatas
+            return loginUserData?.scoreDatas.filter((d) => !!d)
         } else {
-            return userData?.scoreDatas
+            return userData?.scoreDatas.filter((d) => !!d)
         }
     }, [userData, loginUserData, urlParams.userId, tokens.accessToken])
 
