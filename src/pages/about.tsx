@@ -44,8 +44,8 @@ beatoraja 用に設計された IR です。 下記コンセプトに基づい�
 IR に送信可能な本体と API の組み合わせ表です。
 記述されていない本体、API では **IR への送信が行うことができません。**
 
-* beatoraja 0.8.5 : minir-510
-* beatoraja 0.8.6 : minir-520
+* beatoraja 0.8.6 : minir-520, minir-530
+* beatoraja 0.8.7 : minir-530
 
 ## 現状できること
 
