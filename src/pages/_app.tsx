@@ -15,6 +15,7 @@ import Search from './search'
 import Signup from './signup'
 import Song from './song'
 import User from './user'
+import FlavorLog from './flavorLog'
 
 const AppRoot = () => {
     return (
@@ -26,6 +27,9 @@ const AppRoot = () => {
                 </Route>
                 <Route path="/about">
                     <Route index element={<About />} />
+                </Route>
+                <Route path="/flavor-log">
+                    <Route index element={<FlavorLog />} />
                 </Route>
                 <Route path="/privacy">
                     <Route index element={<Privacy />} />
