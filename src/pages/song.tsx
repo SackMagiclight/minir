@@ -33,7 +33,7 @@ import { Helmet } from 'react-helmet-async'
 import { useGetSongScoreListQuery } from '../api'
 import { useSelector } from 'react-redux'
 import { getUserId } from '../store/userStore'
-import * as numeral from 'numeral'
+import numeral from 'numeral'
 import { Link as ReactLink } from 'react-router-dom'
 
 const getClear = (clear: number) => {
