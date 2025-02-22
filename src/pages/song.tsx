@@ -13,6 +13,8 @@ import {
     InputRightElement,
     useToast,
     ButtonGroup,
+    Link,
+    Flex,
 } from '@chakra-ui/react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useMemo } from 'react'
@@ -22,33 +24,107 @@ import { ReactTabulator } from 'react-tabulator'
 import { Tabulator } from 'react-tabulator/lib/types/TabulatorTypes'
 import 'react-tabulator/lib/styles.css'
 import 'react-tabulator/lib/css/tabulator_semanticui.min.css'
-import { CopyIcon } from '@chakra-ui/icons'
+import { CopyIcon, ExternalLinkIcon } from '@chakra-ui/icons'
 import { FaFacebook, FaLine, FaTwitter } from 'react-icons/fa'
 import { useQuery } from 'react-query'
 import axios from 'axios'
 import { cloneDeep, truncate } from 'lodash'
 import { Helmet } from 'react-helmet-async'
 import { useGetSongScoreListQuery } from '../api'
+import { useSelector } from 'react-redux'
+import { getUserId } from '../store/userStore'
+import * as numeral from 'numeral'
+import { Link as ReactLink } from 'react-router-dom'
+
+const getClear = (clear: number) => {
+    let backgroundColor = "inherit"
+    let text = ""
+    switch (clear) {
+        case 0:
+            backgroundColor = 'rgb(255, 255, 255)'
+            text = 'NoPlay'
+            break
+        case 1:
+            backgroundColor = 'rgb(192, 192, 192)'
+            text = 'Failed'
+            break
+        case 2:
+             backgroundColor = 'rgb(149, 149, 255)'
+            text = 'AssistEasy'
+            break
+        case 3:
+             backgroundColor = 'rgb(149, 149, 255)'
+            text = 'LightAssistEasy'
+            break
+        case 4:
+             backgroundColor = 'rgb(152, 251, 152)'
+            text = 'Easy'
+            break
+        case 5:
+             backgroundColor = 'rgb(152, 251, 152)'
+            text =  'Normal'
+            break
+        case 6:
+             backgroundColor = 'rgb(255, 99, 71)'
+            text =  'Hard'
+            break
+        case 7:
+             backgroundColor = 'rgb(255, 217, 0)'
+            text =  'ExHard'
+            break
+        case 8:
+             backgroundColor = 'rgb(255, 140, 0)'
+            text =  'FullCombo'
+            break
+        case 9:
+             backgroundColor = 'rgb(255, 140, 0)'
+            text =  'Perfect'
+            break
+        case 10:
+            backgroundColor = 'rgb(255, 140, 0)'
+            text =  'Max'
+            break
+        default:
+            break
+    }
+
+    return {
+        backgroundColor,
+        text
+    }
+}
 
 export default () => {
     const navigate = useNavigate()
     const urlParams = useParams<{ songhash: string; lnmode: string }>()
     const toast = useToast()
+    const loginUserId = useSelector(getUserId)
 
-    const {data, isLoading} = useGetSongScoreListQuery({
+    const { data, isLoading } = useGetSongScoreListQuery({
         songhash: `${urlParams.songhash ?? ''}${urlParams.lnmode ? `.${urlParams.lnmode}` : '.0'}`,
     })
 
     const columns = useMemo<Tabulator.ColumnDefinition[]>(() => {
         return [
             {
-                formatter: 'rownum',
                 hozAlign: 'center',
                 width: 80,
                 headerSort: false,
                 resizable: false,
                 title: '',
                 responsive: 0,
+                formatter: (cell: Tabulator.CellComponent) => {
+                    const tbl = cell.getTable()
+                    const page = tbl.getPage()
+                    if (page === false) {
+                        return '-'
+                    }
+                    const pageSize = tbl.getPageSize()
+                    let num = (page - 1) * pageSize
+                    num += cell.getRow().getPosition(true)
+
+                    return String(num)
+                },
             },
             {
                 title: 'Name',
@@ -122,43 +198,9 @@ export default () => {
                 resizable: false,
                 headerSort: false,
                 formatter: (cell: Tabulator.CellComponent) => {
-                    switch (cell.getValue()) {
-                        case 0:
-                            cell.getElement().style.backgroundColor = 'rgb(255, 255, 255)'
-                            return 'NoPlay'
-                        case 1:
-                            cell.getElement().style.backgroundColor = 'rgb(192, 192, 192)'
-                            return 'Failed'
-                        case 2:
-                            cell.getElement().style.backgroundColor = 'rgb(149, 149, 255)'
-                            return 'AssistEasy'
-                        case 3:
-                            cell.getElement().style.backgroundColor = 'rgb(149, 149, 255)'
-                            return 'LightAssistEasy'
-                        case 4:
-                            cell.getElement().style.backgroundColor = 'rgb(152, 251, 152)'
-                            return 'Easy'
-                        case 5:
-                            cell.getElement().style.backgroundColor = 'rgb(152, 251, 152)'
-                            return 'Normal'
-                        case 6:
-                            cell.getElement().style.backgroundColor = 'rgb(255, 99, 71)'
-                            return 'Hard'
-                        case 7:
-                            cell.getElement().style.backgroundColor = 'rgb(255, 217, 0)'
-                            return 'ExHard'
-                        case 8:
-                            cell.getElement().style.backgroundColor = 'rgb(255, 140, 0)'
-                            return 'FullCombo'
-                        case 9:
-                            cell.getElement().style.backgroundColor = 'rgb(255, 140, 0)'
-                            return 'Perfect'
-                        case 10:
-                            cell.getElement().style.backgroundColor = 'rgb(255, 140, 0)'
-                            return 'Max'
-                        default:
-                            return ''
-                    }
+                    const { backgroundColor, text } = getClear(cell.getValue())
+                    cell.getElement().style.backgroundColor = backgroundColor
+                    return text
                 },
             },
             {
@@ -271,6 +313,31 @@ export default () => {
 
     const irData = useMemo(() => {
         return cloneDeep(data?.IRDatas)
+    }, [data])
+
+    const userScoreData = useMemo(() => {
+        if (!data) {
+            return {
+                rowNum: 0,
+                scoreData: undefined,
+            }
+        }
+        const userScore = data.IRDatas.find((v) => v.userid === loginUserId)
+        if (userScore) {
+            return {
+                rowNum: data.IRDatas.findIndex((v) => v.userid === loginUserId) + 1,
+                scoreData: userScore,
+            }
+        } else {
+            return {
+                rowNum: 0,
+                scoreData: undefined,
+            }
+        }
+    }, [data])
+
+    const maxScore = useMemo(() => {
+        return (data?.songData?.notes ?? 0) * 2
     }, [data])
 
     return (
@@ -395,6 +462,77 @@ export default () => {
                         </Tbody>
                     </Table>
                 </TableContainer>
+                {!isLoading && loginUserId && (
+                    <Flex
+                        justifyContent={'center'}
+                        flexDirection={'column'}
+                        paddingX={4}
+                        paddingY={1}
+                        borderLeftWidth={4}
+                        marginY={2}
+                        marginX={4}
+                        gap={2}>
+                        <Box fontSize={'large'}>USER DATA</Box>
+                        <Box>
+                            {userScoreData.scoreData ? (
+                                <Box>
+                                    <Flex gap={2} alignItems={'flex-end'}>
+                                        <Box>
+                                            <Box fontSize={'small'}>PLACE</Box>
+                                            <Flex
+                                                fontSize={'x-large'}
+                                                fontWeight={'Bold'}
+                                                borderBottomWidth={2}
+                                                borderBottomColor={'gray'}
+                                                paddingBottom={0.5}
+                                                marginBottom={1}
+                                                alignItems={'baseline'}>
+                                                <Box>{numeral(userScoreData.rowNum).format('0o')}</Box>
+                                                <Box fontSize={'small'}>/{numeral(irData?.length ?? 0).format('0o')}</Box>
+                                            </Flex>
+                                        </Box>
+                                        <Box>
+                                            <Box fontSize={'small'}>SCORE</Box>
+                                            <Flex fontSize={'x-large'} backgroundColor={'#06c755'} paddingX={4} marginBottom={2} alignItems={'baseline'}>
+                                                <Box>{userScoreData.scoreData.score}</Box>
+                                                <Box fontSize={'small'}>/{maxScore}</Box>
+                                            </Flex>
+                                        </Box>
+                                        <Box>
+                                            <Box fontSize={'small'}>COMBO</Box>
+                                            <Flex fontSize={'x-large'} backgroundColor={"orange"} paddingX={4} marginBottom={2} alignItems={'baseline'}>
+                                                <Box>{userScoreData.scoreData.combo}</Box>
+                                                <Box fontSize={'small'}>/{data?.songData?.notes ?? 0}</Box>
+                                            </Flex>
+                                        </Box>
+                                        <Box>
+                                            <Box fontSize={'small'}>CLEAR</Box>
+                                            <Box fontSize={'x-large'} backgroundColor={getClear(userScoreData.scoreData.clear).backgroundColor} paddingX={4} marginBottom={2}>
+                                                {getClear(userScoreData.scoreData.clear).text}
+                                            </Box>
+                                        </Box>
+                                        <Flex>
+                                            <Link
+                                                as={ReactLink}
+                                                 marginBottom={2}
+                                                to={`/viewer/${
+                                                    userScoreData.scoreData.songhash.split('.')[0].length == 67
+                                                        ? 'course'
+                                                        : 'song'
+                                                }/${userScoreData.scoreData.songhash.split('.')[0]}/${
+                                                    userScoreData.scoreData.songhash.split('.')[1]
+                                                }/score/${userScoreData.scoreData.userid}`}>
+                                                <ExternalLinkIcon fontSize={24} />
+                                            </Link>
+                                        </Flex>
+                                    </Flex>
+                                </Box>
+                            ) : (
+                                <Box fontSize={'small'}>NO SCORE</Box>
+                            )}
+                        </Box>
+                    </Flex>
+                )}
                 <ReactTabulator
                     className={'compact'}
                     data={irData}
