@@ -114,7 +114,7 @@ export default () => {
                 break
             case 6:
                 backgroundColor = 'rgb(255, 99, 71)'
-                return 'Hard'
+                text = 'Hard'
                 break
             case 7:
                 backgroundColor = 'rgb(255, 217, 0)'

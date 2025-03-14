@@ -74,6 +74,17 @@ export interface IMinIRUserEntity {
     services?: string[]
 }
 
+export interface IMinIRUserEventEntity {
+    uuid: string
+    userId: string
+    timestamp: number
+    transactionId: string
+    eventType: string
+    beforeValue?: string
+    afterValue?: string
+    payload?: string // JSON string
+}
+
 export type UpdateDynamoUserRequestDto = {
     bio: string
 } & AuthRequestDto

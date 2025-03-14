@@ -10,7 +10,7 @@ import {
     IMinIRUserEntity,
     RemoveRivalRequestDto,
     SignupRequestDto,
-    UpdateDynamoUserRequestDto,
+    UpdateDynamoUserRequestDto, IMinIRUserEventEntity,
 } from './entities'
 
 export const api = createApi({
@@ -192,6 +192,22 @@ export const api = createApi({
                 }
             },
         }),
+        getUserEvent: builder.query<
+            {
+                message: string
+                eventList: (IMinIRUserEventEntity)[]
+            },
+            { userId: string, date?: string }
+        >({
+            query: (arg) => {
+                const { userId, date } = arg
+                return {
+                    url: `user/event`,
+                    method: 'GET',
+                    params: { userId, date },
+                }
+            },
+        }),
         putUserUpdate: builder.mutation<
             {
                 dynamoUser: IMinIRUserEntity
@@ -282,6 +298,7 @@ export const {
     usePostForgetMutation,
     usePostForgetConfirmMutation,
     useGetUserQuery,
+    useGetUserEventQuery,
     usePutUserUpdateMutation,
     useGetRivalListQuery,
     usePostRivalAddMutation,

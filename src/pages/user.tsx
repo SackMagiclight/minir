@@ -38,6 +38,7 @@ import {
 } from '../api'
 import { IMinIRScoreEntity, IMinIRUserEntity } from '../entities'
 import { cloneDeep } from 'lodash'
+import UserEventComponent from '~/components/userEvent/UserEventComponent'
 
 type UserDataLogin = {
     message: string
@@ -392,6 +393,9 @@ export default () => {
                                 </Tbody>
                             </Table>
                         </TableContainer>
+                        {isMyPage && loginUserData && (
+                            <UserEventComponent userId={loginUserData.userData.userid} />
+                        )}
                     </>
                 )}
             </Box>
