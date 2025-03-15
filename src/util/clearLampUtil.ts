@@ -1,3 +1,4 @@
+import { ceil } from 'lodash'
 
 export const clearStyle = (clear: number) => {
     let backgroundColor = ''
@@ -56,3 +57,53 @@ export const clearStyle = (clear: number) => {
         backgroundColor,
     }
 }
+
+export const getDJLevel = (score: number, notes: number) => {
+    const maxScore = notes * 2; // EX SCOREの最大値はノーツ数の2倍
+    const ratio = score / maxScore;
+    let level = '';
+    let colorScheme = '';
+
+    // DJ LEVEL +何点か
+    let distance = 0;
+
+    if (ratio >= 8 / 9) {
+        level = 'AAA';
+        colorScheme = 'green';
+        distance = score - (notes * 2 * 8 / 9);
+    } else if (ratio >= 7 / 9) {
+        level = 'AA';
+        colorScheme = 'blue';
+        distance = score - (notes * 2 * 7 / 9);
+    } else if (ratio >= 6 / 9) {
+        level = 'A';
+        colorScheme = 'cyan';
+        distance = score - (notes * 2 * 6 / 9);
+    } else if (ratio >= 5 / 9) {
+        level = 'B';
+        colorScheme = 'teal';
+        distance = score - (notes * 2 * 5 / 9);
+    } else if (ratio >= 4 / 9) {
+        level = 'C';
+        colorScheme = 'yellow';
+        distance = score - (notes * 2 * 4 / 9);
+    } else if (ratio >= 3 / 9) {
+        level = 'D';
+        colorScheme = 'orange';
+        distance = score - (notes * 2 * 3 / 9);
+    } else if (ratio >= 2 / 9) {
+        level = 'E';
+        colorScheme = 'red';
+        distance = score - (notes * 2 * 2 / 9);
+    } else {
+        level = 'F';
+        colorScheme = 'gray';
+    }
+
+    return {
+        level,
+        colorScheme,
+        distance: ceil(distance),
+    }
+};
+

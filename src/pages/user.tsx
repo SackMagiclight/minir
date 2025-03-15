@@ -84,7 +84,6 @@ export default () => {
     }, [loginUserData, urlParams])
 
     useEffect(() => {
-        console.log(tokens)
         setLoginUserData(undefined)
         setLoginUserBio('')
         !(async () => {
