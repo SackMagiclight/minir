@@ -385,7 +385,7 @@ export default () => {
                                 <Td>
                                     <ButtonGroup variant="outline" spacing="2">
                                         {stellaUrl && (
-                                            <Button color={'#001529'} size="xs" as={'a'} href={stellaUrl} target={'_blank'}>
+                                            <Button color={'#001529'} size="xs" as={Link} href={`https://stellabms.xyz/sha256/${urlParams.songhash}`} isExternal>
                                                 Stella / Satellite
                                             </Button>
                                         )}
