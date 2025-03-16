@@ -3,7 +3,7 @@ import { Box, Card, CardBody, Flex, Grid, GridItem, Heading, Link, Text } from '
 import dayjs from 'dayjs'
 import { MdDoubleArrow } from 'react-icons/md'
 import { clearStyle, getDJLevel } from '~/util/clearLampUtil'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link as ReactLink } from 'react-router-dom'
 
 const clearStringValue = (clearText: string) => {
@@ -22,6 +22,61 @@ const clearStringValue = (clearText: string) => {
 }
 
 export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
+
+    const getTableData = async () => {
+        const result = await Promise.allSettled([
+            fetch(`https://stellabms.xyz/sl/score.json`),
+            fetch(`https://stellabms.xyz/st/score.json`)
+        ])
+
+        return [
+            {
+                tableName: 'Sattelite',
+                prefix: 'sl',
+                data: result[0].status === 'fulfilled' ? await result[0].value.json() : []
+            },
+            {
+                tableName: 'Stella',
+                prefix: 'st',
+                data: result[1].status === 'fulfilled' ? await result[1].value.json() : []
+            }
+        ]
+    }
+
+    const [tableData, setTableData] = useState<any[] | undefined>(undefined)
+    useEffect(() => {
+        (async () => {
+            if (!tableData) {
+                setTableData(await getTableData())
+            }
+        })()
+    }, [])
+
+    const tableComponent = (sha256: string) => {
+        let targetData: any = undefined
+        for (const data of tableData ?? []) {
+            const _data = data.data.find((d: any) => d.sha256 === sha256)
+            if (_data) {
+                targetData = {
+                    ..._data,
+                    tableName: data.tableName,
+                    prefix: data.prefix
+                }
+                break
+            }
+        }
+        if (!targetData) {
+            return null
+        }
+
+        return (
+            <Flex flexDirection={`column`} textAlign={`center`} py={0} px={1} alignItems={`end`}>
+                <Text lineHeight={1} fontSize={`x-small`} fontFamily={`Anta`} textColor={`gray.700`}>{targetData.tableName}</Text>
+                <Text lineHeight={1} fontFamily={`Anta`} textColor={`gray.700`}>{targetData.prefix}{targetData.level}</Text>
+            </Flex>
+        )
+    }
+
     const updateScore = useMemo(() => {
         return eventList.filter((event) => event.eventType === 'score')
     }, [eventList])
@@ -41,6 +96,7 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
                                 </Flex>
                             )
                         }
+
                         return (
                             <Card key={event.uuid}>
                                 <CardBody p={1}>
@@ -64,7 +120,10 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
                                                 <Text fontSize={`medium`} fontFamily={`Orbitron`}>{event.beforeValue ? `(+${Number(event.afterValue) - Number(event.beforeValue)})` : ``}</Text>
                                             </Flex>
                                         </Flex>
-                                        {DJLevelComponent({ score: Number(event.afterValue), notes: payload.song.notes })}
+                                        <Flex gap={1} alignItems={`end`}>
+                                            {DJLevelComponent({ score: Number(event.afterValue), notes: payload.song.notes })}
+                                            {tableComponent(payload.song.sha256)}
+                                        </Flex>
                                     </Flex>
                                 </CardBody>
                             </Card>)
@@ -183,11 +242,14 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
                                     return (
                                         <Card key={event.uuid}>
                                             <CardBody p={1}>
-                                                <Heading size="sm" fontFamily={`Oswald`}>
-                                                    <Link as={ReactLink} variant="plain" to={`/viewer/song/${payload.song.sha256}/${payload.song.lnmode}/score/${event.userId}`}>
-                                                        {payload.song.title}
-                                                    </Link>
-                                                </Heading>
+                                                <Flex justifyContent={`space-between`} alignItems={`center`}>
+                                                    <Heading size="sm" fontFamily={`Oswald`}>
+                                                        <Link as={ReactLink} variant="plain" to={`/viewer/song/${payload.song.sha256}/${payload.song.lnmode}/score/${event.userId}`}>
+                                                            {payload.song.title}
+                                                        </Link>
+                                                    </Heading>
+                                                    {tableComponent(payload.song.sha256)}
+                                                </Flex>
                                             </CardBody>
                                         </Card>
                                     )
