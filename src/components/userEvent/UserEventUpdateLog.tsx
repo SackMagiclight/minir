@@ -157,12 +157,15 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
                                             {payload.song.title}
                                         </Link>
                                     </Heading>
-                                    <Flex alignItems={`center`}>
-                                        <Text fontSize={`small`} fontFamily={`Orbitron`} px={2} py={1} w={`128px`} textAlign={`center`} fontWeight={700} backgroundColor={beforeValue?.backgroundColor ?? `gray.300`}>
-                                            {beforeValue ? beforeValue.text : `No Play`}
-                                        </Text>
-                                        <Box as={MdDoubleArrow} fontSize={`19.5px`} />
-                                        <Text fontSize={`small`} fontFamily={`Orbitron`} px={2} py={1} w={`128px`} textAlign={`center`} fontWeight={700} backgroundColor={afterValue.backgroundColor}>{afterValue.text}</Text>
+                                    <Flex justifyContent={`space-between`}>
+                                        <Flex alignItems={`center`}>
+                                            <Text fontSize={`small`} fontFamily={`Orbitron`} px={2} py={1} w={`128px`} textAlign={`center`} fontWeight={700} backgroundColor={beforeValue?.backgroundColor ?? `gray.300`}>
+                                                {beforeValue ? beforeValue.text : `No Play`}
+                                            </Text>
+                                            <Box as={MdDoubleArrow} fontSize={`19.5px`} />
+                                            <Text fontSize={`small`} fontFamily={`Orbitron`} px={2} py={1} w={`128px`} textAlign={`center`} fontWeight={700} backgroundColor={afterValue.backgroundColor}>{afterValue.text}</Text>
+                                        </Flex>
+                                        {tableComponent(payload.song.sha256)}
                                     </Flex>
                                 </CardBody>
                             </Card>
