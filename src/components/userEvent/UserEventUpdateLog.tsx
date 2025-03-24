@@ -145,31 +145,69 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
                         const payload = JSON.parse(event.payload || '{}')
                         const beforeValue = event.beforeValue ? clearStyle(Number(event.beforeValue)) : undefined
                         const afterValue = clearStyle(Number(event.afterValue))
-                        return (
-                            <Card key={event.uuid}>
-                                <CardBody p={1}>
-                                    <Flex justifyContent={`space-between`} alignItems={`center`}>
-                                        <Box fontSize={`x-small`} fontFamily={`Anta`}>{payload.song.notes} NOTES</Box>
-                                        <Box fontSize={`x-small`} fontFamily={`Roboto`}>{dayjs(event.timestamp).format('HH:mm:ss')}</Box>
-                                    </Flex>
-                                    <Heading size="md" fontFamily={`Oswald`} marginBottom={2}>
-                                        <Link as={ReactLink} variant="plain" to={`/viewer/song/${payload.song.sha256}/${payload.song.lnmode}/score/${event.userId}`}>
-                                            {payload.song.title}
-                                        </Link>
-                                    </Heading>
-                                    <Flex justifyContent={`space-between`}>
-                                        <Flex alignItems={`center`}>
-                                            <Text fontSize={`small`} fontFamily={`Orbitron`} px={2} py={1} w={`128px`} textAlign={`center`} fontWeight={700} backgroundColor={beforeValue?.backgroundColor ?? `gray.300`}>
-                                                {beforeValue ? beforeValue.text : `No Play`}
-                                            </Text>
-                                            <Box as={MdDoubleArrow} fontSize={`19.5px`} />
-                                            <Text fontSize={`small`} fontFamily={`Orbitron`} px={2} py={1} w={`128px`} textAlign={`center`} fontWeight={700} backgroundColor={afterValue.backgroundColor}>{afterValue.text}</Text>
+                        if (!!payload.song) {
+                            return (
+                                <Card key={event.uuid}>
+                                    <CardBody p={1}>
+                                        <Flex justifyContent={`space-between`} alignItems={`center`}>
+                                            <Box fontSize={`x-small`}
+                                                 fontFamily={`Anta`}>{payload.song.notes} NOTES</Box>
+                                            <Box fontSize={`x-small`}
+                                                 fontFamily={`Roboto`}>{dayjs(event.timestamp).format('HH:mm:ss')}</Box>
                                         </Flex>
-                                        {tableComponent(payload.song.sha256)}
-                                    </Flex>
-                                </CardBody>
-                            </Card>
-                        )
+                                        <Heading size="md" fontFamily={`Oswald`} marginBottom={2}>
+                                            <Link as={ReactLink} variant="plain"
+                                                  to={`/viewer/song/${payload.song.sha256}/${payload.song.lnmode}/score/${event.userId}`}>
+                                                {payload.song.title}
+                                            </Link>
+                                        </Heading>
+                                        <Flex justifyContent={`space-between`}>
+                                            <Flex alignItems={`center`}>
+                                                <Text fontSize={`small`} fontFamily={`Orbitron`} px={2} py={1}
+                                                      w={`128px`} textAlign={`center`} fontWeight={700}
+                                                      backgroundColor={beforeValue?.backgroundColor ?? `gray.300`}>
+                                                    {beforeValue ? beforeValue.text : `No Play`}
+                                                </Text>
+                                                <Box as={MdDoubleArrow} fontSize={`19.5px`} />
+                                                <Text fontSize={`small`} fontFamily={`Orbitron`} px={2} py={1}
+                                                      w={`128px`} textAlign={`center`} fontWeight={700}
+                                                      backgroundColor={afterValue.backgroundColor}>{afterValue.text}</Text>
+                                            </Flex>
+                                            {tableComponent(payload.song.sha256)}
+                                        </Flex>
+                                    </CardBody>
+                                </Card>
+                            )
+                        } else if (!!payload.cource) {
+                            return (
+                                <Card key={event.uuid}>
+                                    <CardBody p={1}>
+                                        <Flex justifyContent={`space-between`} alignItems={`center`}>
+                                            <Box fontSize={`x-small`}
+                                                 fontFamily={`Anta`}>-</Box>
+                                            <Box fontSize={`x-small`}
+                                                 fontFamily={`Roboto`}>{dayjs(event.timestamp).format('HH:mm:ss')}</Box>
+                                        </Flex>
+                                        <Heading size="md" fontFamily={`Oswald`} marginBottom={2}>
+                                            {payload.cource.name}
+                                        </Heading>
+                                        <Flex justifyContent={`space-between`}>
+                                            <Flex alignItems={`center`}>
+                                                <Text fontSize={`small`} fontFamily={`Orbitron`} px={2} py={1}
+                                                      w={`128px`} textAlign={`center`} fontWeight={700}
+                                                      backgroundColor={beforeValue?.backgroundColor ?? `gray.300`}>
+                                                    {beforeValue ? beforeValue.text : `No Play`}
+                                                </Text>
+                                                <Box as={MdDoubleArrow} fontSize={`19.5px`} />
+                                                <Text fontSize={`small`} fontFamily={`Orbitron`} px={2} py={1}
+                                                      w={`128px`} textAlign={`center`} fontWeight={700}
+                                                      backgroundColor={afterValue.backgroundColor}>{afterValue.text}</Text>
+                                            </Flex>
+                                        </Flex>
+                                    </CardBody>
+                                </Card>
+                            )
+                        }
                     })}
                 </Flex>
             </Box>
@@ -242,20 +280,33 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
                             <Flex flexDirection={`column`} gap={2}>
                                 {events.map((event) => {
                                     const payload = JSON.parse(event.payload || '{}')
-                                    return (
-                                        <Card key={event.uuid}>
-                                            <CardBody p={1}>
-                                                <Flex justifyContent={`space-between`} alignItems={`center`}>
+                                    if (!!payload.song) {
+                                        return (
+                                            <Card key={event.uuid}>
+                                                <CardBody p={1}>
+                                                    <Flex justifyContent={`space-between`} alignItems={`center`}>
+                                                        <Heading size="sm" fontFamily={`Oswald`}>
+                                                            <Link as={ReactLink} variant="plain"
+                                                                  to={`/viewer/song/${payload.song.sha256}/${payload.song.lnmode}/score/${event.userId}`}>
+                                                                {payload.song.title}
+                                                            </Link>
+                                                        </Heading>
+                                                        {tableComponent(payload.song.sha256)}
+                                                    </Flex>
+                                                </CardBody>
+                                            </Card>
+                                        )
+                                    } else if (!!payload.cource) {
+                                        return (
+                                            <Card key={event.uuid}>
+                                                <CardBody p={1}>
                                                     <Heading size="sm" fontFamily={`Oswald`}>
-                                                        <Link as={ReactLink} variant="plain" to={`/viewer/song/${payload.song.sha256}/${payload.song.lnmode}/score/${event.userId}`}>
-                                                            {payload.song.title}
-                                                        </Link>
+                                                        {payload.cource.name}
                                                     </Heading>
-                                                    {tableComponent(payload.song.sha256)}
-                                                </Flex>
-                                            </CardBody>
-                                        </Card>
-                                    )
+                                                </CardBody>
+                                            </Card>
+                                        )
+                                    }
                                 })}
                             </Flex>
                         </GridItem>
