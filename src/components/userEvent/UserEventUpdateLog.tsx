@@ -214,6 +214,55 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
         ) : null
     }
 
+    const updateBpLamp = useMemo(() => {
+        return eventList.filter((event) => event.eventType === 'bp')
+    }, [eventList])
+    const updateBpComponent = () => {
+        return updateClearLamp.length ? (
+            <Box bg={`gray.100`} p={2}>
+                <Heading w={`100%`} textAlign={`center`}>BP Count</Heading>
+                <Flex flexDirection={`column`} gap={2}>
+                    {updateBpLamp.map((event) => {
+                        const payload = JSON.parse(event.payload || '{}')
+                        if (!!payload.song) {
+                            return (
+                                <Card key={event.uuid}>
+                                    <CardBody p={1}>
+                                        <Flex justifyContent={`space-between`} alignItems={`center`}>
+                                            <Box fontSize={`x-small`}
+                                                 fontFamily={`Anta`}>{payload.song.notes} NOTES</Box>
+                                            <Box fontSize={`x-small`}
+                                                 fontFamily={`Roboto`}>{dayjs(event.timestamp).format('HH:mm:ss')}</Box>
+                                        </Flex>
+                                        <Heading size="md" fontFamily={`Oswald`} marginBottom={1}>
+                                            <Link as={ReactLink} variant="plain"
+                                                  to={`/viewer/song/${payload.song.sha256}/${payload.song.lnmode}/score/${event.userId}`}>
+                                                {payload.song.title}
+                                            </Link>
+                                        </Heading>
+                                        <Flex justifyContent={`space-between`} alignItems={`end`}>
+                                            <Flex alignItems={`end`}>
+                                                <Text fontSize={`small`} mt={2} fontFamily={`Orbitron`}>
+                                                    {event.beforeValue ?? "-"}
+                                                </Text>
+                                                <Box as={MdDoubleArrow} fontSize={`19.5px`} />
+                                                <Flex gap={1} alignItems={`end`}>
+                                                    <Text fontSize={`x-large`} fontFamily={`Orbitron`} color={`blue.500`} lineHeight={1}>{event.afterValue}</Text>
+                                                    <Text fontSize={`medium`} fontFamily={`Orbitron`} lineHeight={1}>{event.beforeValue ? `(-${Number(event.beforeValue) - Number(event.afterValue)})` : ``}</Text>
+                                                </Flex>
+                                            </Flex>
+                                            {tableComponent(payload.song.sha256)}
+                                        </Flex>
+                                    </CardBody>
+                                </Card>
+                            )
+                        }
+                    })}
+                </Flex>
+            </Box>
+        ) : null
+    }
+
     const lampGroup = useMemo(() => {
         return updateClearLamp.reduce((acc, event) => {
             switch (Number(event.afterValue)) {
@@ -319,12 +368,15 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
     return (
         <Flex flexDirection={`column`} gap={2} w={`100%`}>
             {newLampComponent()}
-            <Grid templateColumns={{ base: `repeat(1, 1fr)`, md: `repeat(2, 1fr)` }} gap={1}>
+            <Grid templateColumns={{ base: `repeat(1, 1fr)`, md: `repeat(3, 1fr)` }} gap={1}>
                 <GridItem>
                     {updateScoreComponent()}
                 </GridItem>
                 <GridItem>
                     {updateClearLampComponent()}
+                </GridItem>
+                <GridItem>
+                    {updateBpComponent()}
                 </GridItem>
             </Grid>
         </Flex>
