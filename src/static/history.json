@@ -1,5 +1,9 @@
 [
     {
+        "date": "2025/06/07",
+        "icon": "WarningIcon",
+        "text": "minir-530.jarにてbeatoraja上からのログインができない事象が発生していました。minir-600.jarによる送信に関しては問題なく、現在は修正済みです。"
+    },{
         "date": "2025/03/17",
         "icon": "InfoIcon",
         "text": "MinIR API を更新しました。デイリーレポートに対応しました。 minir-530.jarはレガシーサポートとなります。"
