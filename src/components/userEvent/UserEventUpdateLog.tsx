@@ -8,6 +8,8 @@ import { Link as ReactLink } from 'react-router-dom'
 
 const clearStringValue = (clearText: string) => {
     switch (clearText) {
+        case 'Easy':
+            return 4
         case 'Normal':
             return 5
         case 'Hard':
@@ -26,7 +28,7 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
     const getTableData = async () => {
         const result = await Promise.allSettled([
             fetch(`https://stellabms.xyz/sl/score.json`),
-            fetch(`https://stellabms.xyz/st/score.json`)
+            fetch(`https://stellabms.xyz/st/score.json`),
         ])
 
         return [
@@ -52,10 +54,10 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
         })()
     }, [])
 
-    const tableComponent = (sha256: string) => {
+    const tableComponent = (sha256: string, md5?: string) => {
         let targetData: any = undefined
         for (const data of tableData ?? []) {
-            const _data = data.data.find((d: any) => d.sha256 === sha256)
+            const _data = data.data.find((d: any) => d.sha256 === sha256 || (d.md5 && md5 && d.md5 === md5 ))
             if (_data) {
                 targetData = {
                     ..._data,
@@ -164,13 +166,13 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
                                         <Flex justifyContent={`space-between`}>
                                             <Flex alignItems={`center`}>
                                                 <Text fontSize={`small`} fontFamily={`Orbitron`} px={2} py={1}
-                                                      w={`128px`} textAlign={`center`} fontWeight={700}
+                                                      w={`140px`} textAlign={`center`} fontWeight={700}
                                                       backgroundColor={beforeValue?.backgroundColor ?? `gray.300`}>
                                                     {beforeValue ? beforeValue.text : `No Play`}
                                                 </Text>
                                                 <Box as={MdDoubleArrow} fontSize={`19.5px`} />
                                                 <Text fontSize={`small`} fontFamily={`Orbitron`} px={2} py={1}
-                                                      w={`128px`} textAlign={`center`} fontWeight={700}
+                                                      w={`140px`} textAlign={`center`} fontWeight={700}
                                                       backgroundColor={afterValue.backgroundColor}>{afterValue.text}</Text>
                                             </Flex>
                                             {tableComponent(payload.song.sha256)}
@@ -194,13 +196,13 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
                                         <Flex justifyContent={`space-between`}>
                                             <Flex alignItems={`center`}>
                                                 <Text fontSize={`small`} fontFamily={`Orbitron`} px={2} py={1}
-                                                      w={`128px`} textAlign={`center`} fontWeight={700}
+                                                      w={`140px`} textAlign={`center`} fontWeight={700}
                                                       backgroundColor={beforeValue?.backgroundColor ?? `gray.300`}>
                                                     {beforeValue ? beforeValue.text : `No Play`}
                                                 </Text>
                                                 <Box as={MdDoubleArrow} fontSize={`19.5px`} />
                                                 <Text fontSize={`small`} fontFamily={`Orbitron`} px={2} py={1}
-                                                      w={`128px`} textAlign={`center`} fontWeight={700}
+                                                      w={`140px`} textAlign={`center`} fontWeight={700}
                                                       backgroundColor={afterValue.backgroundColor}>{afterValue.text}</Text>
                                             </Flex>
                                         </Flex>
@@ -275,6 +277,7 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
                 case 3:
                     break
                 case 4:
+                    acc['Easy'].push(event)
                     break
                 case 5:
                     acc['Normal'].push(event)
@@ -299,7 +302,7 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
             }
             return acc
         }, {
-            'Normal': [], 'Hard': [], 'ExHard': [], 'FullCombo': [],
+            'Easy': [], 'Normal': [], 'Hard': [], 'ExHard': [], 'FullCombo': [],
         } as { [key: string]: IMinIRUserEventEntity[] })
     }, [updateClearLamp])
     const newLampComponent = () => {
@@ -308,7 +311,7 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
                 <Box>
                     <Heading w={`100%`} textAlign={`center`}>New Clear Lamp</Heading>
                 </Box>
-                <Grid templateColumns={{ base: `repeat(2, 1fr)`, md: `repeat(4, 1fr)` }} gap={1}>{Object.keys(lampGroup).map((key) => {
+                <Grid templateColumns={{ base: `repeat(2, 1fr)`, md: `repeat(3, 1fr)` }} gap={1}>{Object.keys(lampGroup).map((key) => {
                     const events = lampGroup[key]
                     const clearNumber = clearStringValue(key)
                     const clearStl = clearStyle(clearNumber)

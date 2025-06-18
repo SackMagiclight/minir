@@ -126,7 +126,7 @@ export default () => {
                             cell.getElement().style.backgroundColor = 'rgb(152, 251, 152)'
                             return 'Easy'
                         case 5:
-                            cell.getElement().style.backgroundColor = 'rgb(152, 251, 152)'
+                            cell.getElement().style.backgroundColor = 'rgb(60, 179, 113)'
                             return 'Normal'
                         case 6:
                             cell.getElement().style.backgroundColor = 'rgb(255, 99, 71)'
