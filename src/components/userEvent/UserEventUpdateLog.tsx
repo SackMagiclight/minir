@@ -29,6 +29,8 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
         const result = await Promise.allSettled([
             fetch(`https://stellabms.xyz/sl/score.json`),
             fetch(`https://stellabms.xyz/st/score.json`),
+            fetch(`https://raw.githubusercontent.com/MiraiScarlet/MiraiScarlet.github.io/refs/heads/main/bms/table/genocide_insane/data_insane.json`),
+            fetch(`https://raw.githubusercontent.com/MiraiScarlet/MiraiScarlet.github.io/refs/heads/main/bms/table/genocide_normal/data_normal.json`),
         ])
 
         return [
@@ -41,6 +43,16 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
                 tableName: 'Stella',
                 prefix: 'st',
                 data: result[1].status === 'fulfilled' ? await result[1].value.json() : []
+            },
+            {
+                tableName: '発狂BMS',
+                prefix: '★',
+                data: result[2].status === 'fulfilled' ? await result[2].value.json() : []
+            },
+            {
+                tableName: '通常難易度',
+                prefix: '⭐︎',
+                data: result[3].status === 'fulfilled' ? await result[3].value.json() : []
             }
         ]
     }
