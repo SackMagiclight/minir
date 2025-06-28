@@ -1,8 +1,16 @@
 [
     {
+        "date": "2025/06/22",
+        "icon": "InfoIcon",
+        "text": "Stella側のサイトリニューアルに対する修正を行いました。引き続きminir-600.jarによる送信に対応しています。"
+    },{
         "date": "2025/06/07",
         "icon": "WarningIcon",
         "text": "minir-530.jarにてbeatoraja上からのログインができない事象が発生していました。minir-600.jarによる送信に関しては問題なく、現在は修正済みです。"
+    },{
+        "date": "2025/06/06",
+        "icon": "InfoIcon",
+        "text": "minir-530.jarを正式にサポート対象から除外しました。"
     },{
         "date": "2025/03/17",
         "icon": "InfoIcon",
