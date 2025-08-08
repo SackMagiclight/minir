@@ -29,6 +29,7 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
         const result = await Promise.allSettled([
             fetch(`https://stellabms.xyz/sl/score.json`),
             fetch(`https://stellabms.xyz/st/score.json`),
+            fetch(`https://raw.githubusercontent.com/MiraiScarlet/MiraiScarlet.github.io/refs/heads/main/bms/table/overjoy/data_overjoy.json`),
             fetch(`https://raw.githubusercontent.com/MiraiScarlet/MiraiScarlet.github.io/refs/heads/main/bms/table/genocide_insane/data_insane.json`),
             fetch(`https://raw.githubusercontent.com/MiraiScarlet/MiraiScarlet.github.io/refs/heads/main/bms/table/genocide_normal/data_normal.json`),
         ])
@@ -45,14 +46,19 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
                 data: result[1].status === 'fulfilled' ? await result[1].value.json() : []
             },
             {
+                tableName: 'Overjoy',
+                prefix: '★★',
+                data: result[2].status === 'fulfilled' ? await result[2].value.json() : []
+            },
+            {
                 tableName: '発狂BMS',
                 prefix: '★',
-                data: result[2].status === 'fulfilled' ? await result[2].value.json() : []
+                data: result[3].status === 'fulfilled' ? await result[3].value.json() : []
             },
             {
                 tableName: '通常難易度',
                 prefix: '⭐︎',
-                data: result[3].status === 'fulfilled' ? await result[3].value.json() : []
+                data: result[4].status === 'fulfilled' ? await result[4].value.json() : []
             }
         ]
     }
