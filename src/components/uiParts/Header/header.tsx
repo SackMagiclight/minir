@@ -28,6 +28,7 @@ import { useMemo } from 'react'
 import { useQuery } from 'react-query'
 import { getTokens, reset } from '../../../store/userStore'
 import { useDispatch, useSelector } from 'react-redux'
+import { useGetCurrentUserCountQuery } from '~/api'
 
 const Header = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -55,6 +56,9 @@ const Header = () => {
         () => fetch('https://phfvsk24n737l7awzuhf3c4dfi0phcak.lambda-url.us-east-1.on.aws/').then((res) => res.text()),
         { staleTime: 1000 * 60 * 10, cacheTime: Infinity },
     )
+
+    const { data: _currentUserCount, isFetching } = useGetCurrentUserCountQuery()
+
     const stateDom = useMemo(() => {
         return (
             <Box>
@@ -77,9 +81,25 @@ const Header = () => {
                         </Text>
                     )}
                 </Flex>
+                <Flex>
+                    <Text fontSize="xs" mr={1}>
+                        Current Users:
+                    </Text>
+                    {
+                        isFetching ? (
+                            <Text fontSize="xs" color={'blue.700'}>
+                                Loading...
+                            </Text>
+                        ) : (
+                            <Text fontSize="xs" color={'blue.700'}>
+                                {_currentUserCount?.uniqueUserCount ?? 'Unknown'}
+                            </Text>
+                        )
+                    }
+                </Flex>
             </Box>
         )
-    }, [data])
+    }, [data, isLoading, isFetching, _currentUserCount])
 
     const logout = async () => {
         dispatch(reset())

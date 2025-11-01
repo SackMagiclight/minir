@@ -282,6 +282,18 @@ export const api = createApi({
                 body,
             }),
         }),
+        getCurrentUserCount: builder.query<
+            {
+                message: string
+                uniqueUserCount: number
+            },
+            void
+        >({
+            query: () => ({
+                url: `system/current`,
+                method: 'GET',
+            }),
+        }),
     }),
 })
 
@@ -304,4 +316,5 @@ export const {
     usePostRivalAddMutation,
     useDeleteRivalRemoveMutation,
     usePostServiceAddMutation,
+    useGetCurrentUserCountQuery,
 } = api
