@@ -197,14 +197,14 @@ export const api = createApi({
                 message: string
                 eventList: (IMinIRUserEventEntity)[]
             },
-            { userId: string, date?: string }
+            { userId: string, date?: string, timezone?: string }
         >({
             query: (arg) => {
-                const { userId, date } = arg
+                const { userId, date, timezone } = arg
                 return {
                     url: `user/event`,
                     method: 'GET',
-                    params: { userId, date },
+                    params: { userId, date, timezone },
                 }
             },
         }),

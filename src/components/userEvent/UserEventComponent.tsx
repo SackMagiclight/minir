@@ -7,9 +7,11 @@ import { CiSquareChevLeft, CiSquareChevRight } from "react-icons/ci";
 
 export default ({userId}: { userId: string}) => {
     const [targetDate, setTargetDate] = useState(dayjs().toISOString())
+    const clientTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
     const { data: _userEventData } = useGetUserEventQuery({
         userId: userId,
-        date: targetDate
+        date: targetDate,
+        timezone: clientTimezone,
     })
 
     const handlePrevDate = () => {
