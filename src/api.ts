@@ -294,6 +294,27 @@ export const api = createApi({
                 method: 'GET',
             }),
         }),
+        postHabitStats: builder.mutation<
+            {
+                message: string
+                accessToken: string
+                refreshToken: string
+                stats: {
+                    play_streak: number
+                    last_play_date: string
+                    daily_heatmap: Record<string, number>
+                    weekday_stats: Record<string, { plays: number; ex_sum: number }>
+                    hour_stats: Record<string, { plays: number; ex_sum: number }>
+                } | null
+            },
+            { accessToken: string; refreshToken: string }
+        >({
+            query: (body) => ({
+                url: `user/habit-stats`,
+                method: 'POST',
+                body,
+            }),
+        }),
     }),
 })
 
@@ -317,4 +338,5 @@ export const {
     useDeleteRivalRemoveMutation,
     usePostServiceAddMutation,
     useGetCurrentUserCountQuery,
+    usePostHabitStatsMutation,
 } = api
