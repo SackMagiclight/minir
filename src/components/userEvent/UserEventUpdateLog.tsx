@@ -1,5 +1,5 @@
 import { IMinIRUserEventEntity } from '~/entities'
-import { Box, Card, CardBody, Flex, Grid, GridItem, Heading, Link, Text } from '@chakra-ui/react'
+import { Box, Flex, Grid, GridItem, Link, Text } from '@chakra-ui/react'
 import dayjs from 'dayjs'
 import { MdDoubleArrow } from 'react-icons/md'
 import { clearStyle, getDJLevel } from '~/util/clearLampUtil'
@@ -102,51 +102,66 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
     }, [eventList])
     const updateScoreComponent = () => {
         return updateScore.length ? (
-            <Box bg={`gray.100`} p={2}>
-                <Heading w={`100%`} textAlign={`center`}>Score</Heading>
-                <Flex flexDirection={`column`} gap={2}>
+            <Box>
+                <Text fontSize="xs" fontWeight="700" color="gray.400" letterSpacing="0.08em" textTransform="uppercase" mb={3}>Score</Text>
+                <Flex flexDirection="column" gap={2}>
                     {updateScore.map((event) => {
                         const payload = JSON.parse(event.payload || '{}')
                         const DJLevelComponent = ({ score, notes }: { score: number, notes: number }) => {
                             const { level, distance } = getDJLevel(score, notes)
                             return (
-                                <Flex rounded={`md`} borderWidth={1} textAlign={`center`} py={0} px={1} alignItems={`baseline`}>
-                                    <Text textColor={`blue.500`} fontFamily={`"Press Start 2P"`}>{level}</Text>
-                                    <Text fontSize={`small`} textColor={`gray.700`} fontFamily={`"Press Start 2P"`}>+{distance}</Text>
+                                <Flex
+                                    rounded="md"
+                                    border="1px solid"
+                                    borderColor="blue.200"
+                                    bg="blue.50"
+                                    textAlign="center"
+                                    py={0.5}
+                                    px={2}
+                                    alignItems="baseline"
+                                    gap={0.5}
+                                >
+                                    <Text fontSize="xs" fontWeight="700" color="blue.600" fontFamily={`"Press Start 2P"`}>{level}</Text>
+                                    <Text fontSize="2xs" color="gray.500" fontFamily={`"Press Start 2P"`}>+{distance}</Text>
                                 </Flex>
                             )
                         }
 
                         return (
-                            <Card key={event.uuid}>
-                                <CardBody p={1}>
-                                    <Flex justifyContent={`space-between`} alignItems={`center`}>
-                                        <Box fontSize={`x-small`} fontFamily={`Anta`}>{payload.song.notes} NOTES</Box>
-                                        <Box fontSize={`x-small`} fontFamily={`Roboto`}>{dayjs(event.timestamp).format('HH:mm:ss')}</Box>
+                            <Box
+                                key={event.uuid}
+                                bg="white"
+                                border="1px solid"
+                                borderColor="gray.100"
+                                borderRadius="xl"
+                                p={3}
+                                _hover={{ borderColor: 'gray.200', shadow: 'sm' }}
+                                transition="all 0.15s"
+                            >
+                                <Flex justifyContent="space-between" alignItems="center" mb={1}>
+                                    <Text fontSize="2xs" fontWeight="600" color="gray.400" fontFamily="Anta" letterSpacing="0.06em">{payload.song.notes} NOTES</Text>
+                                    <Text fontSize="2xs" color="gray.400">{dayjs(event.timestamp).format('HH:mm:ss')}</Text>
+                                </Flex>
+                                <Text fontSize="sm" fontWeight="600" fontFamily="Oswald" color="gray.800" mb={2} lineHeight={1.3}>
+                                    <Link as={ReactLink} to={`/viewer/song/${payload.song.sha256}/${payload.song.lnmode}/score/${event.userId}`} _hover={{ color: 'teal.600' }}>
+                                        {payload.song.title}
+                                    </Link>
+                                </Text>
+                                <Flex justifyContent="space-between" alignItems="center">
+                                    <Flex alignItems="center" gap={1}>
+                                        <Text fontSize="xs" color="gray.500" fontFamily="Orbitron">{event.beforeValue ?? 'No Score'}</Text>
+                                        <Box as={MdDoubleArrow} fontSize="14px" color="gray.400" />
+                                        <Text fontSize="lg" fontWeight="700" fontFamily="Orbitron" color="red.500" lineHeight={1}>{event.afterValue}</Text>
+                                        {event.beforeValue && (
+                                            <Text fontSize="xs" color="gray.500" fontFamily="Orbitron">(+{Number(event.afterValue) - Number(event.beforeValue)})</Text>
+                                        )}
                                     </Flex>
-                                    <Heading size="md" fontFamily={`Oswald`}>
-                                        <Link as={ReactLink} variant="plain" to={`/viewer/song/${payload.song.sha256}/${payload.song.lnmode}/score/${event.userId}`}>
-                                            {payload.song.title}
-                                        </Link>
-                                    </Heading>
-                                    <Flex justifyContent={`space-between`} alignItems={`baseline`}>
-                                        <Flex alignItems={`center`}>
-                                            <Text fontSize={`small`} mt={2} fontFamily={`Orbitron`}>
-                                                {event.beforeValue ?? `No Score`}
-                                            </Text>
-                                            <Box as={MdDoubleArrow} fontSize={`19.5px`} mt={2} />
-                                            <Flex gap={1} alignItems={`baseline`}>
-                                                <Text fontSize={`x-large`} fontFamily={`Orbitron`} color={`red.500`}>{event.afterValue}</Text>
-                                                <Text fontSize={`medium`} fontFamily={`Orbitron`}>{event.beforeValue ? `(+${Number(event.afterValue) - Number(event.beforeValue)})` : ``}</Text>
-                                            </Flex>
-                                        </Flex>
-                                        <Flex gap={1} alignItems={`end`}>
-                                            {DJLevelComponent({ score: Number(event.afterValue), notes: payload.song.notes })}
-                                            {tableComponent(payload.song.sha256)}
-                                        </Flex>
+                                    <Flex gap={1} alignItems="end">
+                                        {DJLevelComponent({ score: Number(event.afterValue), notes: payload.song.notes })}
+                                        {tableComponent(payload.song.sha256)}
                                     </Flex>
-                                </CardBody>
-                            </Card>)
+                                </Flex>
+                            </Box>)
                     })}
                 </Flex>
             </Box>
@@ -158,74 +173,85 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
     }, [eventList])
     const updateClearLampComponent = () => {
         return updateClearLamp.length ? (
-            <Box bg={`gray.100`} p={2}>
-                <Heading w={`100%`} textAlign={`center`}>Clear Lamp</Heading>
-                <Flex flexDirection={`column`} gap={2}>
+            <Box>
+                <Text fontSize="xs" fontWeight="700" color="gray.400" letterSpacing="0.08em" textTransform="uppercase" mb={3}>Clear Lamp</Text>
+                <Flex flexDirection="column" gap={2}>
                     {updateClearLamp.map((event) => {
                         const payload = JSON.parse(event.payload || '{}')
                         const beforeValue = event.beforeValue ? clearStyle(Number(event.beforeValue)) : undefined
                         const afterValue = clearStyle(Number(event.afterValue))
+                        const LampBadge = ({ style, label }: { style: ReturnType<typeof clearStyle> | undefined, label: string }) => (
+                            <Text
+                                fontSize="xs"
+                                fontFamily="Orbitron"
+                                px={2.5}
+                                py={1}
+                                borderRadius="md"
+                                fontWeight={700}
+                                textAlign="center"
+                                bg={style?.backgroundColor ?? 'gray.100'}
+                                color={style ? 'white' : 'gray.500'}
+                                minW="80px"
+                            >
+                                {label}
+                            </Text>
+                        )
                         if (!!payload.song) {
                             return (
-                                <Card key={event.uuid}>
-                                    <CardBody p={1}>
-                                        <Flex justifyContent={`space-between`} alignItems={`center`}>
-                                            <Box fontSize={`x-small`}
-                                                 fontFamily={`Anta`}>{payload.song.notes} NOTES</Box>
-                                            <Box fontSize={`x-small`}
-                                                 fontFamily={`Roboto`}>{dayjs(event.timestamp).format('HH:mm:ss')}</Box>
+                                <Box
+                                    key={event.uuid}
+                                    bg="white"
+                                    border="1px solid"
+                                    borderColor="gray.100"
+                                    borderRadius="xl"
+                                    p={3}
+                                    _hover={{ borderColor: 'gray.200', shadow: 'sm' }}
+                                    transition="all 0.15s"
+                                >
+                                    <Flex justifyContent="space-between" alignItems="center" mb={1}>
+                                        <Text fontSize="2xs" fontWeight="600" color="gray.400" fontFamily="Anta" letterSpacing="0.06em">{payload.song.notes} NOTES</Text>
+                                        <Text fontSize="2xs" color="gray.400">{dayjs(event.timestamp).format('HH:mm:ss')}</Text>
+                                    </Flex>
+                                    <Text fontSize="sm" fontWeight="600" fontFamily="Oswald" color="gray.800" mb={2} lineHeight={1.3}>
+                                        <Link as={ReactLink} to={`/viewer/song/${payload.song.sha256}/${payload.song.lnmode}/score/${event.userId}`} _hover={{ color: 'teal.600' }}>
+                                            {payload.song.title}
+                                        </Link>
+                                    </Text>
+                                    <Flex justifyContent="space-between" alignItems="center">
+                                        <Flex alignItems="center" gap={1.5}>
+                                            <LampBadge style={beforeValue} label={beforeValue ? beforeValue.text : 'No Play'} />
+                                            <Box as={MdDoubleArrow} fontSize="14px" color="gray.400" />
+                                            <LampBadge style={afterValue} label={afterValue.text} />
                                         </Flex>
-                                        <Heading size="md" fontFamily={`Oswald`} marginBottom={2}>
-                                            <Link as={ReactLink} variant="plain"
-                                                  to={`/viewer/song/${payload.song.sha256}/${payload.song.lnmode}/score/${event.userId}`}>
-                                                {payload.song.title}
-                                            </Link>
-                                        </Heading>
-                                        <Flex justifyContent={`space-between`}>
-                                            <Flex alignItems={`center`}>
-                                                <Text fontSize={`small`} fontFamily={`Orbitron`} px={2} py={1}
-                                                      w={`140px`} textAlign={`center`} fontWeight={700}
-                                                      backgroundColor={beforeValue?.backgroundColor ?? `gray.300`}>
-                                                    {beforeValue ? beforeValue.text : `No Play`}
-                                                </Text>
-                                                <Box as={MdDoubleArrow} fontSize={`19.5px`} />
-                                                <Text fontSize={`small`} fontFamily={`Orbitron`} px={2} py={1}
-                                                      w={`140px`} textAlign={`center`} fontWeight={700}
-                                                      backgroundColor={afterValue.backgroundColor}>{afterValue.text}</Text>
-                                            </Flex>
-                                            {tableComponent(payload.song.sha256)}
-                                        </Flex>
-                                    </CardBody>
-                                </Card>
+                                        {tableComponent(payload.song.sha256)}
+                                    </Flex>
+                                </Box>
                             )
                         } else if (!!payload.cource) {
                             return (
-                                <Card key={event.uuid}>
-                                    <CardBody p={1}>
-                                        <Flex justifyContent={`space-between`} alignItems={`center`}>
-                                            <Box fontSize={`x-small`}
-                                                 fontFamily={`Anta`}>-</Box>
-                                            <Box fontSize={`x-small`}
-                                                 fontFamily={`Roboto`}>{dayjs(event.timestamp).format('HH:mm:ss')}</Box>
-                                        </Flex>
-                                        <Heading size="md" fontFamily={`Oswald`} marginBottom={2}>
-                                            {payload.cource.name}
-                                        </Heading>
-                                        <Flex justifyContent={`space-between`}>
-                                            <Flex alignItems={`center`}>
-                                                <Text fontSize={`small`} fontFamily={`Orbitron`} px={2} py={1}
-                                                      w={`140px`} textAlign={`center`} fontWeight={700}
-                                                      backgroundColor={beforeValue?.backgroundColor ?? `gray.300`}>
-                                                    {beforeValue ? beforeValue.text : `No Play`}
-                                                </Text>
-                                                <Box as={MdDoubleArrow} fontSize={`19.5px`} />
-                                                <Text fontSize={`small`} fontFamily={`Orbitron`} px={2} py={1}
-                                                      w={`140px`} textAlign={`center`} fontWeight={700}
-                                                      backgroundColor={afterValue.backgroundColor}>{afterValue.text}</Text>
-                                            </Flex>
-                                        </Flex>
-                                    </CardBody>
-                                </Card>
+                                <Box
+                                    key={event.uuid}
+                                    bg="white"
+                                    border="1px solid"
+                                    borderColor="gray.100"
+                                    borderRadius="xl"
+                                    p={3}
+                                    _hover={{ borderColor: 'gray.200', shadow: 'sm' }}
+                                    transition="all 0.15s"
+                                >
+                                    <Flex justifyContent="space-between" alignItems="center" mb={1}>
+                                        <Text fontSize="2xs" color="gray.400">-</Text>
+                                        <Text fontSize="2xs" color="gray.400">{dayjs(event.timestamp).format('HH:mm:ss')}</Text>
+                                    </Flex>
+                                    <Text fontSize="sm" fontWeight="600" fontFamily="Oswald" color="gray.800" mb={2}>
+                                        {payload.cource.name}
+                                    </Text>
+                                    <Flex alignItems="center" gap={1.5}>
+                                        <LampBadge style={beforeValue} label={beforeValue ? beforeValue.text : 'No Play'} />
+                                        <Box as={MdDoubleArrow} fontSize="14px" color="gray.400" />
+                                        <LampBadge style={afterValue} label={afterValue.text} />
+                                    </Flex>
+                                </Box>
                             )
                         }
                     })}
@@ -238,43 +264,45 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
         return eventList.filter((event) => event.eventType === 'bp')
     }, [eventList])
     const updateBpComponent = () => {
-        return updateClearLamp.length ? (
-            <Box bg={`gray.100`} p={2}>
-                <Heading w={`100%`} textAlign={`center`}>BP Count</Heading>
-                <Flex flexDirection={`column`} gap={2}>
+        return updateBpLamp.length ? (
+            <Box>
+                <Text fontSize="xs" fontWeight="700" color="gray.400" letterSpacing="0.08em" textTransform="uppercase" mb={3}>BP Count</Text>
+                <Flex flexDirection="column" gap={2}>
                     {updateBpLamp.map((event) => {
                         const payload = JSON.parse(event.payload || '{}')
                         if (!!payload.song) {
                             return (
-                                <Card key={event.uuid}>
-                                    <CardBody p={1}>
-                                        <Flex justifyContent={`space-between`} alignItems={`center`}>
-                                            <Box fontSize={`x-small`}
-                                                 fontFamily={`Anta`}>{payload.song.notes} NOTES</Box>
-                                            <Box fontSize={`x-small`}
-                                                 fontFamily={`Roboto`}>{dayjs(event.timestamp).format('HH:mm:ss')}</Box>
+                                <Box
+                                    key={event.uuid}
+                                    bg="white"
+                                    border="1px solid"
+                                    borderColor="gray.100"
+                                    borderRadius="xl"
+                                    p={3}
+                                    _hover={{ borderColor: 'gray.200', shadow: 'sm' }}
+                                    transition="all 0.15s"
+                                >
+                                    <Flex justifyContent="space-between" alignItems="center" mb={1}>
+                                        <Text fontSize="2xs" fontWeight="600" color="gray.400" fontFamily="Anta" letterSpacing="0.06em">{payload.song.notes} NOTES</Text>
+                                        <Text fontSize="2xs" color="gray.400">{dayjs(event.timestamp).format('HH:mm:ss')}</Text>
+                                    </Flex>
+                                    <Text fontSize="sm" fontWeight="600" fontFamily="Oswald" color="gray.800" mb={2} lineHeight={1.3}>
+                                        <Link as={ReactLink} to={`/viewer/song/${payload.song.sha256}/${payload.song.lnmode}/score/${event.userId}`} _hover={{ color: 'teal.600' }}>
+                                            {payload.song.title}
+                                        </Link>
+                                    </Text>
+                                    <Flex justifyContent="space-between" alignItems="center">
+                                        <Flex alignItems="center" gap={1}>
+                                            <Text fontSize="xs" color="gray.500" fontFamily="Orbitron">{event.beforeValue ?? '-'}</Text>
+                                            <Box as={MdDoubleArrow} fontSize="14px" color="gray.400" />
+                                            <Text fontSize="lg" fontWeight="700" fontFamily="Orbitron" color="blue.500" lineHeight={1}>{event.afterValue}</Text>
+                                            {event.beforeValue && (
+                                                <Text fontSize="xs" color="gray.500" fontFamily="Orbitron">(-{Number(event.beforeValue) - Number(event.afterValue)})</Text>
+                                            )}
                                         </Flex>
-                                        <Heading size="md" fontFamily={`Oswald`} marginBottom={1}>
-                                            <Link as={ReactLink} variant="plain"
-                                                  to={`/viewer/song/${payload.song.sha256}/${payload.song.lnmode}/score/${event.userId}`}>
-                                                {payload.song.title}
-                                            </Link>
-                                        </Heading>
-                                        <Flex justifyContent={`space-between`} alignItems={`end`}>
-                                            <Flex alignItems={`end`}>
-                                                <Text fontSize={`small`} mt={2} fontFamily={`Orbitron`}>
-                                                    {event.beforeValue ?? "-"}
-                                                </Text>
-                                                <Box as={MdDoubleArrow} fontSize={`19.5px`} />
-                                                <Flex gap={1} alignItems={`end`}>
-                                                    <Text fontSize={`x-large`} fontFamily={`Orbitron`} color={`blue.500`} lineHeight={1}>{event.afterValue}</Text>
-                                                    <Text fontSize={`medium`} fontFamily={`Orbitron`} lineHeight={1}>{event.beforeValue ? `(-${Number(event.beforeValue) - Number(event.afterValue)})` : ``}</Text>
-                                                </Flex>
-                                            </Flex>
-                                            {tableComponent(payload.song.sha256)}
-                                        </Flex>
-                                    </CardBody>
-                                </Card>
+                                        {tableComponent(payload.song.sha256)}
+                                    </Flex>
+                                </Box>
                             )
                         }
                     })}
@@ -284,16 +312,20 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
     }
 
     const lampGroup = useMemo(() => {
-        return updateClearLamp.reduce((acc, event) => {
+        // 同じ曲・コースは最高ランプのイベントのみ残す
+        const highestLampMap = new Map<string, IMinIRUserEventEntity>()
+        for (const event of updateClearLamp) {
+            const payload = JSON.parse(event.payload || '{}')
+            const key = payload.song?.sha256 ?? payload.cource?.name
+            if (!key) continue
+            const existing = highestLampMap.get(key)
+            if (!existing || Number(event.afterValue) > Number(existing.afterValue)) {
+                highestLampMap.set(key, event)
+            }
+        }
+
+        return Array.from(highestLampMap.values()).reduce((acc, event) => {
             switch (Number(event.afterValue)) {
-                case 0:
-                    break
-                case 1:
-                    break
-                case 2:
-                    break
-                case 3:
-                    break
                 case 4:
                     acc['Easy'].push(event)
                     break
@@ -307,11 +339,7 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
                     acc[`ExHard`].push(event)
                     break
                 case 8:
-                    acc[`FullCombo`].push(event)
-                    break
                 case 9:
-                    acc[`FullCombo`].push(event)
-                    break
                 case 10:
                     acc[`FullCombo`].push(event)
                     break
@@ -325,71 +353,85 @@ export default ({ eventList }: { eventList: IMinIRUserEventEntity[] }) => {
     }, [updateClearLamp])
     const newLampComponent = () => {
         return (
-            <Flex flexDirection={`column`} gap={2} backgroundColor={`gray.100`}>
-                <Box>
-                    <Heading w={`100%`} textAlign={`center`}>New Clear Lamp</Heading>
-                </Box>
-                <Grid templateColumns={{ base: `repeat(2, 1fr)`, md: `repeat(3, 1fr)` }} gap={1}>{Object.keys(lampGroup).map((key) => {
-                    const events = lampGroup[key]
-                    const clearNumber = clearStringValue(key)
-                    const clearStl = clearStyle(clearNumber)
-                    if (!events.length) {
+            <Box>
+                <Text fontSize="xs" fontWeight="700" color="gray.400" letterSpacing="0.08em" textTransform="uppercase" mb={3}>New Clear Lamp</Text>
+                <Grid templateColumns={{ base: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }} gap={2}>
+                    {Object.keys(lampGroup).map((key) => {
+                        const events = lampGroup[key]
+                        const clearNumber = clearStringValue(key)
+                        const clearStl = clearStyle(clearNumber)
                         return (
-                            <GridItem bg={clearStl.backgroundColor} p={2} key={key}>
-                                <Heading w={`100%`} textAlign={`center`} fontSize={`large`} fontFamily={`Orbitron`}>{key}</Heading>
-                                <Text textAlign={`center`} py={4}>
-                                    No Record
-                                </Text>
+                            <GridItem
+                                key={key}
+                                borderRadius="xl"
+                                overflow="hidden"
+                                border="1px solid"
+                                borderColor="gray.100"
+                            >
+                                {/* ランプカラーのアクセント帯 */}
+                                <Box h="4px" bg={clearStl.backgroundColor} />
+                                <Box p={3}>
+                                    <Text
+                                        fontSize="xs"
+                                        fontWeight="700"
+                                        fontFamily="Orbitron"
+                                        color="gray.700"
+                                        textAlign="center"
+                                        mb={2}
+                                        letterSpacing="0.04em"
+                                    >
+                                        {key}
+                                    </Text>
+                                    {!events.length ? (
+                                        <Text textAlign="center" fontSize="xs" color="gray.400" py={3}>No Record</Text>
+                                    ) : (
+                                        <Flex flexDirection="column" gap={1.5}>
+                                            {events.map((event) => {
+                                                const payload = JSON.parse(event.payload || '{}')
+                                                if (!!payload.song) {
+                                                    return (
+                                                        <Box
+                                                            key={event.uuid}
+                                                            bg="gray.50"
+                                                            borderRadius="lg"
+                                                            px={2}
+                                                            py={1.5}
+                                                        >
+                                                            <Flex justifyContent="space-between" alignItems="flex-start" gap={1}>
+                                                                <Text fontSize="xs" fontWeight="600" fontFamily="Oswald" color="gray.800" lineHeight={1.3}>
+                                                                    <Link as={ReactLink} to={`/viewer/song/${payload.song.sha256}/${payload.song.lnmode}/score/${event.userId}`} _hover={{ color: 'teal.600' }}>
+                                                                        {payload.song.title}
+                                                                    </Link>
+                                                                </Text>
+                                                                {tableComponent(payload.song.sha256)}
+                                                            </Flex>
+                                                        </Box>
+                                                    )
+                                                } else if (!!payload.cource) {
+                                                    return (
+                                                        <Box key={event.uuid} bg="gray.50" borderRadius="lg" px={2} py={1.5}>
+                                                            <Text fontSize="xs" fontWeight="600" fontFamily="Oswald" color="gray.800">
+                                                                {payload.cource.name}
+                                                            </Text>
+                                                        </Box>
+                                                    )
+                                                }
+                                            })}
+                                        </Flex>
+                                    )}
+                                </Box>
                             </GridItem>
                         )
-                    }
-
-                    return (
-                        <GridItem bg={clearStl.backgroundColor} p={2} key={key}>
-                            <Heading w={`100%`} textAlign={`center`} fontSize={`large`} mb={2} fontFamily={`Orbitron`}>{key}</Heading>
-                            <Flex flexDirection={`column`} gap={2}>
-                                {events.map((event) => {
-                                    const payload = JSON.parse(event.payload || '{}')
-                                    if (!!payload.song) {
-                                        return (
-                                            <Card key={event.uuid}>
-                                                <CardBody p={1}>
-                                                    <Flex justifyContent={`space-between`} alignItems={`center`}>
-                                                        <Heading size="sm" fontFamily={`Oswald`}>
-                                                            <Link as={ReactLink} variant="plain"
-                                                                  to={`/viewer/song/${payload.song.sha256}/${payload.song.lnmode}/score/${event.userId}`}>
-                                                                {payload.song.title}
-                                                            </Link>
-                                                        </Heading>
-                                                        {tableComponent(payload.song.sha256)}
-                                                    </Flex>
-                                                </CardBody>
-                                            </Card>
-                                        )
-                                    } else if (!!payload.cource) {
-                                        return (
-                                            <Card key={event.uuid}>
-                                                <CardBody p={1}>
-                                                    <Heading size="sm" fontFamily={`Oswald`}>
-                                                        {payload.cource.name}
-                                                    </Heading>
-                                                </CardBody>
-                                            </Card>
-                                        )
-                                    }
-                                })}
-                            </Flex>
-                        </GridItem>
-                    )
-                })}</Grid>
-            </Flex>
+                    })}
+                </Grid>
+            </Box>
         )
     }
 
     return (
-        <Flex flexDirection={`column`} gap={2} w={`100%`}>
+        <Flex flexDirection="column" gap={6} w="100%">
             {newLampComponent()}
-            <Grid templateColumns={{ base: `repeat(1, 1fr)`, md: `repeat(3, 1fr)` }} gap={1}>
+            <Grid templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }} gap={4}>
                 <GridItem>
                     {updateScoreComponent()}
                 </GridItem>

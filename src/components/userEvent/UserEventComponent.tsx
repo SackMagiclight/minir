@@ -1,5 +1,5 @@
 import { useGetUserEventQuery } from '~/api'
-import { Box, Button, Flex, Heading, HStack } from '@chakra-ui/react'
+import { Box, Button, Heading, HStack } from '@chakra-ui/react'
 import UserEventUpdateLog from '~/components/userEvent/UserEventUpdateLog'
 import dayjs from 'dayjs'
 import { useState } from 'react'
@@ -25,21 +25,21 @@ export default ({userId}: { userId: string}) => {
     }
 
     return (
-        <Box w={`100%`} p={4}>
-                <HStack w={`100%`} p={4} justifyContent={`center`} >
-                    <Button backgroundColor={`inherit`} variant="solid" p={0} onClick={handlePrevDate}>
-                        <CiSquareChevLeft size={32} />
-                    </Button>
-                    <Heading>
-                        Record for {dayjs(targetDate).format("YYYY/MM/DD")}
-                    </Heading>
-                    <Button backgroundColor={`inherit`} p={0} onClick={handleNextDate}>
-                        <CiSquareChevRight size={32} />
-                    </Button>
-                </HStack>
-            <Flex>
+        <Box w="100%">
+            <HStack w="100%" px={6} py={5} justifyContent="center">
+                <Button backgroundColor="inherit" variant="solid" p={0} onClick={handlePrevDate}>
+                    <CiSquareChevLeft size={32} />
+                </Button>
+                <Heading fontSize={{ base: 'xl', md: '2xl' }}>
+                    Record for {dayjs(targetDate).format("YYYY/MM/DD")}
+                </Heading>
+                <Button backgroundColor="inherit" p={0} onClick={handleNextDate}>
+                    <CiSquareChevRight size={32} />
+                </Button>
+            </HStack>
+            <Box px={{ base: 3, md: 5 }} pb={6}>
                 <UserEventUpdateLog eventList={_userEventData?.eventList || []} />
-            </Flex>
+            </Box>
         </Box>
     )
 }
