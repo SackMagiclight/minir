@@ -1,9 +1,9 @@
 [
     {
-        "date": "2024/02/07",
-        "due": "2024/03/01",
-        "status": "info",
-        "title": "MinIR APIを更新しました",
-        "detail": "beatoraja 本体0.8.7では、旧APIではスコア送信ができません。<br>メニュー「Download API」から、新API(minir-530)をダウンロードしてご利用ください。"
+        "date": "2025/06/06",
+        "due": "2025/06/29",
+        "status": "warning",
+        "title": "MinIR API 旧バージョンサポート終了",
+        "detail": "Stella側のサイトリニューアルに伴い、旧API（minir-530.jar）はスコア連携が行えなくなります。<br>今後のアップデートは提供されず、サポート外となります。<br>メニュー「Download API」から、新API(minir-600)をダウンロードしてご利用ください。"
     }
 ]

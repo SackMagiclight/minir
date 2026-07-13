@@ -417,3 +417,5 @@ src/apis
 .pages
 .java-version
 fastlane/report.xml
+.vscode
+.idea

@@ -61,7 +61,7 @@ const getClear = (clear: number) => {
             text = 'Easy'
             break
         case 5:
-             backgroundColor = 'rgb(152, 251, 152)'
+             backgroundColor = 'rgb(60, 179, 113)'
             text =  'Normal'
             break
         case 6:
@@ -385,7 +385,7 @@ export default () => {
                                 <Td>
                                     <ButtonGroup variant="outline" spacing="2">
                                         {stellaUrl && (
-                                            <Button color={'#001529'} size="xs" as={'a'} href={stellaUrl} target={'_blank'}>
+                                            <Button color={'#001529'} size="xs" as={Link} href={`https://stellabms.xyz/sha256/${urlParams.songhash}`} isExternal>
                                                 Stella / Satellite
                                             </Button>
                                         )}

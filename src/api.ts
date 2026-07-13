@@ -10,7 +10,7 @@ import {
     IMinIRUserEntity,
     RemoveRivalRequestDto,
     SignupRequestDto,
-    UpdateDynamoUserRequestDto,
+    UpdateDynamoUserRequestDto, IMinIRUserEventEntity,
 } from './entities'
 
 export const api = createApi({
@@ -192,6 +192,22 @@ export const api = createApi({
                 }
             },
         }),
+        getUserEvent: builder.query<
+            {
+                message: string
+                eventList: (IMinIRUserEventEntity)[]
+            },
+            { userId: string, date?: string, timezone?: string }
+        >({
+            query: (arg) => {
+                const { userId, date, timezone } = arg
+                return {
+                    url: `user/event`,
+                    method: 'GET',
+                    params: { userId, date, timezone },
+                }
+            },
+        }),
         putUserUpdate: builder.mutation<
             {
                 dynamoUser: IMinIRUserEntity
@@ -266,6 +282,39 @@ export const api = createApi({
                 body,
             }),
         }),
+        getCurrentUserCount: builder.query<
+            {
+                message: string
+                uniqueUserCount: number
+            },
+            void
+        >({
+            query: () => ({
+                url: `system/current`,
+                method: 'GET',
+            }),
+        }),
+        postHabitStats: builder.mutation<
+            {
+                message: string
+                accessToken: string
+                refreshToken: string
+                stats: {
+                    play_streak: number
+                    last_play_date: string
+                    daily_heatmap: Record<string, number>
+                    weekday_stats: Record<string, { plays: number; ex_sum: number }>
+                    hour_stats: Record<string, { plays: number; ex_sum: number }>
+                } | null
+            },
+            { accessToken: string; refreshToken: string }
+        >({
+            query: (body) => ({
+                url: `user/habit-stats`,
+                method: 'POST',
+                body,
+            }),
+        }),
     }),
 })
 
@@ -282,9 +331,12 @@ export const {
     usePostForgetMutation,
     usePostForgetConfirmMutation,
     useGetUserQuery,
+    useGetUserEventQuery,
     usePutUserUpdateMutation,
     useGetRivalListQuery,
     usePostRivalAddMutation,
     useDeleteRivalRemoveMutation,
     usePostServiceAddMutation,
+    useGetCurrentUserCountQuery,
+    usePostHabitStatsMutation,
 } = api
