@@ -12,9 +12,10 @@ import { PersistGate } from 'redux-persist/integration/react'
 import { Provider } from "react-redux";
 import { store, persistor } from "./store/store";
 
+const queryClient = new QueryClient()
+
 const Root: FC<{ children: any }> = ({ children }) => {
     const { VhVariable } = useVh()
-    const queryClient = new QueryClient()
 
     const theme = extendTheme({
         components: {
