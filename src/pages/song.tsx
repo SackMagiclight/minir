@@ -214,7 +214,13 @@ export default () => {
                 formatter: (cell: Tabulator.CellComponent) => {
                     const data = cell.getRow().getData()
                     cell.getElement().style.fontSize = '10px'
-                    return `${data.beatorajaVer ?? ''} <br/> ${data.skinName ?? ''}`
+                    const environment = document.createElement('div')
+                    const version = document.createElement('span')
+                    const skin = document.createElement('span')
+                    version.textContent = typeof data.beatorajaVer === 'string' ? data.beatorajaVer : ''
+                    skin.textContent = typeof data.skinName === 'string' ? data.skinName : ''
+                    environment.append(version, document.createElement('br'), skin)
+                    return environment
                 },
                 headerSort: false,
             },
