@@ -17,7 +17,6 @@ import {
     ListItem,
     Divider,
     CloseButton,
-    Image,
 } from '@chakra-ui/react'
 import { Link as ReactLink, useLocation, useNavigate } from 'react-router-dom'
 import { ExternalLinkIcon, HamburgerIcon } from '@chakra-ui/icons'
@@ -159,14 +158,6 @@ const Header = () => {
                                     <Flex align={'center'}>
                                         <Icon as={FcAbout} />
                                         <Text marginLeft={1}>About</Text>
-                                    </Flex>
-                                </Link>
-                            </ListItem>
-                            <ListItem>
-                                <Link as={ReactLink} to={'/flavor-log'}>
-                                    <Flex align={'center'}>
-                                        <Image src="/minir/flavorlog/icon.png" w={4} h={4} />
-                                        <Text marginLeft={1}>Flavor Log</Text>
                                     </Flex>
                                 </Link>
                             </ListItem>
