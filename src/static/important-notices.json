@@ -1,0 +1,27 @@
+[
+    {
+        "id": "beatoraja-089-support",
+        "enabled": true,
+        "status": "error",
+        "date": "2026/11/03",
+        "title": "【重要】beatoraja 0.8.9への更新をお願いします",
+        "summary": "2026年11月9日 0:00（JST）から0.8.8以前はサポート対象外となります。今後の更新等で接続できなくなる場合がありますので、お早めに0.8.9＋minir-700へ更新をお願いします。",
+        "primaryLink": {
+            "label": "本体ダウンロード",
+            "url": "https://laravel.mocha-repository.info/download"
+        },
+        "paragraphs": [
+            "いつもMinIRをご利用いただきありがとうございます。",
+            "「Mocha-Repository」の旧バージョン対応終了の案内を踏まえ、MinIRでも2026年11月9日 0:00（JST）からbeatoraja 0.8.8以前をサポート対象外とします。サポート終了後の接続や動作は保証されず、今後の更新や運用上の対応によって接続できなくなる場合があります。",
+            "引き続きMinIRをご利用いただくため、早めにbeatoraja 0.8.9へアップデートをお願いいたします。MinIR APIは、0.8.9対応版のminir-700をご利用ください。APIはメニューの「Download API」から入手できます。",
+            "更新前に、設定ファイルとプレイヤーデータのバックアップをお取りください。beatoraja本体は「本体ダウンロード」から入手できます。",
+            "急なご案内となりご不便をおかけしますが、安定したサービス運用のため、ご理解とご協力をお願いいたします。"
+        ],
+        "links": [
+            {
+                "label": "Mocha-Repository",
+                "url": "https://mocha-repository.info/"
+            }
+        ]
+    }
+]

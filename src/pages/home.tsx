@@ -17,6 +17,7 @@ import histories from '~/static/history.json'
 import alertJson from '~/static/alert.json'
 import { InfoIcon, WarningIcon } from '@chakra-ui/icons'
 import { Helmet } from 'react-helmet-async'
+import { ImportantNotices } from '~/components/ImportantNotices'
 
 export default () => {
     const createIcon = (iconName: string) => {
@@ -57,6 +58,7 @@ export default () => {
             <Helmet>
                 <title>MinIR</title>
             </Helmet>
+            <ImportantNotices />
             {alert()}
             <Flex justify={'center'}>
                 <Image boxSize={'60%'} objectFit={'cover'} src={'./logo.png'}></Image>
