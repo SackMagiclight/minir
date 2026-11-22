@@ -1,11 +1,14 @@
 import { rename, rm, writeFile } from 'node:fs/promises'
 
-const officialTables = ['st', 'sl', 'dpst', 'dp', 'sn', 'so', 'sr']
+const tableFamilies = ['st', 'sl', 'dpst', 'dp', 'sn', 'so', 'sr']
+const tablePaths = ['score_sub.json', 'score.json'].flatMap((file) =>
+    tableFamilies.map((family) => `${family}/${file}`),
+)
 const indexUrl = new URL('../src/static/stellaverse-charts.json', import.meta.url)
 const temporaryUrl = new URL(`stellaverse-charts.${process.pid}.tmp`, indexUrl)
 
-async function fetchCharts(table) {
-    const url = `https://stellabms.xyz/${table}/score.json`
+async function fetchCharts(path) {
+    const url = `https://stellabms.xyz/${path}`
     const response = await fetch(url, { signal: AbortSignal.timeout(15000) })
     if (!response.ok) throw new Error(`${url} returned HTTP ${response.status}`)
 
@@ -19,11 +22,12 @@ async function fetchCharts(table) {
         return [[hash.toLowerCase(), id]]
     })
     if (!charts.length) throw new Error(`${url} did not contain any chart IDs`)
-    console.log(`${table}: ${charts.length} charts`)
+    console.log(`${path}: ${charts.length} charts`)
     return charts
 }
 
-const tables = await Promise.all(officialTables.map(fetchCharts))
+const tables = await Promise.all(tablePaths.map(fetchCharts))
+// Official table IDs take precedence when tables share a SHA-256.
 const charts = new Map(tables.flat())
 const index = Object.fromEntries([...charts].sort(([left], [right]) => left.localeCompare(right)))
 
