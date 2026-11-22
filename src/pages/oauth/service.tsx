@@ -22,7 +22,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import React from 'react'
 import { MdAlternateEmail } from 'react-icons/md'
 import { usePostLoginMutation, usePostServiceAddMutation } from '~/api'
-import { setAccessToken, setRefreshToken } from '../../store/userStore'
+import { setAccessToken, setRefreshToken, setUserId } from '../../store/userStore'
 import { useDispatch } from 'react-redux'
 
 export default () => {
@@ -78,6 +78,7 @@ export default () => {
                     token: urlParams.serviceToken ?? '',
                     serviceName: urlParams.serviceName ?? '',
                 }).unwrap()
+                dispatch(setUserId(json.userId))
 
                 const obj = json.returnObj as {
                     Url: string

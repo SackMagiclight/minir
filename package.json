@@ -7,6 +7,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "update:stellaverse": "node scripts/update-stellaverse-charts.mjs",
     "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {

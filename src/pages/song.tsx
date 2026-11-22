@@ -17,7 +17,7 @@ import {
     Flex,
 } from '@chakra-ui/react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { DefaultLayout } from '~/layout/Default'
 
 import { ReactTabulator } from 'react-tabulator'
@@ -26,13 +26,15 @@ import 'react-tabulator/lib/styles.css'
 import 'react-tabulator/lib/css/tabulator_semanticui.min.css'
 import { CopyIcon, ExternalLinkIcon } from '@chakra-ui/icons'
 import { FaFacebook, FaLine, FaTwitter } from 'react-icons/fa'
-import { useQuery } from 'react-query'
-import axios from 'axios'
+import { useQuery, useQueryClient } from 'react-query'
 import { cloneDeep, truncate } from 'lodash'
 import { Helmet } from 'react-helmet-async'
-import { useGetSongScoreListQuery } from '../api'
+import { useGetSongScoreListQuery, usePostMeMutation } from '../api'
+import { StellaScoreSync } from '../components/StellaScoreSync'
 import { useSelector } from 'react-redux'
-import { getUserId } from '../store/userStore'
+import { store } from '../store/store'
+import { getStellaLink, getTokens, getUserId } from '../store/userStore'
+import stellaverseChartsUrl from '../static/stellaverse-charts.json?url'
 import numeral from 'numeral'
 import { Link as ReactLink } from 'react-router-dom'
 
@@ -99,10 +101,12 @@ export default () => {
     const urlParams = useParams<{ songhash: string; lnmode: string }>()
     const toast = useToast()
     const loginUserId = useSelector(getUserId)
+    const { accessToken, refreshToken } = useSelector(getTokens)
+    const stellaLink = useSelector(getStellaLink)
+    const [fetchMe] = usePostMeMutation({ selectFromResult: () => ({}) })
 
-    const { data, isLoading } = useGetSongScoreListQuery({
-        songhash: `${urlParams.songhash ?? ''}${urlParams.lnmode ? `.${urlParams.lnmode}` : '.0'}`,
-    })
+    const songhash = `${urlParams.songhash ?? ''}.${urlParams.lnmode ?? '0'}`
+    const { data, currentData, isLoading, isError } = useGetSongScoreListQuery({ songhash })
 
     const columns = useMemo<Tabulator.ColumnDefinition[]>(() => {
         return [
@@ -227,18 +231,29 @@ export default () => {
         ]
     }, [data])
 
+    const queryClient = useQueryClient()
+    const sha256 = urlParams.songhash?.toLowerCase() ?? ''
     const { data: stellaUrl } = useQuery(
-        'posts',
-        async () => {
-            const { data } = await axios.get(`https://stellabms.xyz/sha256/${urlParams.songhash}`, {
-                headers: {
-                    'Content-Type': 'application/json;charset=UTF-8',
-                    'Access-Control-Allow-Origin': '*',
+        ['stellaverse-chart-url', sha256],
+        async ({ signal }) => {
+            const chartUrl = `https://stellabms.xyz/sha256/${sha256}`
+            const response = await fetch(chartUrl, { credentials: 'omit', signal }).catch(() => undefined)
+            if (response?.ok) return chartUrl
+            if (signal?.aborted) return null
+
+            const chartIds = await queryClient.fetchQuery(
+                ['stellaverse-chart-index', stellaverseChartsUrl],
+                async () => {
+                    const index = await fetch(stellaverseChartsUrl)
+                    if (!index.ok) throw new Error('Failed to load the Stellaverse chart index')
+                    return (await index.json()) as Record<string, number>
                 },
-            })
-            return data
+                { staleTime: Infinity, retry: false },
+            )
+            const chartId = chartIds[sha256]
+            return chartId === undefined ? null : `https://stellabms.xyz/song/${chartId}`
         },
-        { retry: 0 },
+        { enabled: /^[0-9a-f]{64}$/.test(sha256), staleTime: 15 * 60 * 1000, retry: false },
     )
 
     const rowFormatter = (row: Tabulator.RowComponent) => {
@@ -322,25 +337,25 @@ export default () => {
     }, [data])
 
     const userScoreData = useMemo(() => {
-        if (!data) {
-            return {
-                rowNum: 0,
-                scoreData: undefined,
-            }
+        const scores = data?.IRDatas ?? []
+        const index = scores.findIndex((v) => v.userid === loginUserId)
+        return {
+            rowNum: index + 1,
+            scoreData: index >= 0 ? scores[index] : undefined,
         }
-        const userScore = data.IRDatas.find((v) => v.userid === loginUserId)
-        if (userScore) {
-            return {
-                rowNum: data.IRDatas.findIndex((v) => v.userid === loginUserId) + 1,
-                scoreData: userScore,
-            }
-        } else {
-            return {
-                rowNum: 0,
-                scoreData: undefined,
-            }
-        }
-    }, [data])
+    }, [data, loginUserId])
+
+    const hasSyncableScore = Boolean(
+        loginUserId &&
+            /^[0-9a-f]{64}\.[012]$/i.test(songhash) &&
+            currentData?.IRDatas?.some((score) => score.userid === loginUserId && score.novalidate !== true),
+    )
+    useEffect(() => {
+        if (!hasSyncableScore || !loginUserId || !accessToken || !refreshToken) return
+        const { requestId, failedAt } = getStellaLink(store.getState())
+        if (requestId && (!failedAt || Date.now() - failedAt < 60000)) return
+        void fetchMe({ accessToken, refreshToken })
+    }, [hasSyncableScore, songhash, loginUserId, accessToken, refreshToken, stellaLink.requestId, fetchMe])
 
     const maxScore = useMemo(() => {
         return (data?.songData?.notes ?? 0) * 2
@@ -391,18 +406,10 @@ export default () => {
                                 <Td>
                                     <ButtonGroup variant="outline" spacing="2">
                                         {stellaUrl && (
-                                            <Button color={'#001529'} size="xs" as={Link} href={`https://stellabms.xyz/sha256/${urlParams.songhash}`} isExternal>
-                                                Stella / Satellite
+                                            <Button color={'#001529'} size="xs" as={Link} href={stellaUrl} isExternal>
+                                                Stella
                                             </Button>
                                         )}
-                                        <Button
-                                            color={'#FF7066'}
-                                            size="xs"
-                                            as={'a'}
-                                            href={`https://cinnamon.link/charts/${urlParams.songhash}`}
-                                            target={'_blank'}>
-                                            Cinnamon
-                                        </Button>
                                         <Button
                                             color={'#75491E'}
                                             size="xs"
@@ -534,9 +541,12 @@ export default () => {
                                     </Flex>
                                 </Box>
                             ) : (
-                                <Box fontSize={'small'}>NO SCORE</Box>
+                                <Box fontSize={'small'}>{isError ? 'スコアを取得できませんでした' : 'NO SCORE'}</Box>
                             )}
                         </Box>
+                        {hasSyncableScore && accessToken && stellaLink.userId === loginUserId && stellaLink.linked && (
+                            <StellaScoreSync songhash={songhash} userId={loginUserId} accessToken={accessToken} />
+                        )}
                     </Flex>
                 )}
                 <ReactTabulator

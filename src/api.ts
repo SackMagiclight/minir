@@ -12,6 +12,8 @@ import {
     SignupRequestDto,
     UpdateDynamoUserRequestDto, IMinIRUserEventEntity,
 } from './entities'
+import type { RootState } from './store/store'
+import { checkStellaLink, getTokens, invalidateStellaLink, resolveStellaLink } from './store/userStore'
 
 export const api = createApi({
     baseQuery: fetchBaseQuery({
@@ -148,6 +150,22 @@ export const api = createApi({
                 method: 'POST',
                 body,
             }),
+            async onQueryStarted({ accessToken, refreshToken }, { dispatch, getState, queryFulfilled, requestId }) {
+                const tokens = getTokens(getState() as RootState)
+                if (tokens.accessToken !== accessToken || tokens.refreshToken !== refreshToken) return
+
+                dispatch(checkStellaLink(requestId))
+                try {
+                    const { data: { userData } } = await queryFulfilled
+                    dispatch(resolveStellaLink({
+                        requestId,
+                        userId: userData.userid,
+                        linked: userData.services?.includes('Stella') === true,
+                    }))
+                } catch {
+                    dispatch(resolveStellaLink({ requestId, failedAt: Date.now() }))
+                }
+            },
         }),
         postForget: builder.mutation<
             String,
@@ -281,6 +299,10 @@ export const api = createApi({
                 method: 'POST',
                 body,
             }),
+            async onQueryStarted(_, { dispatch, queryFulfilled }) {
+                const result = await queryFulfilled.catch(() => undefined)
+                if (result) dispatch(invalidateStellaLink())
+            },
         }),
         getCurrentUserCount: builder.query<
             {

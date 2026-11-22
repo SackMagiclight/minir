@@ -37,7 +37,7 @@ const AppRoot = () => {
                 <Route path="/viewer/latest/:key">
                     <Route index element={<Latest />} />
                 </Route>
-                <Route path="/viewer/song/:songhash/:lnmode">
+                <Route path="/viewer/song/:songhash/:lnmode?">
                     <Route index element={<Song />} />
                 </Route>
                 <Route path="/viewer/song/:songhash/:lnmode/score/:userId">
